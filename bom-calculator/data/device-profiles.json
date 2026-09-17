@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "profiles": [
+    {
+      "id": "system:DGX B200",
+      "kind": "NVIDIA system",
+      "model": "DGX B200",
+      "family": "DGX",
+      "source_url": "https://docs.nvidia.com/dgx/dgxb200-user-guide/introduction-to-dgxb200.html",
+      "notes": "Four twin-port OSFP cages fan out to eight ConnectX-7 400G interfaces. Two dual-port BlueField-3 DPUs provide storage/in-band networking.",
+      "port_groups": [
+        {
+          "id": "cluster",
+          "label": "Cluster fabric — 4 × twin-port OSFP (8 × 400G ConnectX-7)",
+          "count": 4,
+          "connector_family": "OSFP",
+          "accepted_interface_types": ["OSFP-flattop"],
+          "module_speed_gbps": 800,
+          "supported_module_speeds_gbps": [800],
+          "fabrics": ["IB", "ETH"],
+          "breakouts": [{"links_per_port": 2, "link_speed_gbps": 400}],
+          "pluggable": true,
+          "confidence": "exact",
+          "notes": "DGX B200 server-side OSFP accepts flat-top modules only."
+        },
+        {
+          "id": "bf3-eth",
+          "label": "Storage / in-band — 2 × BlueField-3 QSFP112 Ethernet ports",
+          "count": 2,
+          "connector_family": "QSFP112",
+          "accepted_interface_types": ["QSFP112"],
+          "module_speed_gbps": 400,
+          "supported_module_speeds_gbps": [400],
+          "fabrics": ["ETH"],
+          "breakouts": [{"links_per_port": 1, "link_speed_gbps": 400}],
+          "pluggable": true,
+          "confidence": "exact"
+        },
+        {
+          "id": "bf3-ib",
+          "label": "Storage / in-band — 2 × BlueField-3 QSFP112 InfiniBand ports",
+          "count": 2,
+          "connector_family": "QSFP112",
+          "accepted_interface_types": ["QSFP112"],
+          "module_speed_gbps": 400,
+          "supported_module_speeds_gbps": [400],
+          "fabrics": ["IB"],
+          "breakouts": [{"links_per_port": 1, "link_speed_gbps": 400}],
+          "pluggable": true,
+          "confidence": "exact"
+        }
+      ]
+    },
+    {
+      "id": "system:DGX B300",
+      "kind": "NVIDIA system",
+      "model": "DGX B300",
+      "family": "DGX",
+      "source_url": "https://docs.nvidia.com/dgx/dgxb300-user-guide/introduction-to-dgxb300.html",
+      "notes": "Eight OSFP cluster ports connect eight ConnectX-8 cards at 800G. Server-side OSFP is constrained to flat-top modules.",
+      "port_groups": [
+        {
+          "id": "cluster",
+          "label": "Cluster fabric — 8 × flat-top OSFP 800G ConnectX-8",
+          "count": 8,
+          "connector_family": "OSFP",
+          "accepted_interface_types": ["OSFP-flattop"],
+          "module_speed_gbps": 800,
+          "supported_module_speeds_gbps": [800],
+          "fabrics": ["IB", "ETH"],
+          "breakouts": [
+            {"links_per_port": 1, "link_speed_gbps": 800},
+            {"links_per_port": 2, "link_speed_gbps": 400}
+          ],
+          "pluggable": true,
+          "confidence": "exact",
+          "notes": "DGX B300 server-side OSFP accepts flat-top modules only. ConnectX-8 can operate as 1 × 800G or split into 2 × 400GbE; validate firmware/cable support for the exact deployment."
+        }
+      ]
+    },
+    {
+      "id": "system:DGX GB200 Compute Tray",
+      "kind": "NVIDIA system",
+      "model": "DGX GB200 Compute Tray",
+      "family": "DGX GB200 NVL72",
+      "source_url": "https://docs.nvidia.com/dgx/dgxgb200-user-guide/hardware.html",
+      "notes": "Per compute tray: four ConnectX-7 single-port 400G OSFP NICs and two dual-port BlueField-3 DPUs. Server-side OSFP is constrained to flat-top modules.",
+      "port_groups": [
+        {
+          "id": "compute",
+          "label": "Compute network — 4 × flat-top OSFP 400G ConnectX-7",
+          "count": 4,
+          "connector_family": "OSFP",
+          "accepted_interface_types": ["OSFP-flattop"],
+          "module_speed_gbps": 400,
+          "supported_module_speeds_gbps": [400],
+          "fabrics": ["IB"],
+          "breakouts": [{"links_per_port": 1, "link_speed_gbps": 400}],
+          "pluggable": true,
+          "confidence": "exact"
+        },
+        {
+          "id": "storage",
+          "label": "Storage network — 2 × BlueField-3 QSFP112 400G",
+          "count": 2,
+          "connector_family": "QSFP112",
+          "accepted_interface_types": ["QSFP112"],
+          "module_speed_gbps": 400,
+          "supported_module_speeds_gbps": [400],
+          "fabrics": ["ETH", "IB"],
+          "breakouts": [{"links_per_port": 1, "link_speed_gbps": 400}],
+          "pluggable": true,
+          "confidence": "exact"
+        },
+        {
+          "id": "dgxnet",
+          "label": "DGX management network — 2 × BlueField-3 QSFP112 400G",
+          "count": 2,
+          "connector_family": "QSFP112",
+          "accepted_interface_types": ["QSFP112"],
+          "module_speed_gbps": 400,
+          "supported_module_speeds_gbps": [400],
+          "fabrics": ["ETH"],
+          "breakouts": [{"links_per_port": 1, "link_speed_gbps": 400}],
+          "pluggable": true,
+          "confidence": "exact"
+        }
+      ]
+    },
+    {
+      "id": "profile:MQM9700-NS2F",
+      "kind": "InfiniBand switch / appliance",
+      "model": "MQM9700-NS2F",
+      "family": "Quantum-2 QM9700",
+      "source_url": "https://networking-docs.nvidia.com/qm97x0hw/introduction",
+      "notes": "Managed P2C QM9700 variant. 32 physical OSFP cages expose 64 NDR 400G ports; each cage contains two NDR ports. NVIDIA states the air-cooled cages accept finned OSFP connectors.",
+      "port_groups": [
+        {
+          "id": "ndr",
+          "label": "NDR fabric — 32 × twin-port finned OSFP (64 × 400G)",
+          "count": 32,
+          "connector_family": "OSFP",
+          "accepted_interface_types": ["OSFP-finned"],
+          "module_speed_gbps": 800,
+          "supported_module_speeds_gbps": [800],
+          "fabrics": ["IB"],
+          "breakouts": [
+            {"links_per_port": 2, "link_speed_gbps": 400},
+            {"links_per_port": 4, "link_speed_gbps": 200}
+          ],
+          "pluggable": true,
+          "confidence": "exact",
+          "notes": "One physical cage carries two NDR 400G ports; NDR ports are individually splittable to 2 × 200G."
+        }
+      ]
+    }
+  ]
+}

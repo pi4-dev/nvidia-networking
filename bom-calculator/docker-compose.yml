@@ -1,0 +1,15 @@
+services:
+  compatibility-validator:
+    build:
+      context: ..
+      dockerfile: bom-calculator/Dockerfile
+    container_name: nvidia-compatibility-validator
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      NVIDIA_DATA_PATH: /data/nvidia-interconnects.json
+      DEVICE_PROFILES_PATH: /profiles/device-profiles.json
+    volumes:
+      - ../data/nvidia-interconnects.json:/data/nvidia-interconnects.json:ro
+      - ./data/device-profiles.json:/profiles/device-profiles.json:ro
