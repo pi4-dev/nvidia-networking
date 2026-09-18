@@ -2,7 +2,7 @@ services:
   compatibility-validator:
     build:
       context: ..
-      dockerfile: bom-calculator/Dockerfile
+      dockerfile: compatibility-validator/Dockerfile
     container_name: nvidia-compatibility-validator
     restart: unless-stopped
     ports:

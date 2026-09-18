@@ -87,7 +87,7 @@ For switch-side OSFP records where schema v8 currently states only `OSFP` withou
 
 ## Device profiles
 
-The canonical repository JSON now contains normalized cage/module data for switches, DPUs, SuperNICs and relevant appliances. `bom-calculator/data/device-profiles.json` remains only as a small auditable overlay for system-level port profiles not represented in the canonical dataset.
+The canonical repository JSON now contains normalized cage/module data for switches, DPUs, SuperNICs and relevant appliances. `compatibility-validator/data/device-profiles.json` remains only as a small auditable overlay for system-level port profiles not represented in the canonical dataset.
 
 Current profiles include:
 
@@ -112,7 +112,7 @@ The browser polls `/api/meta` every 5 seconds and refreshes device data automati
 From the repository root:
 
 ```bash
-docker compose -f bom-calculator/docker-compose.yml up -d --build
+docker compose -f compatibility-validator/docker-compose.yml up -d --build
 ```
 
 Open:

@@ -7,11 +7,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-COPY bom-calculator/requirements.txt /app/requirements.txt
+COPY compatibility-validator/requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
-COPY bom-calculator/app /app/app
-COPY bom-calculator/data/device-profiles.json /profiles/device-profiles.json
+COPY compatibility-validator/app /app/app
+COPY compatibility-validator/data/device-profiles.json /profiles/device-profiles.json
 COPY data/nvidia-interconnects.json /data/nvidia-interconnects.json
 
 EXPOSE 8080

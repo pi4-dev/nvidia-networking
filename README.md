@@ -10,8 +10,16 @@ The repository contains a human-readable equipment catalog together with the nor
 .
 ├── README.md
 ├── network_equipment.md
-└── data/
-    └── nvidia-interconnects.json
+├── data/
+│   └── nvidia-interconnects.json
+└── compatibility-validator/
+    ├── README.md
+    ├── Dockerfile
+    ├── docker-compose.yml
+    ├── requirements.txt
+    ├── app/
+    └── data/
+        └── device-profiles.json
 ```
 
 ### `network_equipment.md`
@@ -28,6 +36,29 @@ Generated catalog of active NVIDIA networking products, including:
 - NVIDIA LinkX copper, optical, and adapter interconnects
 
 The file is intended for quick technical lookup and comparison.
+
+### `compatibility-validator/`
+
+Interactive web application for validating NVIDIA LinkX transceivers, AOCs and copper cable assemblies against NVIDIA switches, DPUs, SuperNICs and DGX port profiles.
+
+The validator uses the repository's live `data/nvidia-interconnects.json` dataset and checks, where applicable:
+
+- active product status
+- fabric compatibility (`ETH`, `IB`, `NVL`)
+- connector and module/cage compatibility
+- OSFP mechanical variant (finned vs. flat-top)
+- supported module speed and port mode
+- aggregate cage capacity for multi-lane interfaces
+
+The GUI exposes only products accepted for the selected device and physical port group and shows the reasons and confidence level for each compatibility decision.
+
+Run from the repository root:
+
+```bash
+docker compose -f compatibility-validator/docker-compose.yml up -d --build
+```
+
+Then open `http://localhost:8080/`. See [`compatibility-validator/README.md`](compatibility-validator/README.md) for implementation details and API endpoints.
 
 ### `data/nvidia-interconnects.json`
 
