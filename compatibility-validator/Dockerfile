@@ -15,7 +15,8 @@ RUN groupadd --system --gid 10001 app \
     && useradd --system --uid 10001 --gid app --home-dir /nonexistent --shell /usr/sbin/nologin app
 
 COPY compatibility-validator/requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r /app/requirements.txt
+RUN python -m pip install --no-cache-dir --require-hashes --index-url https://pypi.org/simple -r /app/requirements.txt \\
+    && python -m pip check
 
 COPY compatibility-validator/app /app/app
 COPY compatibility-validator/data/device-profiles.json /profiles/device-profiles.json

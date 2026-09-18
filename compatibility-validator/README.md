@@ -154,6 +154,29 @@ If a live-mounted JSON file changes but the new content is invalid, malformed or
 
 The container runs as UID/GID `10001`, with a read-only root filesystem, all Linux capabilities dropped and `no-new-privileges` enabled. The Compose definition also applies CPU, memory, PID and file-descriptor limits.
 
+
+## Dependency integrity
+
+Runtime dependencies are split into:
+
+- `requirements.in` — the two direct application dependencies, pinned to exact versions.
+- `requirements.txt` — the complete transitive runtime dependency set, pinned to exact versions and authenticated with SHA-256 hashes.
+
+The image build installs dependencies with `pip --require-hashes` from the explicit PyPI index and runs `pip check`. A package with an unexpected artifact hash, an unpinned transitive dependency, or an inconsistent dependency graph fails the image build.
+
+Regenerate the lock after an intentional dependency update with Python 3.12:
+
+```bash
+python -m pip install pip-tools
+pip-compile --generate-hashes --output-file=requirements.txt requirements.in
+```
+
+The runtime uses base `uvicorn` rather than `uvicorn[standard]` because this application does not require the optional watch/reload, WebSocket acceleration, dotenv, YAML or uvloop dependency set. This keeps the runtime dependency graph smaller.
+
+## Error handling
+
+Startup/catalog-loading failures are logged through the Uvicorn error logger, including the server-side traceback. API clients receive only the constant HTTP 503 response detail `Service unavailable`; internal exception strings, mount points and filesystem paths are not propagated to the response.
+
 ## API
 
 The GUI uses the same backend API:
