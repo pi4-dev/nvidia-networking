@@ -129,6 +129,31 @@ http://localhost:8080/healthz
 
 The compose file bind-mounts the canonical JSON read-only, so regenerating `data/nvidia-interconnects.json` is visible to the running application without an application restart.
 
+## Runtime hardening and data safety
+
+The service validates both JSON inputs before activating a new catalog revision. A changed dataset is accepted only when its structure passes validation and its file size is within the configured limit.
+
+Default limits:
+
+- canonical catalog: 2 MiB (`MAX_DATA_BYTES`)
+- device profiles: 512 KiB (`MAX_PROFILE_BYTES`)
+- compatibility-result cache: 256 entries (`COMPAT_CACHE_MAX_ENTRIES`)
+- Uvicorn concurrency: 100 requests
+- listen backlog: 128
+- keep-alive timeout: 5 seconds
+
+If a live-mounted JSON file changes but the new content is invalid, malformed or over the configured size limit, the process continues serving the last-known-good in-memory snapshot. If no valid snapshot has ever been loaded, API access returns `503`.
+
+`/healthz` intentionally exposes only:
+
+```json
+{"status":"ok"}
+```
+
+`/api/meta` does not expose filesystem paths. Compatibility results are cached by catalog revision, device ID and port-group ID, so a newly accepted catalog revision automatically uses a separate cache namespace.
+
+The container runs as UID/GID `10001`, with a read-only root filesystem, all Linux capabilities dropped and `no-new-privileges` enabled. The Compose definition also applies CPU, memory, PID and file-descriptor limits.
+
 ## API
 
 The GUI uses the same backend API:

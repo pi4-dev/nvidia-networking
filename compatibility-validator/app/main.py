@@ -1,12 +1,14 @@
 import hashlib
 import json
+import logging
 import os
 import re
 import threading
+from collections import OrderedDict
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -14,8 +16,12 @@ BASE_DIR = Path(__file__).resolve().parent
 DATA_PATH = Path(os.getenv("NVIDIA_DATA_PATH", "/data/nvidia-interconnects.json"))
 PROFILE_PATH = Path(os.getenv("DEVICE_PROFILES_PATH", "/profiles/device-profiles.json"))
 STATIC_DIR = BASE_DIR / "static"
+MAX_DATA_BYTES = int(os.getenv("MAX_DATA_BYTES", str(2 * 1024 * 1024)))
+MAX_PROFILE_BYTES = int(os.getenv("MAX_PROFILE_BYTES", str(512 * 1024)))
+COMPAT_CACHE_MAX_ENTRIES = int(os.getenv("COMPAT_CACHE_MAX_ENTRIES", "256"))
+logger = logging.getLogger("compatibility-validator")
 
-app = FastAPI(title="NVIDIA Networking Compatibility Validator", version="0.4.1")
+app = FastAPI(title="NVIDIA Networking Compatibility Validator", version="0.5.0")
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # Schema v8 port_interface_compatibility is authoritative. This matrix is used
@@ -288,6 +294,155 @@ def _catalog_groups(item: dict[str, Any], entry: dict[str, Any] | None, fabric: 
     return groups
 
 
+
+def _require(condition: bool, message: str) -> None:
+    if not condition:
+        raise ValueError(message)
+
+
+def _validate_table(section_name: str, section: Any) -> None:
+    _require(isinstance(section, dict), f"{section_name} must be an object")
+    fields = section.get("fields")
+    items = section.get("items")
+    _require(isinstance(fields, list) and fields, f"{section_name}.fields must be a non-empty array")
+    _require(all(isinstance(x, str) and x for x in fields), f"{section_name}.fields must contain non-empty strings")
+    _require(len(fields) == len(set(fields)), f"{section_name}.fields contains duplicate names")
+    _require(isinstance(items, list), f"{section_name}.items must be an array")
+    for idx, row in enumerate(items):
+        _require(isinstance(row, list), f"{section_name}.items[{idx}] must be an array")
+        _require(len(row) == len(fields), f"{section_name}.items[{idx}] length does not match fields")
+
+
+def _validate_rows(name: str, fields: Any, rows: Any, required_fields: set[str] | None = None) -> None:
+    _require(isinstance(fields, list) and fields, f"{name} fields must be a non-empty array")
+    _require(all(isinstance(x, str) and x for x in fields), f"{name} fields must contain non-empty strings")
+    _require(len(fields) == len(set(fields)), f"{name} fields contains duplicate names")
+    if required_fields:
+        missing = required_fields.difference(fields)
+        _require(not missing, f"{name} fields missing required keys: {sorted(missing)}")
+    _require(isinstance(rows, list), f"{name} rows must be an array")
+    for idx, row in enumerate(rows):
+        _require(isinstance(row, list), f"{name}[{idx}] must be an array")
+        _require(len(row) == len(fields), f"{name}[{idx}] length does not match fields")
+
+
+def _validate_dataset_schema(raw: Any) -> None:
+    _require(isinstance(raw, dict), "catalog root must be an object")
+    for key in ("schema_version", "snapshot_date", "generated_at", "linkx"):
+        _require(key in raw, f"catalog missing required key: {key}")
+    _require(isinstance(raw["schema_version"], int) and raw["schema_version"] >= 1, "schema_version must be a positive integer")
+    _require(isinstance(raw["snapshot_date"], str) and raw["snapshot_date"], "snapshot_date must be a non-empty string")
+    _require(isinstance(raw["generated_at"], str) and raw["generated_at"], "generated_at must be a non-empty string")
+
+    for name in ("ethernet", "infiniband", "supernic", "dpu"):
+        if name in raw:
+            _validate_table(name, raw[name])
+
+    linkx = raw["linkx"]
+    _require(isinstance(linkx, dict), "linkx must be an object")
+    _validate_rows(
+        "linkx.transceivers",
+        linkx.get("transceiver_fields"),
+        linkx.get("transceivers"),
+        {"category", "model", "status", "speed", "interface_type"},
+    )
+    _validate_rows(
+        "linkx.aoc",
+        linkx.get("detailed_interconnect_fields"),
+        linkx.get("aoc"),
+        {"category", "model", "status", "speed", "interface_type"},
+    )
+    _validate_rows(
+        "linkx.copper",
+        linkx.get("detailed_interconnect_fields"),
+        linkx.get("copper"),
+        {"category", "model", "status", "speed", "interface_type"},
+    )
+
+    fabric_map = linkx.get("transceiver_fabric_compatibility", {})
+    _require(isinstance(fabric_map, dict), "linkx.transceiver_fabric_compatibility must be an object")
+    for key, value in fabric_map.items():
+        _require(isinstance(key, str) and key, "fabric compatibility keys must be non-empty strings")
+        _require(isinstance(value, list) and all(isinstance(x, str) for x in value), f"fabric compatibility for {key} must be an array of strings")
+
+    compatibility = raw.get("port_interface_compatibility", {})
+    _require(isinstance(compatibility, dict), "port_interface_compatibility must be an object")
+    for bucket, models in compatibility.items():
+        _require(isinstance(bucket, str) and bucket, "compatibility bucket name must be a non-empty string")
+        _require(isinstance(models, dict), f"port_interface_compatibility.{bucket} must be an object")
+        for model, entry in models.items():
+            _require(isinstance(model, str) and model, f"{bucket} model key must be a non-empty string")
+            _require(isinstance(entry, dict), f"{bucket}.{model} must be an object")
+            if "pluggable" in entry:
+                _require(isinstance(entry["pluggable"], bool), f"{bucket}.{model}.pluggable must be boolean")
+            for list_key in ("accepted_pluggables", "fixed_interfaces"):
+                if list_key in entry:
+                    _require(
+                        isinstance(entry[list_key], list) and all(isinstance(x, str) and x for x in entry[list_key]),
+                        f"{bucket}.{model}.{list_key} must be an array of non-empty strings",
+                    )
+            for string_key in ("source_url", "scope_note"):
+                if string_key in entry and entry[string_key] is not None:
+                    _require(isinstance(entry[string_key], str), f"{bucket}.{model}.{string_key} must be a string")
+            if "variants" in entry:
+                _require(isinstance(entry["variants"], list), f"{bucket}.{model}.variants must be an array")
+
+
+def _validate_profiles_schema(raw: Any) -> None:
+    _require(isinstance(raw, dict), "profiles root must be an object")
+    _require(isinstance(raw.get("schema_version"), int) and raw["schema_version"] >= 1, "profiles.schema_version must be a positive integer")
+    profiles = raw.get("profiles")
+    _require(isinstance(profiles, list), "profiles must be an array")
+    seen_profile_ids: set[str] = set()
+    for pidx, profile in enumerate(profiles):
+        _require(isinstance(profile, dict), f"profiles[{pidx}] must be an object")
+        for key in ("id", "kind", "model", "port_groups"):
+            _require(key in profile, f"profiles[{pidx}] missing required key: {key}")
+        for key in ("id", "kind", "model"):
+            _require(isinstance(profile[key], str) and profile[key], f"profiles[{pidx}].{key} must be a non-empty string")
+        _require(profile["id"] not in seen_profile_ids, f"duplicate profile id: {profile['id']}")
+        seen_profile_ids.add(profile["id"])
+        groups = profile["port_groups"]
+        _require(isinstance(groups, list), f"profiles[{pidx}].port_groups must be an array")
+        seen_group_ids: set[str] = set()
+        for gidx, group in enumerate(groups):
+            prefix = f"profiles[{pidx}].port_groups[{gidx}]"
+            _require(isinstance(group, dict), f"{prefix} must be an object")
+            for key in ("id", "label", "connector_family", "pluggable"):
+                _require(key in group, f"{prefix} missing required key: {key}")
+            for key in ("id", "label", "connector_family"):
+                _require(isinstance(group[key], str) and group[key], f"{prefix}.{key} must be a non-empty string")
+            _require(group["id"] not in seen_group_ids, f"{prefix}.id must be unique within profile")
+            seen_group_ids.add(group["id"])
+            _require(isinstance(group["pluggable"], bool), f"{prefix}.pluggable must be boolean")
+            if "count" in group:
+                _require(group["count"] is None or (isinstance(group["count"], int) and group["count"] >= 0), f"{prefix}.count must be a non-negative integer or null")
+            for key in ("module_speed_gbps",):
+                if key in group and group[key] is not None:
+                    _require(isinstance(group[key], int) and group[key] > 0, f"{prefix}.{key} must be a positive integer")
+            for key in ("accepted_interface_types", "fabrics", "supported_module_speeds_gbps"):
+                if key in group:
+                    _require(isinstance(group[key], list), f"{prefix}.{key} must be an array")
+            for bidx, breakout in enumerate(group.get("breakouts") or []):
+                _require(isinstance(breakout, dict), f"{prefix}.breakouts[{bidx}] must be an object")
+                _require(isinstance(breakout.get("links_per_port"), int) and breakout["links_per_port"] > 0, f"{prefix}.breakouts[{bidx}].links_per_port must be positive")
+                _require(isinstance(breakout.get("link_speed_gbps"), int) and breakout["link_speed_gbps"] > 0, f"{prefix}.breakouts[{bidx}].link_speed_gbps must be positive")
+
+
+def _read_json_limited(path: Path, max_bytes: int, label: str) -> tuple[Any, bytes]:
+    try:
+        size = path.stat().st_size
+    except FileNotFoundError as exc:
+        raise ValueError(f"{label} file not found") from exc
+    _require(size <= max_bytes, f"{label} exceeds size limit ({size} > {max_bytes} bytes)")
+    data = path.read_bytes()
+    _require(len(data) <= max_bytes, f"{label} exceeds size limit")
+    try:
+        return json.loads(data), data
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError(f"{label} is not valid UTF-8 JSON") from exc
+
+
 class LiveCatalog:
     def __init__(self, data_path: Path, profile_path: Path):
         self.data_path = data_path
@@ -295,6 +450,7 @@ class LiveCatalog:
         self._lock = threading.RLock()
         self._signature: tuple[Any, ...] | None = None
         self._snapshot: dict[str, Any] = {}
+        self._last_error: str | None = None
 
     @staticmethod
     def _file_signature(path: Path) -> tuple[int, int] | None:
@@ -308,20 +464,32 @@ class LiveCatalog:
         signature = (self._file_signature(self.data_path), self._file_signature(self.profile_path))
         with self._lock:
             if signature != self._signature:
-                self._snapshot = self._load(signature)
-                self._signature = signature
+                try:
+                    candidate = self._load()
+                except Exception as exc:
+                    self._signature = signature
+                    self._last_error = str(exc)
+                    if not self._snapshot:
+                        raise
+                    logger.warning("Catalog reload rejected; serving last-known-good snapshot: %s", exc)
+                else:
+                    self._snapshot = candidate
+                    self._signature = signature
+                    self._last_error = None
             return self._snapshot
 
-    def _load(self, signature: tuple[Any, ...]) -> dict[str, Any]:
-        if not self.data_path.exists():
-            raise RuntimeError(f"Dataset not found: {self.data_path}")
-        with self.data_path.open("r", encoding="utf-8") as fh:
-            raw = json.load(fh)
+    def _load(self) -> dict[str, Any]:
+        raw, data_bytes = _read_json_limited(self.data_path, MAX_DATA_BYTES, "catalog")
+        _validate_dataset_schema(raw)
+
         profiles: list[dict[str, Any]] = []
+        profile_bytes = b""
         if self.profile_path.exists():
-            with self.profile_path.open("r", encoding="utf-8") as fh:
-                profiles = json.load(fh).get("profiles", [])
-        revision = hashlib.sha256(repr(signature).encode()).hexdigest()[:12]
+            profiles_raw, profile_bytes = _read_json_limited(self.profile_path, MAX_PROFILE_BYTES, "profiles")
+            _validate_profiles_schema(profiles_raw)
+            profiles = profiles_raw["profiles"]
+
+        revision = hashlib.sha256(data_bytes + b"\0" + profile_bytes).hexdigest()[:12]
         return {
             "raw": raw,
             "devices": self._build_devices(raw, profiles),
@@ -466,6 +634,8 @@ class LiveCatalog:
 
 
 catalog = LiveCatalog(DATA_PATH, PROFILE_PATH)
+_compat_cache: OrderedDict[tuple[str, str, str], list[dict[str, Any]]] = OrderedDict()
+_compat_cache_lock = threading.RLock()
 
 
 def _snapshot_or_503() -> dict[str, Any]:
@@ -495,9 +665,9 @@ def index() -> FileResponse:
 
 
 @app.get("/healthz")
-def healthz() -> dict[str, Any]:
-    snapshot = _snapshot_or_503()
-    return {"status": "ok", "revision": snapshot["revision"], "snapshot_date": snapshot["snapshot_date"]}
+def healthz() -> dict[str, str]:
+    _snapshot_or_503()
+    return {"status": "ok"}
 
 
 @app.get("/api/meta")
@@ -507,7 +677,6 @@ def meta() -> dict[str, Any]:
         "revision": snapshot["revision"], "schema_version": snapshot["schema_version"],
         "snapshot_date": snapshot["snapshot_date"], "generated_at": snapshot["generated_at"],
         "device_count": len(snapshot["devices"]), "interconnect_count": len(snapshot["interconnects"]),
-        "data_path": str(DATA_PATH),
     }
 
 
@@ -517,8 +686,18 @@ def devices() -> list[dict[str, Any]]:
 
 
 @app.get("/api/compatible")
-def compatible(device_id: str, port_group_id: str) -> list[dict[str, Any]]:
+def compatible(
+    device_id: str = Query(..., min_length=1, max_length=128),
+    port_group_id: str = Query(..., min_length=1, max_length=64),
+) -> list[dict[str, Any]]:
     snapshot = _snapshot_or_503()
+    cache_key = (snapshot["revision"], device_id, port_group_id)
+    with _compat_cache_lock:
+        cached = _compat_cache.get(cache_key)
+        if cached is not None:
+            _compat_cache.move_to_end(cache_key)
+            return cached
+
     device = _find_device(snapshot, device_id)
     group = _find_group(device, port_group_id)
     result = []
@@ -526,4 +705,11 @@ def compatible(device_id: str, port_group_id: str) -> list[dict[str, Any]]:
         ok, confidence, reasons = catalog.compatible(group, item)
         if ok:
             result.append({**item, "compatibility_confidence": confidence, "compatibility_reasons": reasons})
-    return sorted(result, key=lambda x: (_speed_gbps(x.get("speed")) or 0, x.get("model", "")), reverse=True)
+    result = sorted(result, key=lambda x: (_speed_gbps(x.get("speed")) or 0, x.get("model", "")), reverse=True)
+
+    with _compat_cache_lock:
+        _compat_cache[cache_key] = result
+        _compat_cache.move_to_end(cache_key)
+        while len(_compat_cache) > COMPAT_CACHE_MAX_ENTRIES:
+            _compat_cache.popitem(last=False)
+    return result

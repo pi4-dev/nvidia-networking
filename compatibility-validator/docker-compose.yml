@@ -10,6 +10,24 @@ services:
     environment:
       NVIDIA_DATA_PATH: /data/nvidia-interconnects.json
       DEVICE_PROFILES_PATH: /profiles/device-profiles.json
+      MAX_DATA_BYTES: "2097152"
+      MAX_PROFILE_BYTES: "524288"
+      COMPAT_CACHE_MAX_ENTRIES: "256"
+      FORWARDED_ALLOW_IPS: "127.0.0.1"
     volumes:
       - ../data/nvidia-interconnects.json:/data/nvidia-interconnects.json:ro
       - ./data/device-profiles.json:/profiles/device-profiles.json:ro
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    cpus: "1.0"
+    mem_limit: 256m
+    pids_limit: 128
+    ulimits:
+      nofile:
+        soft: 1024
+        hard: 1024
