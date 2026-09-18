@@ -162,7 +162,7 @@ Runtime dependencies are split into:
 - `requirements.in` — the two direct application dependencies, pinned to exact versions.
 - `requirements.txt` — the complete transitive runtime dependency set, pinned to exact versions and authenticated with SHA-256 hashes.
 
-The image build installs dependencies with `pip --require-hashes` from the explicit PyPI index and runs `pip check`. A package with an unexpected artifact hash, an unpinned transitive dependency, or an inconsistent dependency graph fails the image build.
+The image build installs dependencies with `pip --require-hashes --only-binary=:all:` from the explicit PyPI index and runs `pip check`. A package with an unexpected artifact hash, an unpinned transitive dependency, or an inconsistent dependency graph fails the image build.
 
 Regenerate the lock after an intentional dependency update with Python 3.12:
 
