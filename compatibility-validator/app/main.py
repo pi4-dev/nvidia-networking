@@ -328,18 +328,47 @@ def _validate_rows(name: str, fields: Any, rows: Any, required_fields: set[str] 
 
 def _validate_dataset_schema(raw: Any) -> None:
     _require(isinstance(raw, dict), "catalog root must be an object")
-    for key in ("schema_version", "snapshot_date", "generated_at", "linkx"):
+    for key in (
+        "schema_version", "snapshot_date", "generated_at", "timezone", "sources",
+        "linkx", "ethernet", "infiniband", "silicon_photonics", "dpu", "supernic",
+        "summary", "notes", "port_interface_compatibility",
+    ):
         _require(key in raw, f"catalog missing required key: {key}")
     _require(isinstance(raw["schema_version"], int) and raw["schema_version"] >= 1, "schema_version must be a positive integer")
     _require(isinstance(raw["snapshot_date"], str) and raw["snapshot_date"], "snapshot_date must be a non-empty string")
     _require(isinstance(raw["generated_at"], str) and raw["generated_at"], "generated_at must be a non-empty string")
+    _require(isinstance(raw["timezone"], str) and raw["timezone"], "timezone must be a non-empty string")
 
-    for name in ("ethernet", "infiniband", "supernic", "dpu"):
-        if name in raw:
-            _validate_table(name, raw[name])
+    sources = raw["sources"]
+    _require(isinstance(sources, dict) and sources, "sources must be a non-empty object")
+    for key, value in sources.items():
+        _require(isinstance(key, str) and key, "source keys must be non-empty strings")
+        _require(isinstance(value, str) and value, f"sources.{key} must be a non-empty string")
+
+    for name in ("ethernet", "infiniband", "silicon_photonics", "supernic", "dpu"):
+        _validate_table(name, raw[name])
+
+    summary = raw["summary"]
+    _require(isinstance(summary, dict), "summary must be an object")
+    for key, value in summary.items():
+        _require(isinstance(key, str) and key, "summary keys must be non-empty strings")
+        _require(isinstance(value, int) and value >= 0, f"summary.{key} must be a non-negative integer")
+    _require(isinstance(raw["notes"], list) and all(isinstance(x, str) for x in raw["notes"]), "notes must be an array of strings")
 
     linkx = raw["linkx"]
     _require(isinstance(linkx, dict), "linkx must be an object")
+    _validate_rows(
+        "linkx.active",
+        linkx.get("product_fields"),
+        linkx.get("active"),
+        {"model", "speed", "category"},
+    )
+    _validate_rows(
+        "linkx.no_longer_for_sale",
+        linkx.get("product_fields"),
+        linkx.get("no_longer_for_sale"),
+        {"model", "speed", "category"},
+    )
     _validate_rows(
         "linkx.transceivers",
         linkx.get("transceiver_fields"),
@@ -482,12 +511,9 @@ class LiveCatalog:
         raw, data_bytes = _read_json_limited(self.data_path, MAX_DATA_BYTES, "catalog")
         _validate_dataset_schema(raw)
 
-        profiles: list[dict[str, Any]] = []
-        profile_bytes = b""
-        if self.profile_path.exists():
-            profiles_raw, profile_bytes = _read_json_limited(self.profile_path, MAX_PROFILE_BYTES, "profiles")
-            _validate_profiles_schema(profiles_raw)
-            profiles = profiles_raw["profiles"]
+        profiles_raw, profile_bytes = _read_json_limited(self.profile_path, MAX_PROFILE_BYTES, "profiles")
+        _validate_profiles_schema(profiles_raw)
+        profiles = profiles_raw["profiles"]
 
         revision = hashlib.sha256(data_bytes + b"\0" + profile_bytes).hexdigest()[:12]
         return {
