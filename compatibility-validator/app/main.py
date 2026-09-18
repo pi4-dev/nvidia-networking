@@ -19,7 +19,7 @@ STATIC_DIR = BASE_DIR / "static"
 MAX_DATA_BYTES = int(os.getenv("MAX_DATA_BYTES", str(2 * 1024 * 1024)))
 MAX_PROFILE_BYTES = int(os.getenv("MAX_PROFILE_BYTES", str(512 * 1024)))
 COMPAT_CACHE_MAX_ENTRIES = int(os.getenv("COMPAT_CACHE_MAX_ENTRIES", "256"))
-logger = logging.getLogger("compatibility-validator")
+logger = logging.getLogger("uvicorn.error")
 
 app = FastAPI(title="NVIDIA Networking Compatibility Validator", version="0.5.0")
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
@@ -500,7 +500,7 @@ class LiveCatalog:
                     self._last_error = str(exc)
                     if not self._snapshot:
                         raise
-                    logger.warning("Catalog reload rejected; serving last-known-good snapshot: %s", exc)
+                    logger.exception("Catalog reload rejected; serving last-known-good snapshot")
                 else:
                     self._snapshot = candidate
                     self._signature = signature
@@ -667,8 +667,9 @@ _compat_cache_lock = threading.RLock()
 def _snapshot_or_503() -> dict[str, Any]:
     try:
         return catalog.get()
-    except Exception as exc:
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except Exception:
+        logger.exception("Catalog unavailable")
+        raise HTTPException(status_code=503, detail="Service unavailable") from None
 
 
 def _find_device(snapshot: dict[str, Any], device_id: str) -> dict[str, Any]:
