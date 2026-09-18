@@ -16,6 +16,7 @@ The repository contains a human-readable equipment catalog together with the nor
     ├── README.md
     ├── Dockerfile
     ├── docker-compose.yml
+    ├── requirements.in
     ├── requirements.txt
     ├── app/
     └── data/
@@ -51,6 +52,8 @@ The validator uses the repository's live `data/nvidia-interconnects.json` datase
 - aggregate cage capacity for multi-lane interfaces
 
 The GUI exposes only products accepted for the selected device and physical port group and shows the reasons and confidence level for each compatibility decision.
+
+Dependency installation is hash-locked with exact versions and SHA-256 verification; see the application README for regeneration and runtime hardening details.
 
 Run from the repository root:
 
