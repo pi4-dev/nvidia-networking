@@ -34,7 +34,18 @@ def main(base):
                                         "revision": catalog["meta"]["revision"]})
     assert result["orientation"] == {"a": "B", "b": "A"}
     assert result["status"] == "unknown"  # Unspecified FEC cannot become a pass.
-    print(f"Smoke passed: {len(catalog['devices'])} devices, {len(catalog['products'])} products, revision {result['revision']}")
+    assert catalog["hardware_profiles"] and catalog["fiber_assemblies"]
+    hardware = request("/api/hardware/inspect", {"device_id": "supernic:ConnectX-8 SuperNIC", "port_group_id": "catalog-1",
+        "hardware_profile_id": "900-9X81E-00EX-ST0", "revision": catalog["meta"]["revision"]})
+    assert hardware["effective_port"]["module_speed_gbps"] == 800 and hardware["gaps"]
+    proposed = request("/api/recommendations", {"a": {k: a[k] for k in ("device_id", "port_group_id")},
+        "b": {k: b[k] for k in ("device_id", "port_group_id")}, "fabric": "IB", "speed_gbps": 400,
+        "minimum_length_m": 3, "revision": catalog["meta"]["revision"]})
+    assert proposed["candidates"][0]["components"][0]["part_number"] == "980-9I601-00N003"
+    assert any(c["technology"] == "optical" and c["ordering_complete"] for c in proposed["candidates"])
+    assert all(c["validation"]["status"] == "unknown" for c in proposed["candidates"])
+    print(f"Smoke passed: {len(catalog['devices'])} devices, {len(catalog['products'])} products, "
+          f"{proposed['total_candidates']} proposals, revision {result['revision']}")
 
 
 if __name__ == "__main__":

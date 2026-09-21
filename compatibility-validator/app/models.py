@@ -41,6 +41,7 @@ class PortMode(StrictModel):
     electrical_lanes: Annotated[int, Field(ge=1, le=16)] | None = None
     lane_rate_gbps: Distance | None = None
     fec: list[Text] = Field(default_factory=list)
+    fabrics: list[Fabric] = Field(default_factory=list)
 
     @property
     def capacity(self) -> int:
@@ -49,6 +50,7 @@ class PortMode(StrictModel):
     @model_validator(mode="after")
     def consistent(self):
         unique(self.fec, "FEC setting")
+        unique(self.fabrics, "mode fabric")
         if self.electrical_lanes and self.lane_rate_gbps and abs(self.electrical_lanes * self.lane_rate_gbps - self.capacity) > 0.01:
             raise ValueError("electrical lanes and nominal lane rate disagree with mode capacity")
         return self
@@ -78,6 +80,8 @@ class PortGroup(StrictModel):
         unique(self.fabrics, "fabric")
         if self.module_speed_gbps and any(m.capacity > self.module_speed_gbps for m in self.modes):
             raise ValueError("port mode exceeds cage capacity")
+        if self.fabrics and any(not set(m.fabrics).issubset(self.fabrics) for m in self.modes):
+            raise ValueError("port mode fabric outside group scope")
         if self.connector_family != "OSFP" and self.accepted_interface_types:
             raise ValueError("OSFP mechanics only apply to OSFP cages")
         if self.pluggable is False and self.accepted_connector_families:
@@ -167,14 +171,160 @@ class InterconnectDetail(StrictModel):
         return self
 
 
+class Evidence(StrictModel):
+    kind: Literal["manufacturer", "lab"]
+    source_url: Text
+    verified_on: Annotated[str, Field(pattern=r"^\d{4}-\d{2}-\d{2}$")]
+    scope: Text
+    note: Text | None = None
+
+    _source = field_validator("source_url")(check_url)
+
+    @field_validator("verified_on")
+    @classmethod
+    def valid_date(cls, value):
+        if date.fromisoformat(value) > date.today():
+            raise ValueError("verification date cannot be in the future")
+        return value
+
+
+ShortText = Annotated[str, Field(min_length=1, max_length=128)]
+
+
+class IdentityFact(StrictModel):
+    value: ShortText
+    evidence: Evidence
+
+
+class HardwarePort(StrictModel):
+    port_group_id: Annotated[str, Field(min_length=1, max_length=64)]
+    module_speed_gbps: Positive | None = None
+    count: Annotated[int, Field(ge=1, le=1024)] | None = None
+    fabrics: list[Fabric] = Field(default_factory=list)
+    modes: list[PortMode] = Field(default_factory=list)
+    evidence: dict[ShortText, Evidence]
+
+    @model_validator(mode="after")
+    def consistent(self):
+        unique([m.id for m in self.modes], "hardware mode")
+        unique(self.fabrics, "hardware fabric")
+        expected = {k for k in ("module_speed_gbps", "count", "fabrics") if getattr(self, k)}
+        expected.update("modes." + m.id for m in self.modes)
+        inherited = {"connector_family", "accepted_connector_families", "accepted_interface_types", "pluggable"}
+        if not expected.issubset(self.evidence) or not set(self.evidence).issubset(expected | inherited):
+            raise ValueError("every hardware override needs scoped evidence; only named inherited facts may be annotated")
+        if self.module_speed_gbps and any(m.capacity > self.module_speed_gbps for m in self.modes):
+            raise ValueError("hardware mode exceeds per-cage capacity")
+        if self.fabrics and any(not set(m.fabrics).issubset(self.fabrics) for m in self.modes):
+            raise ValueError("mode fabric outside hardware scope")
+        return self
+
+
+def numeric_version(value: str) -> tuple[int, ...] | None:
+    if not re.fullmatch(r"\d+(?:\.\d+){0,7}", value):
+        return None
+    parts = [int(n) for n in value.split(".")]
+    return tuple(parts + [0] * (8 - len(parts)))
+
+
+class VersionScope(StrictModel):
+    versions: list[ShortText] = Field(default_factory=list)
+    minimum: ShortText | None = None
+    maximum: ShortText | None = None
+
+    @model_validator(mode="after")
+    def consistent(self):
+        unique(self.versions, "tested version")
+        if bool(self.versions) == bool(self.minimum or self.maximum):
+            raise ValueError("use exact tested versions or a documented numeric range")
+        for value in (self.minimum, self.maximum):
+            if value and numeric_version(value) is None:
+                raise ValueError("version ranges must be numeric")
+        if self.minimum and self.maximum and numeric_version(self.minimum) > numeric_version(self.maximum):
+            raise ValueError("inverted version range")
+        return self
+
+
+class Qualification(StrictModel):
+    id: ShortText
+    port_group_id: Annotated[str, Field(min_length=1, max_length=64)]
+    product_ids: list[Identifier] = Field(default_factory=list)
+    part_numbers: list[ShortText] = Field(default_factory=list)
+    mode_ids: list[ShortText] = Field(default_factory=list)
+    fabric: Fabric
+    psid: ShortText | None = None
+    firmware: VersionScope | None = None
+    os_name: ShortText | None = None
+    os_version: VersionScope | None = None
+    outcome: Literal["supported", "unsupported"]
+    evidence: Evidence
+
+    @model_validator(mode="after")
+    def consistent(self):
+        if not self.product_ids and not self.part_numbers:
+            raise ValueError("qualification must identify products or ordering numbers")
+        if self.os_version and not self.os_name:
+            raise ValueError("OS version needs an OS name")
+        for key in ("product_ids", "part_numbers", "mode_ids"):
+            unique(getattr(self, key), key)
+        return self
+
+
+class HardwareProfile(StrictModel):
+    id: ShortText
+    device_id: Annotated[str, Field(min_length=1, max_length=128)]
+    label: Text
+    identity: dict[Literal["sku", "opn", "adapter_variant", "psid"], IdentityFact]
+    ports: list[HardwarePort]
+    required_context: list[Literal["psid", "firmware", "os_name", "os_version"]] = Field(default_factory=list)
+    qualifications: list[Qualification] = Field(default_factory=list)
+    notes: list[Text] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def consistent(self):
+        if not self.identity or not self.ports:
+            raise ValueError("hardware profile needs identity and scoped ports")
+        unique([p.port_group_id for p in self.ports], "hardware port")
+        unique([q.id for q in self.qualifications], "qualification")
+        unique(self.required_context, "required runtime field")
+        return self
+
+
+class FiberAssembly(StrictModel):
+    part_number: ShortText
+    model: Text
+    length_m: Distance
+    medium: Literal["SM", "MM"]
+    fiber_type: Literal["OS2", "SM-unspecified", "OM3", "OM4", "OM5"]
+    connector_a: ShortText
+    connector_b: ShortText
+    polarity: ShortText
+    gender_a: Literal["female", "male"]
+    gender_b: Literal["female", "male"]
+    evidence: dict[ShortText, Evidence]
+
+    @model_validator(mode="after")
+    def consistent(self):
+        expected = set(type(self).model_fields) - {"evidence"}
+        if set(self.evidence) != expected:
+            raise ValueError("every fiber assembly fact needs evidence")
+        if (self.medium == "SM") != (self.fiber_type in {"OS2", "SM-unspecified"}):
+            raise ValueError("fiber grade and medium disagree")
+        return self
+
+
 class ProfileDocument(StrictModel):
     schema_version: Literal[2]
     profiles: list[DeviceProfile]
     interconnect_details: dict[Identifier, InterconnectDetail]
+    hardware_profiles: list[HardwareProfile] = Field(default_factory=list)
+    fiber_assemblies: list[FiberAssembly] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def consistent(self):
         unique([p.id for p in self.profiles], "device profile ID")
+        unique([p.id for p in self.hardware_profiles], "hardware profile ID")
+        unique([p.part_number for p in self.fiber_assemblies], "fiber PN")
         return self
 
 
@@ -303,18 +453,33 @@ class CatalogDocument(StrictModel):
         return self
 
 
-class Selection(StrictModel):
+class RuntimeContext(StrictModel):
+    sku: ShortText | None = None
+    opn: ShortText | None = None
+    adapter_variant: ShortText | None = None
+    psid: ShortText | None = None
+    firmware: ShortText | None = None
+    os_name: ShortText | None = None
+    os_version: ShortText | None = None
+
+
+class HostSelection(StrictModel):
     device_id: Annotated[str, Field(min_length=1, max_length=128)]
     port_group_id: Annotated[str, Field(min_length=1, max_length=64)]
+    mode_id: Annotated[str, Field(min_length=1, max_length=64)] | None = None
+    hardware_profile_id: ShortText | None = None
+    runtime: RuntimeContext = Field(default_factory=RuntimeContext)
+
+
+class Selection(HostSelection):
     product_id: Identifier
     endpoint_id: Literal["A", "B"] | None = None
-    mode_id: Annotated[str, Field(min_length=1, max_length=64)] | None = None
     part_number: Text | None = None
 
 
 class FiberCable(StrictModel):
     medium: Literal["SM", "MM"]
-    fiber_type: Literal["OS2", "OM3", "OM4", "OM5"]
+    fiber_type: Literal["OS2", "SM-unspecified", "OM3", "OM4", "OM5"]
     connector_a: Text
     connector_b: Text
     # Pinout is checked explicitly; a matching MPO shell alone is insufficient.
@@ -322,7 +487,7 @@ class FiberCable(StrictModel):
 
     @model_validator(mode="after")
     def consistent(self):
-        if (self.medium == "SM") != (self.fiber_type == "OS2"):
+        if (self.medium == "SM") != (self.fiber_type in {"OS2", "SM-unspecified"}):
             raise ValueError("OS2 is single-mode; OM3/OM4/OM5 are multi-mode")
         return self
 
@@ -333,4 +498,41 @@ class ConnectionRequest(StrictModel):
     fabric: Fabric
     length_m: Distance | None = None
     fiber: FiberCable | None = None
+    fiber_part_number: ShortText | None = None
     revision: Annotated[str, Field(pattern=r"^[0-9a-f]{12}$")] | None = None
+
+
+class HardwareInspection(HostSelection):
+    revision: Annotated[str, Field(pattern=r"^[0-9a-f]{12}$")] | None = None
+
+
+class PortEvaluation(HostSelection):
+    fabric: Fabric | None = None
+    revision: Annotated[str, Field(pattern=r"^[0-9a-f]{12}$")] | None = None
+
+
+class OwnedPart(StrictModel):
+    part_number: ShortText
+    quantity: Annotated[int, Field(ge=1, le=10000)] = 1
+
+
+class RecommendationRequest(StrictModel):
+    a: HostSelection
+    b: HostSelection
+    fabric: Fabric
+    speed_gbps: Positive
+    minimum_length_m: Distance
+    technology: Literal["any", "cable", "optical", "DAC", "LACC", "ACC", "AOC"] = "any"
+    fiber_type: Literal["any", "OS2", "SM-unspecified", "OM3", "OM4", "OM5"] = "any"
+    reuse_part_number: ShortText | None = None
+    reuse_side: Literal["either", "a", "b"] = "either"
+    owned_parts: Annotated[list[OwnedPart], Field(max_length=64)] = Field(default_factory=list)
+    sort_by: Literal["evidence", "fewest_components", "reuse"] = "evidence"
+    include_unknown: bool = True
+    limit: Annotated[int, Field(ge=1, le=100)] = 25
+    revision: Annotated[str, Field(pattern=r"^[0-9a-f]{12}$")] | None = None
+
+    @model_validator(mode="after")
+    def consistent(self):
+        unique([p.part_number for p in self.owned_parts], "owned PN")
+        return self

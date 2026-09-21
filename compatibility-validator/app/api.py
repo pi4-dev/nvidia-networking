@@ -11,10 +11,12 @@ from fastapi.staticfiles import StaticFiles
 
 from .catalog import CatalogUnavailable, LiveCatalog
 from .config import COMPAT_CACHE_MAX_ENTRIES, DATA_PATH, MAX_REQUEST_BYTES, PROFILE_PATH, STATIC_DIR
-from .models import ConnectionRequest, Fabric
-from .rules import evaluate, validate_connection
+from .models import ConnectionRequest, Fabric, HardwareInspection, PortEvaluation, RecommendationRequest
+from .rules import decide, evaluate, validate_connection
+from .hardware import effective_host, inspect_hardware, identity_checks, qualify
+from .recommendations import recommend
 
-VERSION = "0.02-dev"
+VERSION = "0.03-dev"
 logger = logging.getLogger("uvicorn.error")
 app = FastAPI(title="NVIDIA Networking Compatibility Validator", version=VERSION)
 catalog = LiveCatalog(DATA_PATH, PROFILE_PATH)
@@ -84,7 +86,9 @@ async def server_error(_request, exc):
 def metadata(snapshot, state):
     return {**{key: snapshot[key] for key in ("revision", "schema_version", "profiles_schema_version", "snapshot_date", "generated_at")},
             "application_version": VERSION, "device_count": len(snapshot["devices"]),
-            "interconnect_count": len(snapshot["interconnects"]), "catalog": state}
+            "interconnect_count": len(snapshot["interconnects"]),
+            "hardware_profile_count": len(snapshot["hardware_profiles"]),
+            "fiber_assembly_count": len(snapshot["fiber_assemblies"]), "catalog": state}
 
 
 def snapshot_for_revision(revision=None):
@@ -145,7 +149,8 @@ def meta():
 @app.get("/api/catalog")
 def catalog_bundle():
     snapshot, state = catalog.view()
-    return {"meta": metadata(snapshot, state), "devices": snapshot["devices"], "products": snapshot["interconnects"]}
+    return {"meta": metadata(snapshot, state), "devices": snapshot["devices"], "products": snapshot["interconnects"],
+            "hardware_profiles": snapshot["hardware_profiles"], "fiber_assemblies": snapshot["fiber_assemblies"]}
 
 
 @app.get("/api/devices")
@@ -194,5 +199,46 @@ def connection(request: ConnectionRequest):
         result = validate_connection(snapshot, request)
     except KeyError as exc:
         # resolve() only emits constant public lookup errors.
+        raise HTTPException(404, exc.args[0]) from None
+    return {**result, "application_version": VERSION, "evaluated_at": datetime.now(timezone.utc).isoformat()}
+
+
+@app.post("/api/hardware/inspect")
+def hardware_inspection(request: HardwareInspection):
+    snapshot = snapshot_for_revision(request.revision)
+    try:
+        return inspect_hardware(snapshot, request)
+    except KeyError as exc:
+        raise HTTPException(404, exc.args[0]) from None
+
+
+@app.post("/api/evaluate")
+def evaluate_hardware_products(request: PortEvaluation):
+    snapshot = snapshot_for_revision(request.revision)
+    try:
+        _, group, profile = effective_host(snapshot, request)
+    except KeyError as exc:
+        raise HTTPException(404, exc.args[0]) from None
+    if request.mode_id and request.mode_id not in {m["id"] for m in group["modes"]}:
+        raise HTTPException(422, "Unknown mode for selected hardware profile")
+    products = []
+    for item in snapshot["interconnects"]:
+        validation = evaluate(group, item, request.fabric, request.mode_id)
+        validation["technical_status"] = validation["status"]
+        validation["checks"] += identity_checks(profile, request.runtime)
+        validation["status"] = decide(validation["checks"])
+        validation["qualification"] = qualify(snapshot, request, item, request.fabric, request.mode_id)
+        products.append({**item, "validation": validation})
+    return {"revision": snapshot["revision"], "device_id": request.device_id,
+            "port_group_id": request.port_group_id, "products": products,
+            "hardware": inspect_hardware(snapshot, request)}
+
+
+@app.post("/api/recommendations")
+def recommendations(request: RecommendationRequest):
+    snapshot = snapshot_for_revision(request.revision)
+    try:
+        result = recommend(snapshot, request)
+    except KeyError as exc:
         raise HTTPException(404, exc.args[0]) from None
     return {**result, "application_version": VERSION, "evaluated_at": datetime.now(timezone.utc).isoformat()}

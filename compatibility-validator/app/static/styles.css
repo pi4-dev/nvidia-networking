@@ -20,3 +20,18 @@
 button{background:#17232d;border:1px solid var(--line2);border-radius:8px;padding:9px 12px;color:var(--text);cursor:pointer}button:hover{border-color:#76b900}button:disabled{opacity:.45;cursor:default}button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.primary,.tabs [aria-selected=true]{background:#243918;border-color:#76b900}.actionbar,.actions,.tabs{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.actionbar{justify-content:space-between}.grid4{display:grid;grid-template-columns:1fr 1.5fr 1.5fr 1fr;gap:12px}.secondary-filters{margin-top:12px}.secondary-filters .filter{min-width:120px;flex:1}.details-grid{margin-top:16px}.checks{margin-top:18px;overflow:auto}.checks td{white-space:normal}.checks td:first-child{width:90px}.checks code{color:var(--muted);font-size:10px;display:block}.link-sides{display:grid;grid-template-columns:1fr 1fr;gap:18px}fieldset{border:1px solid var(--line);border-radius:10px;padding:18px;min-width:0}legend{color:#b9e783;padding:0 8px}.link-sides label{margin-top:12px}.link-options{margin:18px 0}.check-label{display:flex;align-items:center;gap:10px;margin-top:14px;text-transform:none;font-size:12px}.check-label input{width:auto}.model-button{background:none;border:0;text-align:left;padding:0;font-weight:700;color:var(--text)}.small{font-size:12px}.pill{font-size:11px}.kv{grid-template-columns:110px 1fr}.statusline .warn,.statusline .bad{font-weight:700}
 @media(max-width:1100px){.grid4{grid-template-columns:1fr 1fr}.header-inner{align-items:flex-start}.panel-head{flex-wrap:wrap}}
 @media(max-width:720px){.grid4,.link-sides{grid-template-columns:1fr}.actionbar{align-items:stretch}.actions{width:100%}.actions button{flex:1}.tabs{width:100%}.tabs button{flex:1}}
+
+/* Exact hardware and complete connection selection. */
+.hardware-context { margin: 1rem 0; padding: .8rem; border: 1px solid var(--line); border-radius: 8px; }
+.hardware-context details { margin-top: .7rem; }
+summary { cursor: pointer; line-height: 1.6; }
+textarea { width: 100%; box-sizing: border-box; padding: .75rem; background: #111a14; color: #edf3ef; border: 1px solid #39473d; border-radius: 6px; font: inherit; resize: vertical; }
+.evidence-details { margin: .8rem 0; }
+.evidence-details li { margin-bottom: .8rem; }
+.component { margin-bottom: .7rem; overflow-wrap: anywhere; }
+.recommendation-table td { vertical-align: top; min-width: 160px; white-space: normal; overflow-wrap: anywhere; }
+.recommendation-table td:nth-child(2) { min-width: 250px; }
+.recommendation-table details { max-width: 400px; white-space: normal; }
+#hardwareReport td { overflow-wrap: anywhere; white-space: normal; max-width: 450px; }
+.tabs { flex-wrap: wrap; }
+.grid3 > *, .grid4 > *, select, input { min-width: 0; }

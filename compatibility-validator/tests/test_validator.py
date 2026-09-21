@@ -214,7 +214,9 @@ class RulesTests(unittest.TestCase):
         p=next(i for i in snapshot['interconnects'] if i['model']=='MCA4J80-Nxxx-FTF')
         for e in p['endpoints']:
             for m in e['modes']:m['fec']=['fixture-fec']
-        self.assertEqual(validate_connection(snapshot,cable_request())['status'],'compatible')
+        result = validate_connection(snapshot,cable_request())
+        self.assertEqual(result['technical_status'],'compatible')
+        self.assertEqual(result['status'],'unknown')  # Hardware/software qualification is separate.
 
     def test_locally_matching_fec_must_also_agree_across_the_cable(self):
         snapshot = copy.deepcopy(SNAPSHOT)
@@ -320,6 +322,37 @@ class APITests(unittest.TestCase):
         self.assertNotIn(b'<style>',body)
         for path in ['/static/app.js','/static/core.js','/static/styles.css']:
             self.assertEqual(self.request(path)[0],200)
+
+    def test_hardware_and_recommendation_http_contracts(self):
+        from test_features import request
+        revision = api.catalog.get()['revision']
+        payload = request(technology='LACC', revision=revision).model_dump()
+        code, _, body = self.request('/api/recommendations', json.dumps(payload).encode())
+        result = json.loads(body)
+        self.assertEqual(code, 200)
+        self.assertEqual(result['revision'], revision)
+        self.assertEqual(result['application_version'], '0.03-dev')
+        self.assertEqual(result['candidates'][0]['components'][0]['part_number'], '980-9I601-00N003')
+        host = dict(device_id='supernic:ConnectX-8 SuperNIC', port_group_id='catalog-1',
+                    hardware_profile_id='900-9X81E-00EX-ST0', revision=revision)
+        code, _, body = self.request('/api/hardware/inspect', json.dumps(host).encode())
+        self.assertEqual(code, 200)
+        self.assertEqual(json.loads(body)['effective_port']['module_speed_gbps'], 800)
+        code, _, body = self.request('/api/evaluate', json.dumps({**host, 'fabric': 'ETH', 'mode_id': '2x400-eth'}).encode())
+        self.assertEqual(code, 200)
+        self.assertTrue(json.loads(body)['products'])
+
+    def test_new_routes_reject_stale_revision_wrong_board_and_invalid_input(self):
+        from test_features import request
+        host = dict(device_id='supernic:ConnectX-8 SuperNIC', port_group_id='catalog-1',
+                    hardware_profile_id='900-9X81E-00EX-ST0')
+        for route, payload in [('/api/hardware/inspect', host), ('/api/evaluate', host),
+                               ('/api/recommendations', request().model_dump())]:
+            with self.subTest(route=route):
+                self.assertEqual(self.request(route, json.dumps({**payload, 'revision': '000000000000'}).encode())[0], 409)
+                self.assertEqual(self.request(route, b'{}')[0], 422)
+        host['hardware_profile_id'] = '900-9X81Q-00CN-ST0'
+        self.assertEqual(self.request('/api/hardware/inspect', json.dumps(host).encode())[0], 404)
 
 
 if __name__=='__main__':

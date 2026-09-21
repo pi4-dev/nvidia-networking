@@ -12,6 +12,7 @@ from typing import Any
 
 from .config import MAX_DATA_BYTES, MAX_PROFILE_BYTES
 from .models import CatalogDocument, ProfileDocument
+from .hardware import validate_hardware_catalog
 
 logger = logging.getLogger("uvicorn.error")
 
@@ -182,10 +183,14 @@ class LiveCatalog:
         CatalogDocument.model_validate(raw)
         profiles_raw, profile_bytes = read_json_limited(self.profile_path, MAX_PROFILE_BYTES)
         profiles = ProfileDocument.model_validate(profiles_raw)
-        return {"devices": build_devices(raw, profiles), "interconnects": build_products(raw, profiles),
+        snapshot = {"devices": build_devices(raw, profiles), "interconnects": build_products(raw, profiles),
+                "hardware_profiles": [p.model_dump() for p in profiles.hardware_profiles],
+                "fiber_assemblies": [p.model_dump() for p in profiles.fiber_assemblies],
                 "revision": hashlib.sha256(data_bytes + b"\0" + profile_bytes).hexdigest()[:12],
                 "schema_version": raw["schema_version"], "profiles_schema_version": profiles.schema_version,
                 "snapshot_date": raw["snapshot_date"], "generated_at": raw["generated_at"]}
+        validate_hardware_catalog(snapshot)
+        return snapshot
 
     def get(self):
         with self._lock:

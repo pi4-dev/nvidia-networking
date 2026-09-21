@@ -1,8 +1,8 @@
 # NVIDIA Networking Compatibility Validator
 
-Web application for evaluating NVIDIA LinkX modules and cable assemblies against explicit switch, adapter and DGX port profiles. The interface supports both **host-port fit** and **one connection between devices A and B**.
+Web application for evaluating NVIDIA LinkX modules and cable assemblies against explicit switch, adapter and DGX port profiles. The interface supports **host-port fit**, **exact hardware and software qualification**, **one connection between devices A and B**, and a **connection selection assistant**.
 
-The repository baseline is preserved in branch [`v0.01`](https://github.com/pi4-dev/nvidia-networking/tree/v0.01), at commit `6071fa9f05b7ea5e116094f518fd4b6c15992867`. Ongoing development is on `main`.
+The repository baseline is preserved in branch [`v0.01`](https://github.com/pi4-dev/nvidia-networking/tree/v0.01), at commit `6071fa9f05b7ea5e116094f518fd4b6c15992867`. The previous validator is preserved as [`v0.02`](https://github.com/pi4-dev/nvidia-networking/tree/v0.02), at commit `d52782bd3ba8d282d1e999ba16b4f2073f501b67`. Ongoing development (`0.03-dev`) is on `main`.
 
 ## Run
 
@@ -30,7 +30,13 @@ Default data paths resolve from the application directory. `NVIDIA_DATA_PATH` an
 
 **Port fit:** choose a device, physical port group and optional operating mode/fabric. Search by model or ordering PN; filter by result, lifecycle, cable technology, medium, termination capacity and reach. Select a product to see its checks, source links, matching cable end and exact SKU length where documented. “Why was a product rejected?” includes rejected and retired products.
 
-**Connection A ↔ B:** select both devices and their ports, then either two optical modules plus fiber or the two ends of one cable assembly. Choose ordering PNs, fabric and actual length. The result covers one link or one breakout leg. For fiber, select OS2/OM3/OM4/OM5, connectors including polish, and explicitly confirm that gender, polarity and lane mapping match the cable drawing.
+**Connection A ↔ B:** select both devices and their ports, then either two optical modules plus fiber or the two ends of one cable assembly. Choose ordering PNs, fabric and actual length. The result covers one link or one breakout leg. For fiber, select a catalog ordering PN or a custom OS2/SM-unspecified/OM3/OM4/OM5 assembly, connectors including polish, and explicitly confirm that gender, polarity and lane mapping match the cable drawing.
+
+**Exact hardware:** choose a documented board OPN or stay with the generic device. Expand “Observed hardware and software” to enter SKU, OPN, variant, PSID, firmware, OS and OS version. “Inspect exact hardware” shows parameter values, manufacturer/lab source, verification date and scope, followed by missing facts and actions. Exact profiles can narrow the available physical port group and add only documented modes. Generic catalog facts without dated evidence remain labeled as such. Inspection reports can be exported without selecting a product.
+
+**Connection assistant:** choose devices/ports A and B, fabric, bandwidth **per link**, minimum length, optional technology/fiber grade, and an optional exact PN that must be reused. Enter owned inventory as one `PN,quantity` per line. The assistant compares active cable assemblies with module A + fiber + module B, including ordering numbers, actual SKU length, orientation, port modes, FEC gaps, qualification and quantities to reuse/buy. A required PN counts as one owned item unless its inventory quantity is explicitly entered. Two identical module PNs require two physical modules. “Open connection” transfers the full proposal to manual validation; optical pinout confirmation always starts unchecked.
+
+Ranking first considers validation status and availability of complete ordering numbers, then the selected priority (evidence completeness, fewest components, or reuse), then shortest adequate length and a stable PN ordering. A 3 m requirement can select a documented 5 m SKU; the actual 5 m length is checked against optical reach. A family-level maximum never substitutes for an unknown cable SKU length. The search checks at most 3,000 combinations and explicitly reports truncation; narrow constraints to continue. By default it returns up to 25 proposals (API maximum 100). Missing fiber PNs produce an explicitly incomplete specification. No result is a purchasing approval while required evidence is unknown.
 
 “Copy configuration link” preserves the selections, filters and catalog revision. Local storage restores the last configuration. A shared link for an older revision shows a notice and recalculates using the available catalog; it does not retrieve historical catalog bytes. “Export JSON” includes the result, checks, selections, revision, catalog freshness, application version and timestamp.
 
@@ -51,9 +57,14 @@ The host-port view checks pluggability, connector family, OSFP cooling shell, su
 - A common cable link rate and FEC across both hosts and cable ends.
 - Matching cable identity/variant/PN and the selected SKU's actual length.
 - Optical medium, fiber-specific reach, connector/polish, standard, lanes, lane rate, wavelengths and FEC.
-- User verification of optical gender, polarity and lane mapping.
+- User verification of optical gender, polarity and lane mapping; a known fiber PN alone does not assert that both module receptacles match it.
+- Exact-board identity and product-specific firmware/OS qualification where evidence exists.
 
-Undocumented hardware values remain unknown. The shipped catalog does not provide every adapter cage rate, electrical mode, FEC setting or firmware qualification, so complete links can correctly return `unknown`. Breakout validation covers one selected leg, and does not validate all attached devices or an arbitrary optical splitter topology. Procurement quantities and BOM planning are outside this application's scope.
+Undocumented hardware values remain unknown. The shipped catalog does not provide every adapter cage rate, electrical mode, FEC setting or firmware qualification, so complete links can correctly return `unknown`. Breakout validation covers one selected leg, and does not validate all attached devices or an arbitrary optical splitter topology. Quantities apply only to this connection. Multi-link project BOM planning is outside this application's scope.
+
+Complete links return `technical_status` separately from each host's `qualification`. An applicable manufacturer record can confirm qualification. A matching internal lab pass produces `lab-tested` and a conditional overall result when all required technical checks pass; it never becomes manufacturer confirmation. Missing or untested versions, absent PSIDs and out-of-scope records remain `unknown`. An explicit scoped denial or identity mismatch fails; a support record cannot override mechanical or electrical failure. Version ranges use numeric components (`2.10 > 2.9`); suffixes require exact version entries.
+
+The initial exact profile catalog covers four ConnectX-8 OPNs (C8180 Socket Direct, C8180 DSP, C8180L and C8240) and 21 MFP7E10/MFP7E30 fiber assemblies, verified against linked NVIDIA sources on 2026-09-21. It deliberately contains **no invented PSIDs, firmware minimums, OS version qualifications or FEC values**. MFP7E30 is documented as 9/125 single-mode; its grade is `SM-unspecified` until an explicit OS2 source is recorded. Existing generic profiles remain available for other hardware.
 
 ## Data contracts
 
@@ -61,7 +72,7 @@ The canonical `../data/nvidia-interconnects.json` remains schema **8**. `data/de
 
 `port_interface_compatibility` remains authoritative for accepted module families and fixed interfaces. The overlay cannot broaden those permissions. Port capabilities are not inferred from free-text descriptions or aggregate adapter bandwidth. Generic and SKU-specific Quantum-2 profiles use the same twin-port capacity; SN3420 modes cannot exceed cage capacity. Unqualified OSFP shells remain unknown.
 
-`app/models.py` owns the strict Pydantic contracts, `catalog.py` loading and cross-file integrity, `rules.py` compatibility decisions, and `api.py` HTTP routes. `main.py` remains the Uvicorn entry point. Browser helpers and UI logic live in separate `static/core.js` and `static/app.js` files.
+`app/models.py` owns the strict Pydantic contracts, `catalog.py` loading and cross-file integrity, `rules.py` compatibility decisions, `hardware.py` scoped evidence/qualification, `recommendations.py` connection selection, and `api.py` HTTP routes. `main.py` remains the Uvicorn entry point. Browser helpers and UI logic live in separate `static/core.js` and `static/app.js` files.
 
 ## Live reload and failure handling
 
@@ -79,11 +90,14 @@ Detailed errors remain in server logs. Public errors and metadata do not expose 
 | --- | --- |
 | `GET /healthz` | Minimal readiness check. |
 | `GET /api/meta` | Counts, versions, revision, snapshot dates and reload state. |
-| `GET /api/catalog` | Metadata, devices and products from one coherent snapshot. |
+| `GET /api/catalog` | Metadata, devices, products, exact hardware profiles and fiber SKUs from one coherent snapshot. |
 | `GET /api/devices` | Device list; revision in `X-Catalog-Revision`. |
 | `GET /api/products` | All detailed and retired diagnostic records plus revision. |
 | `GET /api/evaluate` | Every product with structured checks for the selected host port. |
-| `POST /api/connection` | One A-to-B link with checks, orientation and selected configuration. |
+| `POST /api/evaluate` | Host fit with an exact hardware profile and observed runtime; includes hardware evidence. |
+| `POST /api/hardware/inspect` | Effective port facts, dated sources, identity checks and actionable gaps. |
+| `POST /api/recommendations` | Ranked single-link proposals, components, inventory, settings, full validation and bounded-search metadata. |
+| `POST /api/connection` | One A-to-B link with technical/qualification results, checks, gaps, orientation and selected configuration. |
 | `GET /api/compatible` | Legacy route: active `compatible`/`conditional` host-port candidates only. |
 
 `/api/evaluate` requires `device_id` and `port_group_id`; optional parameters are `fabric`, `mode_id` and `revision`. Identifiers and values are bounded. A stale revision returns `409`, invalid input `422`, and an absent device/group `404`.
@@ -111,6 +125,26 @@ Example body for `/api/connection` (use IDs and revision from `/api/catalog`):
 }
 ```
 
+Each host can additionally contain `hardware_profile_id` and a `runtime` object with `sku`, `opn`, `adapter_variant`, `psid`, `firmware`, `os_name`, and `os_version`. The inspection endpoint takes a host plus optional `revision`; POST evaluation also accepts `fabric`. A profile for a different device or physical group returns `404`. Qualification records and profiles are maintained in the versioned JSON file; there is no unauthenticated catalog-editing API.
+
+Example `/api/recommendations` body:
+
+```json
+{
+  "a": {"device_id": "profile:MQM9700-NS2F", "port_group_id": "ndr"},
+  "b": {"device_id": "system:DGX B200", "port_group_id": "cluster"},
+  "fabric": "IB",
+  "speed_gbps": 400,
+  "minimum_length_m": 3,
+  "technology": "any",
+  "owned_parts": [{"part_number": "980-9I601-00N003", "quantity": 1}],
+  "sort_by": "reuse",
+  "include_unknown": true
+}
+```
+
+Additional assistant fields are `fiber_type` (default `any`), `reuse_part_number`, `reuse_side` (`either`/`a`/`b`), `limit` (1–100), and `revision`. `technology` supports `any`, `cable`, `optical`, `DAC`, `LACC`, `ACC`, `AOC`. `sort_by` supports `evidence`, `fewest_components`, `reuse`. Connection requests accept `fiber_part_number`; supplied properties and actual length must agree with that SKU.
+
 `endpoint_id` and `mode_id` may be omitted to evaluate documented alternatives. Requesting a nonexistent endpoint/mode produces a failed validation. `revision` is optional for direct API clients and required by the GUI's workflow. Interactive API documentation is at `/docs` (its default Swagger assets require network access).
 
 ## Limits and container configuration
@@ -124,7 +158,7 @@ Example body for `/api/connection` (use IDs and revision from `/api/catalog`):
 | Uvicorn concurrency / backlog / keep-alive | 100 / 128 / 5 seconds |
 | Compose CPU / memory / PIDs | 1 CPU / 256 MiB / 128 |
 
-Input reads are bounded before JSON parsing, duplicate keys and nonfinite numbers are rejected, and evaluations are cached by revision, device, group, fabric and mode. The container runs as UID/GID `10001`, with a read-only root filesystem, all capabilities dropped and `no-new-privileges`. The GUI uses a same-origin Content Security Policy and escapes catalog text.
+Input reads are bounded before JSON parsing, duplicate keys and nonfinite numbers are rejected, and generic GET evaluations are cached by revision, device, group, fabric and mode. Runtime-specific POST evaluations are independent, so one host's firmware context cannot leak into another result. The container runs as UID/GID `10001`, with a read-only root filesystem, all capabilities dropped and `no-new-privileges`. The GUI uses a same-origin Content Security Policy and escapes catalog text.
 
 Runtime dependencies are pinned with hashes in `requirements.txt`; direct dependencies are in `requirements.in`. The Docker build uses `--require-hashes --only-binary=:all:` and `pip check`. Regenerate the lock with Python 3.12 after intentional dependency changes:
 

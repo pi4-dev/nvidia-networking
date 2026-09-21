@@ -3241,5 +3241,2168 @@
       "source_url": "https://networking-docs.nvidia.com/mcp1600e0xxxeyyspec",
       "conditions": []
     }
-  }
+  },
+  "hardware_profiles": [
+    {
+      "id": "900-9X81E-00EX-ST0",
+      "device_id": "supernic:ConnectX-8 SuperNIC",
+      "label": "C8180 Socket Direct · 900-9X81E-00EX-ST0",
+      "identity": {
+        "opn": {
+          "value": "900-9X81E-00EX-ST0",
+          "evidence": {
+            "kind": "manufacturer",
+            "source_url": "https://networking-docs.nvidia.com/connectx8hw/",
+            "verified_on": "2026-09-21",
+            "scope": "C8180 Socket Direct, OPN 900-9X81E-00EX-ST0; per physical cage, not aggregate board throughput."
+          }
+        },
+        "adapter_variant": {
+          "value": "C8180 Socket Direct",
+          "evidence": {
+            "kind": "manufacturer",
+            "source_url": "https://networking-docs.nvidia.com/connectx8hw/",
+            "verified_on": "2026-09-21",
+            "scope": "C8180 Socket Direct, OPN 900-9X81E-00EX-ST0; per physical cage, not aggregate board throughput."
+          }
+        }
+      },
+      "ports": [
+        {
+          "port_group_id": "catalog-1",
+          "module_speed_gbps": 800,
+          "count": 1,
+          "fabrics": [
+            "ETH",
+            "IB"
+          ],
+          "modes": [
+            {
+              "id": "1x800-xdr",
+              "links": 1,
+              "speed_gbps": 800,
+              "fabrics": [
+                "IB"
+              ],
+              "electrical_lanes": 4,
+              "lane_rate_gbps": 200.0
+            },
+            {
+              "id": "1x400-ndr",
+              "links": 1,
+              "speed_gbps": 400,
+              "fabrics": [
+                "IB"
+              ],
+              "electrical_lanes": 4,
+              "lane_rate_gbps": 100.0
+            },
+            {
+              "id": "2x400-ndr",
+              "links": 2,
+              "speed_gbps": 400,
+              "fabrics": [
+                "IB"
+              ]
+            },
+            {
+              "id": "2x400-eth",
+              "links": 2,
+              "speed_gbps": 400,
+              "fabrics": [
+                "ETH"
+              ]
+            },
+            {
+              "id": "4x200-eth",
+              "links": 4,
+              "speed_gbps": 200,
+              "fabrics": [
+                "ETH"
+              ]
+            },
+            {
+              "id": "8x100-eth",
+              "links": 8,
+              "speed_gbps": 100,
+              "fabrics": [
+                "ETH"
+              ]
+            }
+          ],
+          "evidence": {
+            "module_speed_gbps": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/specifications",
+              "verified_on": "2026-09-21",
+              "scope": "C8180 Socket Direct, OPN 900-9X81E-00EX-ST0; per physical cage, not aggregate board throughput."
+            },
+            "count": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/specifications",
+              "verified_on": "2026-09-21",
+              "scope": "C8180 Socket Direct, OPN 900-9X81E-00EX-ST0; per physical cage, not aggregate board throughput."
+            },
+            "fabrics": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/specifications",
+              "verified_on": "2026-09-21",
+              "scope": "C8180 Socket Direct, OPN 900-9X81E-00EX-ST0; per physical cage, not aggregate board throughput."
+            },
+            "modes.1x800-xdr": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/port-configurations",
+              "verified_on": "2026-09-21",
+              "scope": "C8180 Socket Direct, OPN 900-9X81E-00EX-ST0; per physical cage, not aggregate board throughput. 1x800-xdr. Unlisted modes are not asserted unsupported."
+            },
+            "modes.1x400-ndr": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/port-configurations",
+              "verified_on": "2026-09-21",
+              "scope": "C8180 Socket Direct, OPN 900-9X81E-00EX-ST0; per physical cage, not aggregate board throughput. 1x400-ndr. Unlisted modes are not asserted unsupported."
+            },
+            "modes.2x400-ndr": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/port-configurations",
+              "verified_on": "2026-09-21",
+              "scope": "C8180 Socket Direct, OPN 900-9X81E-00EX-ST0; per physical cage, not aggregate board throughput. 2x400-ndr. Unlisted modes are not asserted unsupported."
+            },
+            "modes.2x400-eth": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/port-configurations",
+              "verified_on": "2026-09-21",
+              "scope": "C8180 Socket Direct, OPN 900-9X81E-00EX-ST0; per physical cage, not aggregate board throughput. 2x400-eth. Unlisted modes are not asserted unsupported."
+            },
+            "modes.4x200-eth": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/port-configurations",
+              "verified_on": "2026-09-21",
+              "scope": "C8180 Socket Direct, OPN 900-9X81E-00EX-ST0; per physical cage, not aggregate board throughput. 4x200-eth. Unlisted modes are not asserted unsupported."
+            },
+            "modes.8x100-eth": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/port-configurations",
+              "verified_on": "2026-09-21",
+              "scope": "C8180 Socket Direct, OPN 900-9X81E-00EX-ST0; per physical cage, not aggregate board throughput. 8x100-eth. Unlisted modes are not asserted unsupported."
+            },
+            "connector_family": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/specifications",
+              "verified_on": "2026-09-21",
+              "scope": "C8180 Socket Direct, OPN 900-9X81E-00EX-ST0; per physical cage, not aggregate board throughput."
+            }
+          }
+        }
+      ],
+      "required_context": [
+        "psid",
+        "firmware",
+        "os_name",
+        "os_version"
+      ],
+      "qualifications": [],
+      "notes": [
+        "Port reconfiguration may require a reboot or power cycle; follow the board manual.",
+        "No PSID, firmware minimum, OS version or product qualification is inferred from family-level documentation."
+      ]
+    },
+    {
+      "id": "900-9X81E-00EX-DT0",
+      "device_id": "supernic:ConnectX-8 SuperNIC",
+      "label": "C8180 with DSP · 900-9X81E-00EX-DT0",
+      "identity": {
+        "opn": {
+          "value": "900-9X81E-00EX-DT0",
+          "evidence": {
+            "kind": "manufacturer",
+            "source_url": "https://networking-docs.nvidia.com/connectx8hw/",
+            "verified_on": "2026-09-21",
+            "scope": "C8180 with DSP, OPN 900-9X81E-00EX-DT0; per physical cage, not aggregate board throughput."
+          }
+        },
+        "adapter_variant": {
+          "value": "C8180 with DSP",
+          "evidence": {
+            "kind": "manufacturer",
+            "source_url": "https://networking-docs.nvidia.com/connectx8hw/",
+            "verified_on": "2026-09-21",
+            "scope": "C8180 with DSP, OPN 900-9X81E-00EX-DT0; per physical cage, not aggregate board throughput."
+          }
+        }
+      },
+      "ports": [
+        {
+          "port_group_id": "catalog-1",
+          "module_speed_gbps": 800,
+          "count": 1,
+          "fabrics": [
+            "ETH",
+            "IB"
+          ],
+          "modes": [
+            {
+              "id": "1x800-xdr",
+              "links": 1,
+              "speed_gbps": 800,
+              "fabrics": [
+                "IB"
+              ],
+              "electrical_lanes": 4,
+              "lane_rate_gbps": 200.0
+            },
+            {
+              "id": "1x400-ndr",
+              "links": 1,
+              "speed_gbps": 400,
+              "fabrics": [
+                "IB"
+              ],
+              "electrical_lanes": 4,
+              "lane_rate_gbps": 100.0
+            },
+            {
+              "id": "2x400-ndr",
+              "links": 2,
+              "speed_gbps": 400,
+              "fabrics": [
+                "IB"
+              ]
+            },
+            {
+              "id": "2x400-eth",
+              "links": 2,
+              "speed_gbps": 400,
+              "fabrics": [
+                "ETH"
+              ]
+            },
+            {
+              "id": "4x200-eth",
+              "links": 4,
+              "speed_gbps": 200,
+              "fabrics": [
+                "ETH"
+              ]
+            },
+            {
+              "id": "8x100-eth",
+              "links": 8,
+              "speed_gbps": 100,
+              "fabrics": [
+                "ETH"
+              ]
+            }
+          ],
+          "evidence": {
+            "module_speed_gbps": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/specifications",
+              "verified_on": "2026-09-21",
+              "scope": "C8180 with DSP, OPN 900-9X81E-00EX-DT0; per physical cage, not aggregate board throughput."
+            },
+            "count": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/specifications",
+              "verified_on": "2026-09-21",
+              "scope": "C8180 with DSP, OPN 900-9X81E-00EX-DT0; per physical cage, not aggregate board throughput."
+            },
+            "fabrics": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/specifications",
+              "verified_on": "2026-09-21",
+              "scope": "C8180 with DSP, OPN 900-9X81E-00EX-DT0; per physical cage, not aggregate board throughput."
+            },
+            "modes.1x800-xdr": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/port-configurations",
+              "verified_on": "2026-09-21",
+              "scope": "C8180 with DSP, OPN 900-9X81E-00EX-DT0; per physical cage, not aggregate board throughput. 1x800-xdr. Unlisted modes are not asserted unsupported."
+            },
+            "modes.1x400-ndr": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/port-configurations",
+              "verified_on": "2026-09-21",
+              "scope": "C8180 with DSP, OPN 900-9X81E-00EX-DT0; per physical cage, not aggregate board throughput. 1x400-ndr. Unlisted modes are not asserted unsupported."
+            },
+            "modes.2x400-ndr": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/port-configurations",
+              "verified_on": "2026-09-21",
+              "scope": "C8180 with DSP, OPN 900-9X81E-00EX-DT0; per physical cage, not aggregate board throughput. 2x400-ndr. Unlisted modes are not asserted unsupported."
+            },
+            "modes.2x400-eth": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/port-configurations",
+              "verified_on": "2026-09-21",
+              "scope": "C8180 with DSP, OPN 900-9X81E-00EX-DT0; per physical cage, not aggregate board throughput. 2x400-eth. Unlisted modes are not asserted unsupported."
+            },
+            "modes.4x200-eth": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/port-configurations",
+              "verified_on": "2026-09-21",
+              "scope": "C8180 with DSP, OPN 900-9X81E-00EX-DT0; per physical cage, not aggregate board throughput. 4x200-eth. Unlisted modes are not asserted unsupported."
+            },
+            "modes.8x100-eth": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/port-configurations",
+              "verified_on": "2026-09-21",
+              "scope": "C8180 with DSP, OPN 900-9X81E-00EX-DT0; per physical cage, not aggregate board throughput. 8x100-eth. Unlisted modes are not asserted unsupported."
+            },
+            "connector_family": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/specifications",
+              "verified_on": "2026-09-21",
+              "scope": "C8180 with DSP, OPN 900-9X81E-00EX-DT0; per physical cage, not aggregate board throughput."
+            }
+          }
+        }
+      ],
+      "required_context": [
+        "psid",
+        "firmware",
+        "os_name",
+        "os_version"
+      ],
+      "qualifications": [],
+      "notes": [
+        "Port reconfiguration may require a reboot or power cycle; follow the board manual.",
+        "No PSID, firmware minimum, OS version or product qualification is inferred from family-level documentation."
+      ]
+    },
+    {
+      "id": "900-9X81E-00EX-SL0",
+      "device_id": "supernic:ConnectX-8 SuperNIC",
+      "label": "C8180L partner-cooled · 900-9X81E-00EX-SL0",
+      "identity": {
+        "opn": {
+          "value": "900-9X81E-00EX-SL0",
+          "evidence": {
+            "kind": "manufacturer",
+            "source_url": "https://networking-docs.nvidia.com/connectx8hw/",
+            "verified_on": "2026-09-21",
+            "scope": "C8180L partner-cooled, OPN 900-9X81E-00EX-SL0; per physical cage, not aggregate board throughput."
+          }
+        },
+        "adapter_variant": {
+          "value": "C8180L partner-cooled",
+          "evidence": {
+            "kind": "manufacturer",
+            "source_url": "https://networking-docs.nvidia.com/connectx8hw/",
+            "verified_on": "2026-09-21",
+            "scope": "C8180L partner-cooled, OPN 900-9X81E-00EX-SL0; per physical cage, not aggregate board throughput."
+          }
+        }
+      },
+      "ports": [
+        {
+          "port_group_id": "catalog-1",
+          "module_speed_gbps": 800,
+          "count": 1,
+          "fabrics": [
+            "ETH",
+            "IB"
+          ],
+          "modes": [
+            {
+              "id": "1x800-xdr",
+              "links": 1,
+              "speed_gbps": 800,
+              "fabrics": [
+                "IB"
+              ],
+              "electrical_lanes": 4,
+              "lane_rate_gbps": 200.0
+            },
+            {
+              "id": "1x400-ndr",
+              "links": 1,
+              "speed_gbps": 400,
+              "fabrics": [
+                "IB"
+              ],
+              "electrical_lanes": 4,
+              "lane_rate_gbps": 100.0
+            },
+            {
+              "id": "2x400-ndr",
+              "links": 2,
+              "speed_gbps": 400,
+              "fabrics": [
+                "IB"
+              ]
+            },
+            {
+              "id": "2x400-eth",
+              "links": 2,
+              "speed_gbps": 400,
+              "fabrics": [
+                "ETH"
+              ]
+            },
+            {
+              "id": "4x200-eth",
+              "links": 4,
+              "speed_gbps": 200,
+              "fabrics": [
+                "ETH"
+              ]
+            },
+            {
+              "id": "8x100-eth",
+              "links": 8,
+              "speed_gbps": 100,
+              "fabrics": [
+                "ETH"
+              ]
+            }
+          ],
+          "evidence": {
+            "module_speed_gbps": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/specifications",
+              "verified_on": "2026-09-21",
+              "scope": "C8180L partner-cooled, OPN 900-9X81E-00EX-SL0; per physical cage, not aggregate board throughput."
+            },
+            "count": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/specifications",
+              "verified_on": "2026-09-21",
+              "scope": "C8180L partner-cooled, OPN 900-9X81E-00EX-SL0; per physical cage, not aggregate board throughput."
+            },
+            "fabrics": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/specifications",
+              "verified_on": "2026-09-21",
+              "scope": "C8180L partner-cooled, OPN 900-9X81E-00EX-SL0; per physical cage, not aggregate board throughput."
+            },
+            "modes.1x800-xdr": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/port-configurations",
+              "verified_on": "2026-09-21",
+              "scope": "C8180L partner-cooled, OPN 900-9X81E-00EX-SL0; per physical cage, not aggregate board throughput. 1x800-xdr. Unlisted modes are not asserted unsupported."
+            },
+            "modes.1x400-ndr": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/port-configurations",
+              "verified_on": "2026-09-21",
+              "scope": "C8180L partner-cooled, OPN 900-9X81E-00EX-SL0; per physical cage, not aggregate board throughput. 1x400-ndr. Unlisted modes are not asserted unsupported."
+            },
+            "modes.2x400-ndr": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/port-configurations",
+              "verified_on": "2026-09-21",
+              "scope": "C8180L partner-cooled, OPN 900-9X81E-00EX-SL0; per physical cage, not aggregate board throughput. 2x400-ndr. Unlisted modes are not asserted unsupported."
+            },
+            "modes.2x400-eth": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/port-configurations",
+              "verified_on": "2026-09-21",
+              "scope": "C8180L partner-cooled, OPN 900-9X81E-00EX-SL0; per physical cage, not aggregate board throughput. 2x400-eth. Unlisted modes are not asserted unsupported."
+            },
+            "modes.4x200-eth": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/port-configurations",
+              "verified_on": "2026-09-21",
+              "scope": "C8180L partner-cooled, OPN 900-9X81E-00EX-SL0; per physical cage, not aggregate board throughput. 4x200-eth. Unlisted modes are not asserted unsupported."
+            },
+            "modes.8x100-eth": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/port-configurations",
+              "verified_on": "2026-09-21",
+              "scope": "C8180L partner-cooled, OPN 900-9X81E-00EX-SL0; per physical cage, not aggregate board throughput. 8x100-eth. Unlisted modes are not asserted unsupported."
+            },
+            "connector_family": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/specifications",
+              "verified_on": "2026-09-21",
+              "scope": "C8180L partner-cooled, OPN 900-9X81E-00EX-SL0; per physical cage, not aggregate board throughput."
+            }
+          }
+        }
+      ],
+      "required_context": [
+        "psid",
+        "firmware",
+        "os_name",
+        "os_version"
+      ],
+      "qualifications": [],
+      "notes": [
+        "Port reconfiguration may require a reboot or power cycle; follow the board manual.",
+        "No PSID, firmware minimum, OS version or product qualification is inferred from family-level documentation."
+      ]
+    },
+    {
+      "id": "900-9X81Q-00CN-ST0",
+      "device_id": "supernic:ConnectX-8 SuperNIC",
+      "label": "C8240 dual QSFP112 · 900-9X81Q-00CN-ST0",
+      "identity": {
+        "opn": {
+          "value": "900-9X81Q-00CN-ST0",
+          "evidence": {
+            "kind": "manufacturer",
+            "source_url": "https://networking-docs.nvidia.com/connectx8hw/",
+            "verified_on": "2026-09-21",
+            "scope": "C8240 dual QSFP112, OPN 900-9X81Q-00CN-ST0; per physical cage, not aggregate board throughput."
+          }
+        },
+        "adapter_variant": {
+          "value": "C8240 dual QSFP112",
+          "evidence": {
+            "kind": "manufacturer",
+            "source_url": "https://networking-docs.nvidia.com/connectx8hw/",
+            "verified_on": "2026-09-21",
+            "scope": "C8240 dual QSFP112, OPN 900-9X81Q-00CN-ST0; per physical cage, not aggregate board throughput."
+          }
+        }
+      },
+      "ports": [
+        {
+          "port_group_id": "catalog-2",
+          "module_speed_gbps": 400,
+          "count": 2,
+          "fabrics": [
+            "ETH",
+            "IB"
+          ],
+          "modes": [
+            {
+              "id": "1x400",
+              "links": 1,
+              "speed_gbps": 400,
+              "fabrics": [
+                "IB",
+                "ETH"
+              ],
+              "electrical_lanes": 4,
+              "lane_rate_gbps": 100.0
+            },
+            {
+              "id": "4x100-eth",
+              "links": 4,
+              "speed_gbps": 100,
+              "fabrics": [
+                "ETH"
+              ]
+            }
+          ],
+          "evidence": {
+            "module_speed_gbps": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/specifications",
+              "verified_on": "2026-09-21",
+              "scope": "C8240 dual QSFP112, OPN 900-9X81Q-00CN-ST0; per physical cage, not aggregate board throughput."
+            },
+            "count": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/specifications",
+              "verified_on": "2026-09-21",
+              "scope": "C8240 dual QSFP112, OPN 900-9X81Q-00CN-ST0; per physical cage, not aggregate board throughput."
+            },
+            "fabrics": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/specifications",
+              "verified_on": "2026-09-21",
+              "scope": "C8240 dual QSFP112, OPN 900-9X81Q-00CN-ST0; per physical cage, not aggregate board throughput."
+            },
+            "modes.1x400": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/port-configurations",
+              "verified_on": "2026-09-21",
+              "scope": "C8240 dual QSFP112, OPN 900-9X81Q-00CN-ST0; per physical cage, not aggregate board throughput. 1x400. Unlisted modes are not asserted unsupported."
+            },
+            "modes.4x100-eth": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/port-configurations",
+              "verified_on": "2026-09-21",
+              "scope": "C8240 dual QSFP112, OPN 900-9X81Q-00CN-ST0; per physical cage, not aggregate board throughput. 4x100-eth. Unlisted modes are not asserted unsupported."
+            },
+            "connector_family": {
+              "kind": "manufacturer",
+              "source_url": "https://networking-docs.nvidia.com/connectx8hw/specifications",
+              "verified_on": "2026-09-21",
+              "scope": "C8240 dual QSFP112, OPN 900-9X81Q-00CN-ST0; per physical cage, not aggregate board throughput."
+            }
+          }
+        }
+      ],
+      "required_context": [
+        "psid",
+        "firmware",
+        "os_name",
+        "os_version"
+      ],
+      "qualifications": [],
+      "notes": [
+        "Port reconfiguration may require a reboot or power cycle; follow the board manual.",
+        "No PSID, firmware minimum, OS version or product qualification is inferred from family-level documentation."
+      ]
+    }
+  ],
+  "fiber_assemblies": [
+    {
+      "part_number": "MFP7E10-N003",
+      "model": "MFP7E10",
+      "length_m": 3.0,
+      "medium": "MM",
+      "fiber_type": "OM3",
+      "connector_a": "MPO-12/APC",
+      "connector_b": "MPO-12/APC",
+      "polarity": "Type B",
+      "gender_a": "female",
+      "gender_b": "female",
+      "evidence": {
+        "part_number": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N003: 3 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "model": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N003: 3 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "length_m": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N003: 3 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "medium": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N003: 3 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "fiber_type": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N003: 3 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N003: 3 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N003: 3 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "polarity": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N003: 3 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N003: 3 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N003: 3 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        }
+      }
+    },
+    {
+      "part_number": "MFP7E10-N005",
+      "model": "MFP7E10",
+      "length_m": 5.0,
+      "medium": "MM",
+      "fiber_type": "OM3",
+      "connector_a": "MPO-12/APC",
+      "connector_b": "MPO-12/APC",
+      "polarity": "Type B",
+      "gender_a": "female",
+      "gender_b": "female",
+      "evidence": {
+        "part_number": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N005: 5 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "model": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N005: 5 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "length_m": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N005: 5 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "medium": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N005: 5 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "fiber_type": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N005: 5 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N005: 5 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N005: 5 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "polarity": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N005: 5 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N005: 5 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N005: 5 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        }
+      }
+    },
+    {
+      "part_number": "MFP7E10-N007",
+      "model": "MFP7E10",
+      "length_m": 7.0,
+      "medium": "MM",
+      "fiber_type": "OM3",
+      "connector_a": "MPO-12/APC",
+      "connector_b": "MPO-12/APC",
+      "polarity": "Type B",
+      "gender_a": "female",
+      "gender_b": "female",
+      "evidence": {
+        "part_number": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N007: 7 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "model": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N007: 7 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "length_m": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N007: 7 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "medium": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N007: 7 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "fiber_type": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N007: 7 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N007: 7 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N007: 7 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "polarity": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N007: 7 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N007: 7 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N007: 7 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        }
+      }
+    },
+    {
+      "part_number": "MFP7E10-N010",
+      "model": "MFP7E10",
+      "length_m": 10.0,
+      "medium": "MM",
+      "fiber_type": "OM3",
+      "connector_a": "MPO-12/APC",
+      "connector_b": "MPO-12/APC",
+      "polarity": "Type B",
+      "gender_a": "female",
+      "gender_b": "female",
+      "evidence": {
+        "part_number": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N010: 10 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "model": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N010: 10 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "length_m": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N010: 10 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "medium": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N010: 10 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "fiber_type": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N010: 10 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N010: 10 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N010: 10 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "polarity": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N010: 10 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N010: 10 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N010: 10 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        }
+      }
+    },
+    {
+      "part_number": "MFP7E10-N015",
+      "model": "MFP7E10",
+      "length_m": 15.0,
+      "medium": "MM",
+      "fiber_type": "OM3",
+      "connector_a": "MPO-12/APC",
+      "connector_b": "MPO-12/APC",
+      "polarity": "Type B",
+      "gender_a": "female",
+      "gender_b": "female",
+      "evidence": {
+        "part_number": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N015: 15 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "model": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N015: 15 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "length_m": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N015: 15 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "medium": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N015: 15 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "fiber_type": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N015: 15 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N015: 15 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N015: 15 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "polarity": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N015: 15 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N015: 15 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N015: 15 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        }
+      }
+    },
+    {
+      "part_number": "MFP7E10-N020",
+      "model": "MFP7E10",
+      "length_m": 20.0,
+      "medium": "MM",
+      "fiber_type": "OM3",
+      "connector_a": "MPO-12/APC",
+      "connector_b": "MPO-12/APC",
+      "polarity": "Type B",
+      "gender_a": "female",
+      "gender_b": "female",
+      "evidence": {
+        "part_number": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N020: 20 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "model": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N020: 20 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "length_m": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N020: 20 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "medium": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N020: 20 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "fiber_type": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N020: 20 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N020: 20 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N020: 20 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "polarity": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N020: 20 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N020: 20 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N020: 20 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        }
+      }
+    },
+    {
+      "part_number": "MFP7E10-N025",
+      "model": "MFP7E10",
+      "length_m": 25.0,
+      "medium": "MM",
+      "fiber_type": "OM3",
+      "connector_a": "MPO-12/APC",
+      "connector_b": "MPO-12/APC",
+      "polarity": "Type B",
+      "gender_a": "female",
+      "gender_b": "female",
+      "evidence": {
+        "part_number": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N025: 25 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "model": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N025: 25 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "length_m": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N025: 25 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "medium": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N025: 25 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "fiber_type": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N025: 25 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N025: 25 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N025: 25 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "polarity": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N025: 25 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N025: 25 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N025: 25 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        }
+      }
+    },
+    {
+      "part_number": "MFP7E10-N030",
+      "model": "MFP7E10",
+      "length_m": 30.0,
+      "medium": "MM",
+      "fiber_type": "OM3",
+      "connector_a": "MPO-12/APC",
+      "connector_b": "MPO-12/APC",
+      "polarity": "Type B",
+      "gender_a": "female",
+      "gender_b": "female",
+      "evidence": {
+        "part_number": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N030: 30 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "model": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N030: 30 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "length_m": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N030: 30 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "medium": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N030: 30 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "fiber_type": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N030: 30 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N030: 30 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N030: 30 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "polarity": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N030: 30 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N030: 30 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N030: 30 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        }
+      }
+    },
+    {
+      "part_number": "MFP7E10-N035",
+      "model": "MFP7E10",
+      "length_m": 35.0,
+      "medium": "MM",
+      "fiber_type": "OM4",
+      "connector_a": "MPO-12/APC",
+      "connector_b": "MPO-12/APC",
+      "polarity": "Type B",
+      "gender_a": "female",
+      "gender_b": "female",
+      "evidence": {
+        "part_number": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N035: 35 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "model": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N035: 35 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "length_m": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N035: 35 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "medium": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N035: 35 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "fiber_type": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N035: 35 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N035: 35 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N035: 35 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "polarity": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N035: 35 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N035: 35 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N035: 35 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        }
+      }
+    },
+    {
+      "part_number": "MFP7E10-N040",
+      "model": "MFP7E10",
+      "length_m": 40.0,
+      "medium": "MM",
+      "fiber_type": "OM4",
+      "connector_a": "MPO-12/APC",
+      "connector_b": "MPO-12/APC",
+      "polarity": "Type B",
+      "gender_a": "female",
+      "gender_b": "female",
+      "evidence": {
+        "part_number": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N040: 40 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "model": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N040: 40 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "length_m": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N040: 40 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "medium": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N040: 40 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "fiber_type": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N040: 40 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N040: 40 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N040: 40 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "polarity": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N040: 40 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N040: 40 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N040: 40 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        }
+      }
+    },
+    {
+      "part_number": "MFP7E10-N050",
+      "model": "MFP7E10",
+      "length_m": 50.0,
+      "medium": "MM",
+      "fiber_type": "OM4",
+      "connector_a": "MPO-12/APC",
+      "connector_b": "MPO-12/APC",
+      "polarity": "Type B",
+      "gender_a": "female",
+      "gender_b": "female",
+      "evidence": {
+        "part_number": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N050: 50 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "model": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N050: 50 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "length_m": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N050: 50 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "medium": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N050: 50 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "fiber_type": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N050: 50 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N050: 50 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N050: 50 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "polarity": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N050: 50 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N050: 50 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e10nxxx/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E10-N050: 50 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        }
+      }
+    },
+    {
+      "part_number": "MFP7E30-N003",
+      "model": "MFP7E30",
+      "length_m": 3.0,
+      "medium": "SM",
+      "fiber_type": "SM-unspecified",
+      "connector_a": "MPO-12/APC",
+      "connector_b": "MPO-12/APC",
+      "polarity": "Type B",
+      "gender_a": "female",
+      "gender_b": "female",
+      "evidence": {
+        "part_number": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N003: 3 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "model": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N003: 3 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "length_m": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N003: 3 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "medium": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N003: 3 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "fiber_type": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N003: 3 m, MPO-12/APC female to female, Type B crossover, 8 active fibers.",
+          "note": "9/125 single-mode is documented; an OS2 label is not asserted."
+        },
+        "connector_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N003: 3 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N003: 3 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "polarity": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N003: 3 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N003: 3 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N003: 3 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        }
+      }
+    },
+    {
+      "part_number": "MFP7E30-N005",
+      "model": "MFP7E30",
+      "length_m": 5.0,
+      "medium": "SM",
+      "fiber_type": "SM-unspecified",
+      "connector_a": "MPO-12/APC",
+      "connector_b": "MPO-12/APC",
+      "polarity": "Type B",
+      "gender_a": "female",
+      "gender_b": "female",
+      "evidence": {
+        "part_number": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N005: 5 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "model": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N005: 5 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "length_m": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N005: 5 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "medium": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N005: 5 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "fiber_type": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N005: 5 m, MPO-12/APC female to female, Type B crossover, 8 active fibers.",
+          "note": "9/125 single-mode is documented; an OS2 label is not asserted."
+        },
+        "connector_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N005: 5 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N005: 5 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "polarity": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N005: 5 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N005: 5 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N005: 5 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        }
+      }
+    },
+    {
+      "part_number": "MFP7E30-N007",
+      "model": "MFP7E30",
+      "length_m": 7.0,
+      "medium": "SM",
+      "fiber_type": "SM-unspecified",
+      "connector_a": "MPO-12/APC",
+      "connector_b": "MPO-12/APC",
+      "polarity": "Type B",
+      "gender_a": "female",
+      "gender_b": "female",
+      "evidence": {
+        "part_number": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N007: 7 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "model": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N007: 7 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "length_m": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N007: 7 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "medium": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N007: 7 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "fiber_type": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N007: 7 m, MPO-12/APC female to female, Type B crossover, 8 active fibers.",
+          "note": "9/125 single-mode is documented; an OS2 label is not asserted."
+        },
+        "connector_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N007: 7 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N007: 7 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "polarity": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N007: 7 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N007: 7 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N007: 7 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        }
+      }
+    },
+    {
+      "part_number": "MFP7E30-N010",
+      "model": "MFP7E30",
+      "length_m": 10.0,
+      "medium": "SM",
+      "fiber_type": "SM-unspecified",
+      "connector_a": "MPO-12/APC",
+      "connector_b": "MPO-12/APC",
+      "polarity": "Type B",
+      "gender_a": "female",
+      "gender_b": "female",
+      "evidence": {
+        "part_number": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N010: 10 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "model": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N010: 10 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "length_m": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N010: 10 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "medium": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N010: 10 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "fiber_type": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N010: 10 m, MPO-12/APC female to female, Type B crossover, 8 active fibers.",
+          "note": "9/125 single-mode is documented; an OS2 label is not asserted."
+        },
+        "connector_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N010: 10 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N010: 10 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "polarity": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N010: 10 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N010: 10 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N010: 10 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        }
+      }
+    },
+    {
+      "part_number": "MFP7E30-N015",
+      "model": "MFP7E30",
+      "length_m": 15.0,
+      "medium": "SM",
+      "fiber_type": "SM-unspecified",
+      "connector_a": "MPO-12/APC",
+      "connector_b": "MPO-12/APC",
+      "polarity": "Type B",
+      "gender_a": "female",
+      "gender_b": "female",
+      "evidence": {
+        "part_number": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N015: 15 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "model": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N015: 15 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "length_m": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N015: 15 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "medium": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N015: 15 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "fiber_type": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N015: 15 m, MPO-12/APC female to female, Type B crossover, 8 active fibers.",
+          "note": "9/125 single-mode is documented; an OS2 label is not asserted."
+        },
+        "connector_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N015: 15 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N015: 15 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "polarity": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N015: 15 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N015: 15 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N015: 15 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        }
+      }
+    },
+    {
+      "part_number": "MFP7E30-N020",
+      "model": "MFP7E30",
+      "length_m": 20.0,
+      "medium": "SM",
+      "fiber_type": "SM-unspecified",
+      "connector_a": "MPO-12/APC",
+      "connector_b": "MPO-12/APC",
+      "polarity": "Type B",
+      "gender_a": "female",
+      "gender_b": "female",
+      "evidence": {
+        "part_number": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N020: 20 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "model": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N020: 20 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "length_m": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N020: 20 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "medium": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N020: 20 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "fiber_type": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N020: 20 m, MPO-12/APC female to female, Type B crossover, 8 active fibers.",
+          "note": "9/125 single-mode is documented; an OS2 label is not asserted."
+        },
+        "connector_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N020: 20 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N020: 20 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "polarity": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N020: 20 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N020: 20 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N020: 20 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        }
+      }
+    },
+    {
+      "part_number": "MFP7E30-N030",
+      "model": "MFP7E30",
+      "length_m": 30.0,
+      "medium": "SM",
+      "fiber_type": "SM-unspecified",
+      "connector_a": "MPO-12/APC",
+      "connector_b": "MPO-12/APC",
+      "polarity": "Type B",
+      "gender_a": "female",
+      "gender_b": "female",
+      "evidence": {
+        "part_number": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N030: 30 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "model": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N030: 30 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "length_m": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N030: 30 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "medium": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N030: 30 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "fiber_type": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N030: 30 m, MPO-12/APC female to female, Type B crossover, 8 active fibers.",
+          "note": "9/125 single-mode is documented; an OS2 label is not asserted."
+        },
+        "connector_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N030: 30 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N030: 30 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "polarity": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N030: 30 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N030: 30 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N030: 30 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        }
+      }
+    },
+    {
+      "part_number": "MFP7E30-N050",
+      "model": "MFP7E30",
+      "length_m": 50.0,
+      "medium": "SM",
+      "fiber_type": "SM-unspecified",
+      "connector_a": "MPO-12/APC",
+      "connector_b": "MPO-12/APC",
+      "polarity": "Type B",
+      "gender_a": "female",
+      "gender_b": "female",
+      "evidence": {
+        "part_number": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N050: 50 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "model": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N050: 50 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "length_m": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N050: 50 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "medium": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N050: 50 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "fiber_type": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N050: 50 m, MPO-12/APC female to female, Type B crossover, 8 active fibers.",
+          "note": "9/125 single-mode is documented; an OS2 label is not asserted."
+        },
+        "connector_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N050: 50 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N050: 50 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "polarity": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N050: 50 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N050: 50 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N050: 50 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        }
+      }
+    },
+    {
+      "part_number": "MFP7E30-N100",
+      "model": "MFP7E30",
+      "length_m": 100.0,
+      "medium": "SM",
+      "fiber_type": "SM-unspecified",
+      "connector_a": "MPO-12/APC",
+      "connector_b": "MPO-12/APC",
+      "polarity": "Type B",
+      "gender_a": "female",
+      "gender_b": "female",
+      "evidence": {
+        "part_number": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N100: 100 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "model": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N100: 100 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "length_m": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N100: 100 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "medium": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N100: 100 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "fiber_type": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N100: 100 m, MPO-12/APC female to female, Type B crossover, 8 active fibers.",
+          "note": "9/125 single-mode is documented; an OS2 label is not asserted."
+        },
+        "connector_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N100: 100 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N100: 100 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "polarity": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N100: 100 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N100: 100 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N100: 100 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        }
+      }
+    },
+    {
+      "part_number": "MFP7E30-N150",
+      "model": "MFP7E30",
+      "length_m": 150.0,
+      "medium": "SM",
+      "fiber_type": "SM-unspecified",
+      "connector_a": "MPO-12/APC",
+      "connector_b": "MPO-12/APC",
+      "polarity": "Type B",
+      "gender_a": "female",
+      "gender_b": "female",
+      "evidence": {
+        "part_number": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N150: 150 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "model": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N150: 150 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "length_m": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/ordering-information",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N150: 150 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "medium": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N150: 150 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "fiber_type": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N150: 150 m, MPO-12/APC female to female, Type B crossover, 8 active fibers.",
+          "note": "9/125 single-mode is documented; an OS2 label is not asserted."
+        },
+        "connector_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N150: 150 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "connector_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N150: 150 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "polarity": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N150: 150 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_a": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N150: 150 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        },
+        "gender_b": {
+          "kind": "manufacturer",
+          "source_url": "https://networking-docs.nvidia.com/mfp7e30nxxxpub/specifications",
+          "verified_on": "2026-09-21",
+          "scope": "MFP7E30-N150: 150 m, MPO-12/APC female to female, Type B crossover, 8 active fibers."
+        }
+      }
+    }
+  ]
 }

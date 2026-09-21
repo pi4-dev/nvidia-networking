@@ -2,7 +2,8 @@
 
 from itertools import product
 
-from .models import ConnectionRequest
+from .models import ConnectionRequest, FiberCable
+from .hardware import actionable_gaps, effective_host, qualify
 
 RANK = {"compatible": 0, "conditional": 1, "unknown": 2, "incompatible": 3}
 
@@ -68,10 +69,10 @@ def evaluate_endpoint(group, item, endpoint, fabric=None, mode_id=None):
         checks.append(check("product.speed", "unknown", "Product aggregate rate is not documented.", item_source))
     else:
         checks.append(check("product.speed", "pass", f"Product aggregate rate: {item['speed_gbps']}G.", item_source))
-    gm = group.get("modes") or []
+    gm = [m for m in group.get("modes", []) if not fabric or not m.get("fabrics") or fabric in m["fabrics"]]
     if mode_id:
         gm = [m for m in gm if m["id"] == mode_id]
-    em = endpoint.get("modes", []) if endpoint else []
+    em = [m for m in (endpoint or {}).get("modes", []) if not fabric or not m.get("fabrics") or fabric in m["fabrics"]]
     matches = [(g, e) for g in gm for e in em if (g["links"], g["speed_gbps"]) == (e["links"], e["speed_gbps"])]
     if mode_id and not gm:
         checks.append(check("port.mode", "fail", "Selected port mode does not exist in this profile.", source))
@@ -127,12 +128,7 @@ def evaluate(group, item, fabric=None, mode_id=None, endpoint_id=None):
 
 
 def resolve(snapshot, selection):
-    device = next((d for d in snapshot["devices"] if d["id"] == selection.device_id), None)
-    if not device:
-        raise KeyError("Unknown device")
-    group = next((g for g in device["port_groups"] if g["id"] == selection.port_group_id), None)
-    if not group:
-        raise KeyError("Unknown port group")
+    device, group, _ = effective_host(snapshot, selection)
     item = next((i for i in snapshot["interconnects"] if i["id"] == selection.product_id), None)
     if not item:
         raise KeyError("Unknown product")
@@ -185,11 +181,13 @@ def _optical_checks(a, b, request):
     return checks
 
 
-def _cable_fec(ga, gb, ea, eb, va, vb):
+def _cable_fec(ga, gb, ea, eb, va, vb, fabric):
     combinations = []
     ga_modes = [m for m in ga["modes"] if m["id"] in va["matched_modes"]]
     gb_modes = [m for m in gb["modes"] if m["id"] in vb["matched_modes"]]
     for gma, gmb, ma, mb in product(ga_modes, gb_modes, (ea or {}).get("modes", []), (eb or {}).get("modes", [])):
+        if any(m.get("fabrics") and fabric not in m["fabrics"] for m in (gma, gmb, ma, mb)):
+            continue
         if any((g["links"], g["speed_gbps"]) != (e["links"], e["speed_gbps"]) for g, e in ((gma, ma), (gmb, mb))):
             continue
         sets = [set(m.get("fec") or []) for m in (ma, mb, gma, gmb)]
@@ -212,6 +210,23 @@ def validate_connection(snapshot, request: ConnectionRequest):
     db, gb, b = resolve(snapshot, request.b)
     optical = a.get("category") == "Transceiver" and b.get("category") == "Transceiver"
     mixed = (a.get("category") == "Transceiver") != (b.get("category") == "Transceiver")
+    fiber_checks, fiber_assembly = [], None
+    if request.fiber_part_number:
+        fiber_assembly = next((f for f in snapshot.get("fiber_assemblies", []) if f["part_number"] == request.fiber_part_number), None)
+        if not fiber_assembly:
+            raise KeyError("Unknown fiber assembly part number")
+        if not optical:
+            fiber_checks.append(check("link.fiber_assembly", "fail", "A separate fiber assembly requires two transceivers."))
+        else:
+            fields = {k: fiber_assembly[k] for k in ("medium", "fiber_type", "connector_a", "connector_b")}
+            if request.fiber is None:
+                request = request.model_copy(update={"fiber": FiberCable(**fields)})
+            agrees = all(getattr(request.fiber, k) == v for k, v in fields.items())
+            fiber_checks.append(check("link.fiber_assembly", "pass" if agrees else "fail",
+                "Selected fiber properties must match its ordering number.", fiber_assembly["evidence"]["part_number"]["source_url"]))
+            fiber_checks.append(check("link.fiber_length", "unknown" if request.length_m is None else
+                "pass" if request.length_m == fiber_assembly["length_m"] else "fail",
+                f"Fiber assembly {fiber_assembly['part_number']} is {fiber_assembly['length_m']}m long."))
     ends_a = [e for e in a.get("endpoints", []) if not request.a.endpoint_id or e["id"] == request.a.endpoint_id] or [None]
     ends_b = [e for e in b.get("endpoints", []) if not request.b.endpoint_id or e["id"] == request.b.endpoint_id] or [None]
     candidates = []
@@ -221,7 +236,7 @@ def validate_connection(snapshot, request: ConnectionRequest):
         for mode_a, mode_b in product(_mode_options(ga, ea, request.a.mode_id), _mode_options(gb, eb, request.b.mode_id)):
             va = evaluate(ga, a, request.fabric, mode_a, ea["id"] if ea else request.a.endpoint_id)
             vb = evaluate(gb, b, request.fabric, mode_b, eb["id"] if eb else request.b.endpoint_id)
-            checks = _required_host_checks(va, "A") + _required_host_checks(vb, "B")
+            checks = _required_host_checks(va, "A") + _required_host_checks(vb, "B") + fiber_checks
             sa, ca = _selected_sku(a, request.a.part_number, "A")
             sb, cb = _selected_sku(b, request.b.part_number, "B")
             checks += [ca, cb]
@@ -237,7 +252,7 @@ def validate_connection(snapshot, request: ConnectionRequest):
                 if (a.get("interface_count") or 1) > 1 or (b.get("interface_count") or 1) > 1:
                     checks.append(check("link.scope", "unknown", "This result covers one optical link; validate each remaining twin-port/breakout link separately.", required=False))
             else:
-                checks += _cable_fec(ga, gb, ea, eb, va, vb)
+                checks += _cable_fec(ga, gb, ea, eb, va, vb, request.fabric)
                 checks.append(check("link.assembly", "pass" if a["id"] == b["id"] else "fail", "Both ports must terminate the same cable assembly and variant."))
                 checks.append(check("link.orientation", "unknown" if not ea or not eb else ("pass" if ea["id"] != eb["id"] else "fail"),
                                     f"Termination at device A: {(ea or {}).get('id', 'unknown')}; device B: {(eb or {}).get('id', 'unknown')}."))
@@ -248,11 +263,18 @@ def validate_connection(snapshot, request: ConnectionRequest):
                                     f"Selected cable SKU length {length if length is not None else 'unknown'}m; requested {request.length_m if request.length_m is not None else 'unknown'}m."))
                 if (ea or {}).get("role") == "branch" or (eb or {}).get("role") == "branch":
                     checks.append(check("link.scope", "unknown", "This result covers one breakout leg. Other legs need separate endpoint validation.", required=False))
-            result = {"status": decide(checks), "scope": "single-link", "checks": checks,
+            technical_status = decide(checks)
+            qualification = {side: qualify(snapshot, selection, item, request.fabric, mode)
+                for side, selection, item, mode in (("a", request.a, a, mode_a), ("b", request.b, b, mode_b))}
+            for side, q in qualification.items():
+                checks.extend({**c, "code": side.upper() + "." + c["code"]} for c in q["checks"])
+            result = {"status": decide(checks), "technical_status": technical_status,
+                      "qualification": qualification, "scope": "single-link", "checks": checks,
                       "orientation": {"a": va["endpoint_id"], "b": vb["endpoint_id"]},
                       "modes": {"a": mode_a, "b": mode_b}, "port_results": {"a": va, "b": vb}}
             candidates.append(result)
     result = choose(candidates)
     return {**result, "revision": snapshot["revision"], "selection": request.model_dump(),
+            "gaps": actionable_gaps(result["checks"]), "fiber_assembly": fiber_assembly,
             "devices": {"a": da["model"], "b": db["model"]},
             "products": {"a": a["model"], "b": b["model"]}}

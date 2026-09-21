@@ -16,15 +16,17 @@
 <main><div class="stack">
   <div id="serviceMessage" class="message hidden" role="status"></div>
   <div class="actionbar">
-    <div class="tabs" role="tablist" aria-label="Validation scope"><button id="portTab" role="tab" aria-selected="true" aria-controls="portView">Port fit</button><button id="linkTab" role="tab" aria-selected="false" aria-controls="linkView">Connection A ↔ B</button></div>
+    <div class="tabs" role="tablist" aria-label="Validation scope"><button id="portTab" role="tab" aria-selected="true" aria-controls="portView">Port fit</button><button id="linkTab" role="tab" aria-selected="false" aria-controls="linkView">Connection A ↔ B</button><button id="wizardTab" role="tab" aria-selected="false" aria-controls="wizardView">Connection assistant</button></div>
     <div class="actions"><button id="retry">Refresh catalog</button><button id="share">Copy configuration link</button><button id="export" disabled>Export JSON</button></div>
   </div>
   <div id="actionMessage" class="small" role="status"></div>
   <div id="portView" class="stack" role="tabpanel" aria-labelledby="portTab">
     <section class="panel"><div class="panel-head"><h2><span class="step">1</span>Select equipment and operating mode</h2></div><div class="panel-body">
       <div class="grid4"><div><label for="kind">Equipment category</label><select id="kind"></select></div><div><label for="device">Device / system</label><select id="device"></select></div><div><label for="group">Physical port group</label><select id="group"></select></div><div><label for="mode">Port mode</label><select id="mode"></select></div></div>
+      <div id="portHardware" class="hardware-context"></div>
       <div class="summary" id="deviceSummary"></div><div id="deviceMessage" class="message hidden"></div>
     </div></section>
+    <section class="panel"><div class="panel-head"><h2>Hardware evidence and missing data</h2><button id="inspectHardware">Inspect exact hardware</button></div><div class="panel-body"><p class="small">Select the board OPN and enter observed software versions. Sources and lab reports apply only within their stated scope. Port fit is separate from firmware and OS qualification.</p><div id="hardwareReport" aria-live="polite">Inspect a hardware profile to see dated facts and the next steps needed to resolve unknowns.</div></div></section>
     <section class="panel"><div class="panel-head"><h2><span class="step">2</span>Inspect products and rejected matches</h2><button id="whyRejected">Why was a product rejected?</button></div><div class="panel-body">
       <div class="toolbar">
         <div class="grow"><label for="search">Model or ordering part number</label><input id="search" type="search" placeholder="Model, PN, connector…"></div>
@@ -57,6 +59,7 @@
           <label for="aDevice">Device / system</label><select id="aDevice"></select>
           <label for="aGroup">Port group</label><select id="aGroup"></select>
           <label for="aMode">Operating mode</label><select id="aMode"></select>
+          <div id="aHardware" class="hardware-context"></div>
           <label for="aProduct">Module or cable</label><select id="aProduct"></select>
           <label for="aEnd">Cable termination at device A</label><select id="aEnd"></select>
           <label for="aPn">Ordering part number</label><select id="aPn"></select>
@@ -65,18 +68,46 @@
           <label for="bDevice">Device / system</label><select id="bDevice"></select>
           <label for="bGroup">Port group</label><select id="bGroup"></select>
           <label for="bMode">Operating mode</label><select id="bMode"></select>
+          <div id="bHardware" class="hardware-context"></div>
           <label for="bProduct">Module or cable</label><select id="bProduct"></select>
           <label for="bEnd">Cable termination at device B</label><select id="bEnd"></select>
           <label for="bPn">Ordering part number</label><select id="bPn"></select>
         </fieldset>
       </div>
       <div class="grid3 link-options"><div><label for="linkFabric">Fabric</label><select id="linkFabric"><option>IB</option><option>ETH</option><option>NVL</option></select></div><div><label for="linkLength">Actual cable length (m)</label><input id="linkLength" type="number" min="0.1" max="1000000" step="0.1" placeholder="Required for reach check"></div></div>
-      <fieldset id="fiberOptions"><legend>Optical fiber</legend>
-        <div class="grid3"><div><label for="fiberType">Fiber type</label><select id="fiberType"><option>OS2</option><option>OM3</option><option>OM4</option><option>OM5</option></select></div><div><label for="connectorA">Cable connector at A</label><select id="connectorA"><option>MPO-12/APC</option><option>MPO-12/UPC</option><option>Duplex LC/UPC</option><option>LC duplex</option><option>Duplex LC</option></select></div><div><label for="connectorB">Cable connector at B</label><select id="connectorB"><option>MPO-12/APC</option><option>MPO-12/UPC</option><option>Duplex LC/UPC</option><option>LC duplex</option><option>Duplex LC</option></select></div></div>
+      <fieldset id="fiberOptions"><legend>Optical fiber</legend><label for="fiberPn">Fiber ordering part number</label><select id="fiberPn"></select>
+        <div class="grid3"><div><label for="fiberType">Fiber type</label><select id="fiberType"><option>OS2</option><option>SM-unspecified</option><option>OM3</option><option>OM4</option><option>OM5</option></select></div><div><label for="connectorA">Cable connector at A</label><select id="connectorA"><option>MPO-12/APC</option><option>MPO-12/UPC</option><option>Duplex LC/UPC</option><option>LC duplex</option><option>Duplex LC</option></select></div><div><label for="connectorB">Cable connector at B</label><select id="connectorB"><option>MPO-12/APC</option><option>MPO-12/UPC</option><option>Duplex LC/UPC</option><option>LC duplex</option><option>Duplex LC</option></select></div></div>
         <label class="check-label"><input id="pinout" type="checkbox"> I verified connector gender, polarity and lane mapping against the cable drawing.</label>
       </fieldset>
       <div class="actionbar"><button id="validateLink" class="primary">Validate connection</button><span id="linkStatus" role="status">Select the connection and run validation.</span></div>
+      <div id="linkQualification" class="message"></div><div id="linkGaps"></div>
       <div id="linkChecks" class="checks" aria-live="polite"></div>
+    </div></section>
+  </div>
+
+  <div id="wizardView" class="stack hidden" role="tabpanel" aria-labelledby="wizardTab">
+    <section class="panel"><div class="panel-head"><h2>Build a complete connection</h2></div><div class="panel-body">
+      <p class="small">Enter the ports, required per-link bandwidth and minimum cable length. Compare available assemblies, or two modules with a separate fiber. One result covers one link or one breakout leg.</p>
+      <div class="link-sides">
+<fieldset><legend>Device A</legend><label for="waDevice">Device / system</label><select id="waDevice"></select><label for="waGroup">Physical port group</label><select id="waGroup"></select><label for="waMode">Operating mode</label><select id="waMode"></select><div id="waHardware" class="hardware-context"></div></fieldset><fieldset><legend>Device B</legend><label for="wbDevice">Device / system</label><select id="wbDevice"></select><label for="wbGroup">Physical port group</label><select id="wbGroup"></select><label for="wbMode">Operating mode</label><select id="wbMode"></select><div id="wbHardware" class="hardware-context"></div></fieldset></div>
+      <div class="grid4 link-options">
+        <div><label for="wizardFabric">Fabric</label><select id="wizardFabric"><option>IB</option><option>ETH</option><option>NVL</option></select></div>
+        <div><label for="wizardSpeed">Required bandwidth per link (Gb/s)</label><input id="wizardSpeed" type="number" min="1" max="100000" step="1" value="400"></div>
+        <div><label for="wizardLength">Minimum assembly length (m)</label><input id="wizardLength" type="number" min="0.1" max="1000000" step="0.1" value="3"></div>
+        <div><label for="wizardTechnology">Technology</label><select id="wizardTechnology"><option value="any">All technologies</option><option value="cable">Cable assemblies</option><option>DAC</option><option>LACC</option><option>ACC</option><option>AOC</option><option value="optical">Modules + fiber</option></select></div>
+      </div>
+      <div class="grid4 link-options">
+        <div><label for="wizardFiber">Fiber grade</label><select id="wizardFiber"><option value="any">Any documented grade</option><option>OS2</option><option>SM-unspecified</option><option>OM3</option><option>OM4</option><option>OM5</option></select></div>
+        <div><label for="reusePn">Required existing part number</label><input id="reusePn" list="knownParts" maxlength="128" placeholder="Optional exact PN"></div>
+        <div><label for="reuseSide">Place existing part at</label><select id="reuseSide"><option value="either">Either end / shared assembly</option><option value="a">Device A</option><option value="b">Device B</option></select></div>
+        <div><label for="wizardSort">Prefer</label><select id="wizardSort"><option value="evidence">Most complete evidence</option><option value="fewest_components">Fewest components</option><option value="reuse">Reuse owned parts</option></select></div>
+      </div>
+      <datalist id="knownParts"></datalist>
+      <label for="ownedParts">Owned inventory — one PN,quantity per line</label><textarea id="ownedParts" rows="3" maxlength="6000" placeholder="980-9I601-00N003,1"></textarea>
+      <p class="small">A required existing PN counts as one owned item unless an explicit inventory quantity is entered. Quantities are counted once across both ends.</p>
+      <label class="check-label"><input id="includeUnknown" type="checkbox" checked> Include proposals with missing evidence</label>
+      <div class="actionbar"><button id="recommend" class="primary">Find connection options</button><span id="wizardStatus" role="status">Set requirements and search the catalog.</span></div>
+      <div id="wizardResults" aria-live="polite"></div>
     </div></section>
   </div>
 </div></main>
