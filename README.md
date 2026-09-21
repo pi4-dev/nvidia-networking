@@ -51,7 +51,9 @@ The validator uses the repository's live `data/nvidia-interconnects.json` datase
 - supported module speed and port mode
 - aggregate cage capacity for multi-lane interfaces
 
-The GUI exposes only products accepted for the selected device and physical port group and shows the reasons and confidence level for each compatibility decision.
+The GUI separates host-port fit from complete A-to-B link checks and reports `compatible`, `conditional`, `unknown` or `incompatible`, with individual checks and source links. Rejected and retired products are available for diagnostics. It supports explicit port modes, both cable ends, SKU lengths, fiber parameters, saved/shared configurations and JSON report export.
+
+The original repository state is preserved in branch [`v0.01`](https://github.com/pi4-dev/nvidia-networking/tree/v0.01), at commit `6071fa9f05b7ea5e116094f518fd4b6c15992867`. Further development is on `main`. CI runs data/rule/API/browser regressions and a Docker Compose smoke test.
 
 Dependency installation is hash-locked with exact versions and SHA-256 verification; see the application README for regeneration and runtime hardening details.
 

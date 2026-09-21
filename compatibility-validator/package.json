@@ -1,0 +1,7 @@
+{
+  "name": "nvidia-compatibility-validator-tests",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {"test": "node --test tests/frontend.test.cjs"},
+  "devDependencies": {"jsdom": "30.1.0"}
+}

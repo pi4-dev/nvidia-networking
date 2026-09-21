@@ -1,111 +1,8 @@
 # NVIDIA Networking Compatibility Validator
 
-Interactive web application for validating NVIDIA LinkX transceivers and cable assemblies against NVIDIA switches, adapters and DGX port profiles using the repository's live `data/nvidia-interconnects.json` dataset.
+Web application for evaluating NVIDIA LinkX modules and cable assemblies against explicit switch, adapter and DGX port profiles. The interface supports both **host-port fit** and **one connection between devices A and B**.
 
-## Web GUI
-
-The application exposes a browser GUI at:
-
-```text
-http://localhost:8080/
-```
-
-The workflow is intentionally validation-only:
-
-1. Select equipment category, device/system and physical port group.
-2. Browse only active LinkX products that pass compatibility validation for that port group.
-3. Filter products by model/part number, category, fabric and medium.
-4. Select a transceiver, AOC or copper assembly.
-5. Review validation confidence and the exact reasons why the product is accepted.
-6. Review device, port and LinkX product details, including direct links to NVIDIA documentation and the cage/module compatibility source.
-
-There is no BOM calculation, port quantity planning, cable-count calculation or endpoint-side quantity output.
-
-## What it validates
-
-The compatibility engine checks:
-
-- product status (`active`)
-- fabric compatibility (`ETH`, `IB`, `NVL` where applicable)
-- host-side connector/form factor
-- module/cage compatibility from schema v8 `port_interface_compatibility`
-- exact OSFP mechanical variant (`finned` vs `flat-top`) when encoded or otherwise known by the explicit device profile
-- module speed against advertised device port/module modes
-- aggregate cage capacity, including twin-port 1.6T OSFP cases such as Quantum-X800
-
-Compatibility confidence shown in the GUI:
-
-- `exact` — exact mechanical/form-factor match
-- `backward-compatible` — the catalog explicitly allows a different module generation in the selected cage
-
-## Schema v8 module / cage compatibility
-
-For schema v8 and newer, `data/nvidia-interconnects.json` is the authoritative source for device-side pluggable compatibility:
-
-```text
-port_interface_compatibility
-  ethernet_switching
-  infiniband_and_appliances
-  dpu
-  supernic
-```
-
-The validator consumes these fields directly:
-
-- `pluggable`
-- `accepted_pluggables`
-- `fixed_interfaces`
-- `source_url`
-- `variants`
-- `scope_note`
-
-For devices with multiple physical cage families, `accepted_pluggables` is applied per matching form-factor class. Example: on SN5400 the QSFP-DD group uses the QSFP entries while the SFP28 group uses the SFP entry; the device-wide list is not blindly copied to every port group.
-
-`fixed_interfaces` always wins over a device-level `pluggable=true`. This prevents fixed interfaces such as RJ45 or CPO interfaces from being treated as pluggable cages.
-
-The GUI shows both the raw catalog list (`Catalog accepts`) and the effective per-port-group list (`Accepted modules`), together with the compatibility source link.
-
-For older schema snapshots without `port_interface_compatibility`, the application retains a legacy form-factor fallback. This fallback is not used when schema v8 compatibility data exists for the selected device.
-
-## DPU / SuperNIC support from schema v8
-
-Schema v8 can make devices validation-ready even when the compact portfolio record does not contain physical port counts. The validator builds validation-only cage groups from `accepted_pluggables` without inventing quantities.
-
-Examples include:
-
-- BlueField-3 DPU: QSFP112 / QSFP56 / QSFP28
-- BlueField-4 DPU: QSFP112 for the documented scope in the dataset
-- ConnectX-8 / ConnectX-9 SuperNIC: separate OSFP (RHS cage) and QSFP112 variants
-
-When a physical port count is not present in the source, the GUI displays `—` rather than inferring a value.
-
-## OSFP mechanics
-
-OSFP is treated separately because the cooling/mechanical variant matters. Explicit `RHS`, `flat` or `flattop` qualifiers map to flat-top modules, while explicit `IHS` or `finned` qualifiers map to finned modules.
-
-For switch-side OSFP records where schema v8 currently states only `OSFP` without an IHS/RHS qualifier, the existing NVIDIA switch-side finned constraint is retained. DGX system profiles continue to carry their explicit server-side flat-top requirement.
-
-## Device profiles
-
-The canonical repository JSON now contains normalized cage/module data for switches, DPUs, SuperNICs and relevant appliances. `compatibility-validator/data/device-profiles.json` remains only as a small auditable overlay for system-level port profiles not represented in the canonical dataset.
-
-Current profiles include:
-
-- DGX B200
-- DGX B300
-- DGX GB200 Compute Tray
-- MQM9700-NS2F
-
-Devices for which the catalog intentionally does not assert an external cage type remain visible but are marked as not validation-ready.
-
-## Live reload
-
-The application does not copy the mounted JSON into a database. It checks file metadata (`mtime` + size) and reloads the catalog on the next request when either file changes:
-
-- `/data/nvidia-interconnects.json`
-- `/profiles/device-profiles.json`
-
-The browser polls `/api/meta` every 5 seconds and refreshes device data automatically when the dataset revision changes.
+The repository baseline is preserved in branch [`v0.01`](https://github.com/pi4-dev/nvidia-networking/tree/v0.01), at commit `6071fa9f05b7ea5e116094f518fd4b6c15992867`. Ongoing development is on `main`.
 
 ## Run
 
@@ -115,101 +12,141 @@ From the repository root:
 docker compose -f compatibility-validator/docker-compose.yml up -d --build
 ```
 
-Open:
+Open <http://localhost:8080/>. Health is available at `/healthz`; catalog freshness and revision are in `/api/meta`.
 
-```text
-http://localhost:8080/
+For local development with Python 3.12:
+
+```bash
+cd compatibility-validator
+python -m venv .venv
+. .venv/bin/activate
+python -m pip install --require-hashes --only-binary=:all: --index-url https://pypi.org/simple -r requirements.txt
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8080
 ```
 
-Health check:
+Default data paths resolve from the application directory. `NVIDIA_DATA_PATH` and `DEVICE_PROFILES_PATH` can override them. Node is only needed to run frontend regression tests; the browser application has no external JavaScript dependencies or build step.
 
-```text
-http://localhost:8080/healthz
-```
+## Workflow
 
-The compose file bind-mounts the canonical JSON read-only, so regenerating `data/nvidia-interconnects.json` is visible to the running application without an application restart.
+**Port fit:** choose a device, physical port group and optional operating mode/fabric. Search by model or ordering PN; filter by result, lifecycle, cable technology, medium, termination capacity and reach. Select a product to see its checks, source links, matching cable end and exact SKU length where documented. “Why was a product rejected?” includes rejected and retired products.
 
-## Runtime hardening and data safety
+**Connection A ↔ B:** select both devices and their ports, then either two optical modules plus fiber or the two ends of one cable assembly. Choose ordering PNs, fabric and actual length. The result covers one link or one breakout leg. For fiber, select OS2/OM3/OM4/OM5, connectors including polish, and explicitly confirm that gender, polarity and lane mapping match the cable drawing.
 
-The service validates both JSON inputs before activating a new catalog revision. A changed dataset is accepted only when its structure passes validation and its file size is within the configured limit.
+“Copy configuration link” preserves the selections, filters and catalog revision. Local storage restores the last configuration. A shared link for an older revision shows a notice and recalculates using the available catalog; it does not retrieve historical catalog bytes. “Export JSON” includes the result, checks, selections, revision, catalog freshness, application version and timestamp.
 
-Default limits:
+## Results and scope
 
-- canonical catalog: 2 MiB (`MAX_DATA_BYTES`)
-- device profiles: 512 KiB (`MAX_PROFILE_BYTES`)
-- compatibility-result cache: 256 entries (`COMPAT_CACHE_MAX_ENTRIES`)
-- Uvicorn concurrency: 100 requests
-- listen backlog: 128
-- keep-alive timeout: 5 seconds
+| Result | Meaning |
+| --- | --- |
+| `compatible` | All applicable checks have documented passing values. |
+| `conditional` | Required checks pass; additional conditions or host-fit details still need verification. |
+| `unknown` | Required evidence is missing. This is not an approval. |
+| `incompatible` | At least one check explicitly fails. |
 
-If a live-mounted JSON file changes but the new content is invalid, malformed or over the configured size limit, the process continues serving the last-known-good in-memory snapshot. If no valid snapshot has ever been loaded, API access returns `503`.
+Mechanical `match_type` (`exact`, `backward-compatible`, `mismatch`, `unknown`) is separate from the overall result. An exact cage match alone cannot certify interoperability. Missing fabric, rate, mode, capacity or endpoint data cannot produce a positive result.
 
-`/healthz` intentionally exposes only:
+The host-port view checks pluggability, connector family, OSFP cooling shell, supported fabric, explicit link count/rate and per-cage capacity. Electrical lanes, lane rate and FEC are shown as conditions if unknown. Complete connection validation requires those facts, and also checks:
+
+- Both cable ends, including reversed flat-top/finned assemblies and breakout branches.
+- A common cable link rate and FEC across both hosts and cable ends.
+- Matching cable identity/variant/PN and the selected SKU's actual length.
+- Optical medium, fiber-specific reach, connector/polish, standard, lanes, lane rate, wavelengths and FEC.
+- User verification of optical gender, polarity and lane mapping.
+
+Undocumented hardware values remain unknown. The shipped catalog does not provide every adapter cage rate, electrical mode, FEC setting or firmware qualification, so complete links can correctly return `unknown`. Breakout validation covers one selected leg, and does not validate all attached devices or an arbitrary optical splitter topology. Procurement quantities and BOM planning are outside this application's scope.
+
+## Data contracts
+
+The canonical `../data/nvidia-interconnects.json` remains schema **8**. `data/device-profiles.json` uses schema **2**, with explicit port modes, cable endpoints, SKU lengths and optical details. Both inputs are checked before activating a revision. See [DATA_MODEL.md](DATA_MODEL.md) for field semantics and update instructions.
+
+`port_interface_compatibility` remains authoritative for accepted module families and fixed interfaces. The overlay cannot broaden those permissions. Port capabilities are not inferred from free-text descriptions or aggregate adapter bandwidth. Generic and SKU-specific Quantum-2 profiles use the same twin-port capacity; SN3420 modes cannot exceed cage capacity. Unqualified OSFP shells remain unknown.
+
+`app/models.py` owns the strict Pydantic contracts, `catalog.py` loading and cross-file integrity, `rules.py` compatibility decisions, and `api.py` HTTP routes. `main.py` remains the Uvicorn entry point. Browser helpers and UI logic live in separate `static/core.js` and `static/app.js` files.
+
+## Live reload and failure handling
+
+On each data request the loader checks inode, nanosecond timestamps and size for both files. It validates a candidate snapshot and confirms that neither input changed during loading before activating it. The revision hashes both inputs. The browser polls metadata every five seconds, preserves selections and filters on refresh, cancels obsolete requests, and checks revision and selection before displaying a response.
+
+Compose mounts **directories** read-only so that atomic file replacement is visible inside the container. Update both related inputs together; if one temporarily disagrees with the other, the candidate is rejected until a consistent pair is present.
+
+A malformed, oversized or inconsistent update keeps the last valid snapshot and sets `/api/meta` → `catalog.state` to `degraded`, with last-success/last-failure timestamps and a generic error code. The GUI displays this state. If no valid snapshot has ever loaded, data endpoints and `/healthz` consistently return `503`; they never return an empty successful catalog. Correcting the input recovers without restarting. API/network failures show an offline notice and a retry action.
+
+Detailed errors remain in server logs. Public errors and metadata do not expose filesystem paths. `/healthz` returns only `{"status":"ok"}` when a valid snapshot is available, including during last-good operation; monitoring for rejected updates should inspect `/api/meta` as well.
+
+## API
+
+| Route | Response |
+| --- | --- |
+| `GET /healthz` | Minimal readiness check. |
+| `GET /api/meta` | Counts, versions, revision, snapshot dates and reload state. |
+| `GET /api/catalog` | Metadata, devices and products from one coherent snapshot. |
+| `GET /api/devices` | Device list; revision in `X-Catalog-Revision`. |
+| `GET /api/products` | All detailed and retired diagnostic records plus revision. |
+| `GET /api/evaluate` | Every product with structured checks for the selected host port. |
+| `POST /api/connection` | One A-to-B link with checks, orientation and selected configuration. |
+| `GET /api/compatible` | Legacy route: active `compatible`/`conditional` host-port candidates only. |
+
+`/api/evaluate` requires `device_id` and `port_group_id`; optional parameters are `fabric`, `mode_id` and `revision`. Identifiers and values are bounded. A stale revision returns `409`, invalid input `422`, and an absent device/group `404`.
+
+Example body for `/api/connection` (use IDs and revision from `/api/catalog`):
 
 ```json
-{"status":"ok"}
+{
+  "a": {
+    "device_id": "profile:MQM9700-NS2F",
+    "port_group_id": "ndr",
+    "product_id": "Copper|MCA4J80-Nxxx-FTF|flat-to-finned",
+    "endpoint_id": "B",
+    "part_number": "980-9I601-00N003"
+  },
+  "b": {
+    "device_id": "system:DGX B200",
+    "port_group_id": "cluster",
+    "product_id": "Copper|MCA4J80-Nxxx-FTF|flat-to-finned",
+    "endpoint_id": "A",
+    "part_number": "980-9I601-00N003"
+  },
+  "fabric": "IB",
+  "length_m": 3
+}
 ```
 
-`/api/meta` does not expose filesystem paths. Compatibility results are cached by catalog revision, device ID and port-group ID, so a newly accepted catalog revision automatically uses a separate cache namespace.
+`endpoint_id` and `mode_id` may be omitted to evaluate documented alternatives. Requesting a nonexistent endpoint/mode produces a failed validation. `revision` is optional for direct API clients and required by the GUI's workflow. Interactive API documentation is at `/docs` (its default Swagger assets require network access).
 
-The container runs as UID/GID `10001`, with a read-only root filesystem, all Linux capabilities dropped and `no-new-privileges` enabled. The Compose definition also applies CPU, memory, PID and file-descriptor limits.
+## Limits and container configuration
 
+| Setting | Default |
+| --- | --- |
+| `MAX_DATA_BYTES` | 2 MiB |
+| `MAX_PROFILE_BYTES` | 512 KiB |
+| `COMPAT_CACHE_MAX_ENTRIES` | 256 |
+| HTTP request body | 16 KiB |
+| Uvicorn concurrency / backlog / keep-alive | 100 / 128 / 5 seconds |
+| Compose CPU / memory / PIDs | 1 CPU / 256 MiB / 128 |
 
-## Dependency integrity
+Input reads are bounded before JSON parsing, duplicate keys and nonfinite numbers are rejected, and evaluations are cached by revision, device, group, fabric and mode. The container runs as UID/GID `10001`, with a read-only root filesystem, all capabilities dropped and `no-new-privileges`. The GUI uses a same-origin Content Security Policy and escapes catalog text.
 
-Runtime dependencies are split into:
-
-- `requirements.in` — the two direct application dependencies, pinned to exact versions.
-- `requirements.txt` — the complete transitive runtime dependency set, pinned to exact versions and authenticated with SHA-256 hashes.
-
-The image build installs dependencies with `pip --require-hashes --only-binary=:all:` from the explicit PyPI index and runs `pip check`. A package with an unexpected artifact hash, an unpinned transitive dependency, or an inconsistent dependency graph fails the image build.
-
-Regenerate the lock after an intentional dependency update with Python 3.12:
+Runtime dependencies are pinned with hashes in `requirements.txt`; direct dependencies are in `requirements.in`. The Docker build uses `--require-hashes --only-binary=:all:` and `pip check`. Regenerate the lock with Python 3.12 after intentional dependency changes:
 
 ```bash
 python -m pip install pip-tools
 pip-compile --generate-hashes --output-file=requirements.txt requirements.in
 ```
 
-The runtime uses base `uvicorn` rather than `uvicorn[standard]` because this application does not require the optional watch/reload, WebSocket acceleration, dotenv, YAML or uvloop dependency set. This keeps the runtime dependency graph smaller.
+## Tests and CI
 
-## Error handling
+From `compatibility-validator/`, after installing the runtime dependencies:
 
-Startup/catalog-loading failures are logged through the Uvicorn error logger, including the server-side traceback. API clients receive only the constant HTTP 503 response detail `Service unavailable`; internal exception strings, mount points and filesystem paths are not propagated to the response.
+```bash
+python -m unittest discover -s tests -p 'test_*.py' -v
+npm ci --ignore-scripts
+npm test
+```
 
-## API
+Backend tests exercise the actual repository inputs, failed startup/reload/recovery, null fields, strict schemas, hardware regressions, both-end validation and a real HTTP server. Browser tests use jsdom to run the shipped scripts, including out-of-order responses, catalog refresh, restored configurations, export/share and startup retry.
 
-The GUI uses the same backend API:
+`.github/workflows/compatibility-validator.yml` runs both suites and builds/starts the production Compose service with its resource limits. `tests/smoke.py` then checks nonempty catalog data, rejected products and both-end connection validation through HTTP:
 
-- `GET /healthz`
-- `GET /api/meta`
-- `GET /api/devices`
-- `GET /api/compatible?device_id=...&port_group_id=...`
-
-`GET /api/devices` exposes the effective validation groups together with fields such as:
-
-- `accepted_pluggables`
-- `fixed_interfaces`
-- `compatibility_source_url`
-- `accepted_connector_families`
-- `compatibility_source`
-- `catalog_accepted_pluggables`
-- `scope_note`
-- `variants`
-
-`GET /api/compatible` returns only active products accepted for the selected port group and includes:
-
-- `fabric_compatibility`
-- `interface_type`
-- `interface_count`
-- `interface_speed`
-- `interface_connector`
-- `speed`
-- `medium`
-- `reach`
-- `part_numbers`
-- `source_url`
-- `compatibility_confidence`
-- `compatibility_reasons`
-
-The validator does not calculate quantities or generate a bill of materials.
+```bash
+python tests/smoke.py http://127.0.0.1:8080
+```

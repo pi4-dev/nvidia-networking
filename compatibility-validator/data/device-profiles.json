@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "profiles": [
     {
       "id": "system:DGX B200",
@@ -14,40 +14,75 @@
           "label": "Cluster fabric — 4 × twin-port OSFP (8 × 400G ConnectX-7)",
           "count": 4,
           "connector_family": "OSFP",
-          "accepted_interface_types": ["OSFP-flattop"],
+          "accepted_interface_types": [
+            "OSFP-flattop"
+          ],
           "module_speed_gbps": 800,
-          "supported_module_speeds_gbps": [800],
-          "fabrics": ["IB", "ETH"],
-          "breakouts": [{"links_per_port": 2, "link_speed_gbps": 400}],
+          "fabrics": [
+            "IB",
+            "ETH"
+          ],
           "pluggable": true,
-          "confidence": "exact",
-          "notes": "DGX B200 server-side OSFP accepts flat-top modules only."
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400
+            }
+          ],
+          "scope_note": "DGX B200 server-side OSFP accepts flat-top modules only.",
+          "source_url": "https://docs.nvidia.com/dgx/dgxb200-user-guide/introduction-to-dgxb200.html",
+          "accepted_connector_families": [
+            "OSFP"
+          ]
         },
         {
           "id": "bf3-eth",
           "label": "Storage / in-band — 2 × BlueField-3 QSFP112 Ethernet ports",
           "count": 2,
           "connector_family": "QSFP112",
-          "accepted_interface_types": ["QSFP112"],
+          "accepted_interface_types": [],
           "module_speed_gbps": 400,
-          "supported_module_speeds_gbps": [400],
-          "fabrics": ["ETH"],
-          "breakouts": [{"links_per_port": 1, "link_speed_gbps": 400}],
+          "fabrics": [
+            "ETH"
+          ],
           "pluggable": true,
-          "confidence": "exact"
+          "modes": [
+            {
+              "id": "1x400",
+              "links": 1,
+              "speed_gbps": 400
+            }
+          ],
+          "scope_note": null,
+          "source_url": "https://docs.nvidia.com/dgx/dgxb200-user-guide/introduction-to-dgxb200.html",
+          "accepted_connector_families": [
+            "QSFP112"
+          ]
         },
         {
           "id": "bf3-ib",
           "label": "Storage / in-band — 2 × BlueField-3 QSFP112 InfiniBand ports",
           "count": 2,
           "connector_family": "QSFP112",
-          "accepted_interface_types": ["QSFP112"],
+          "accepted_interface_types": [],
           "module_speed_gbps": 400,
-          "supported_module_speeds_gbps": [400],
-          "fabrics": ["IB"],
-          "breakouts": [{"links_per_port": 1, "link_speed_gbps": 400}],
+          "fabrics": [
+            "IB"
+          ],
           "pluggable": true,
-          "confidence": "exact"
+          "modes": [
+            {
+              "id": "1x400",
+              "links": 1,
+              "speed_gbps": 400
+            }
+          ],
+          "scope_note": null,
+          "source_url": "https://docs.nvidia.com/dgx/dgxb200-user-guide/introduction-to-dgxb200.html",
+          "accepted_connector_families": [
+            "QSFP112"
+          ]
         }
       ]
     },
@@ -64,17 +99,35 @@
           "label": "Cluster fabric — 8 × flat-top OSFP 800G ConnectX-8",
           "count": 8,
           "connector_family": "OSFP",
-          "accepted_interface_types": ["OSFP-flattop"],
+          "accepted_interface_types": [
+            "OSFP-flattop"
+          ],
           "module_speed_gbps": 800,
-          "supported_module_speeds_gbps": [800],
-          "fabrics": ["IB", "ETH"],
-          "breakouts": [
-            {"links_per_port": 1, "link_speed_gbps": 800},
-            {"links_per_port": 2, "link_speed_gbps": 400}
+          "fabrics": [
+            "IB",
+            "ETH"
           ],
           "pluggable": true,
-          "confidence": "exact",
-          "notes": "DGX B300 server-side OSFP accepts flat-top modules only. ConnectX-8 can operate as 1 × 800G or split into 2 × 400GbE; validate firmware/cable support for the exact deployment."
+          "modes": [
+            {
+              "id": "1x800",
+              "links": 1,
+              "speed_gbps": 800
+            },
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400
+            }
+          ],
+          "scope_note": "DGX B300 server-side OSFP accepts flat-top modules only. ConnectX-8 can operate as 1 × 800G or split into 2 × 400GbE; validate firmware/cable support for the exact deployment.",
+          "source_url": "https://docs.nvidia.com/dgx/dgxb300-user-guide/introduction-to-dgxb300.html",
+          "accepted_connector_families": [
+            "OSFP"
+          ],
+          "conditions": [
+            "The selected breakout mode requires firmware and cable qualification for the exact ConnectX-8 SKU."
+          ]
         }
       ]
     },
@@ -91,39 +144,75 @@
           "label": "Compute network — 4 × flat-top OSFP 400G ConnectX-7",
           "count": 4,
           "connector_family": "OSFP",
-          "accepted_interface_types": ["OSFP-flattop"],
+          "accepted_interface_types": [
+            "OSFP-flattop"
+          ],
           "module_speed_gbps": 400,
-          "supported_module_speeds_gbps": [400],
-          "fabrics": ["IB"],
-          "breakouts": [{"links_per_port": 1, "link_speed_gbps": 400}],
+          "fabrics": [
+            "IB"
+          ],
           "pluggable": true,
-          "confidence": "exact"
+          "modes": [
+            {
+              "id": "1x400",
+              "links": 1,
+              "speed_gbps": 400
+            }
+          ],
+          "scope_note": null,
+          "source_url": "https://docs.nvidia.com/dgx/dgxgb200-user-guide/hardware.html",
+          "accepted_connector_families": [
+            "OSFP"
+          ]
         },
         {
           "id": "storage",
           "label": "Storage network — 2 × BlueField-3 QSFP112 400G",
           "count": 2,
           "connector_family": "QSFP112",
-          "accepted_interface_types": ["QSFP112"],
+          "accepted_interface_types": [],
           "module_speed_gbps": 400,
-          "supported_module_speeds_gbps": [400],
-          "fabrics": ["ETH", "IB"],
-          "breakouts": [{"links_per_port": 1, "link_speed_gbps": 400}],
+          "fabrics": [
+            "ETH",
+            "IB"
+          ],
           "pluggable": true,
-          "confidence": "exact"
+          "modes": [
+            {
+              "id": "1x400",
+              "links": 1,
+              "speed_gbps": 400
+            }
+          ],
+          "scope_note": null,
+          "source_url": "https://docs.nvidia.com/dgx/dgxgb200-user-guide/hardware.html",
+          "accepted_connector_families": [
+            "QSFP112"
+          ]
         },
         {
           "id": "dgxnet",
           "label": "DGX management network — 2 × BlueField-3 QSFP112 400G",
           "count": 2,
           "connector_family": "QSFP112",
-          "accepted_interface_types": ["QSFP112"],
+          "accepted_interface_types": [],
           "module_speed_gbps": 400,
-          "supported_module_speeds_gbps": [400],
-          "fabrics": ["ETH"],
-          "breakouts": [{"links_per_port": 1, "link_speed_gbps": 400}],
+          "fabrics": [
+            "ETH"
+          ],
           "pluggable": true,
-          "confidence": "exact"
+          "modes": [
+            {
+              "id": "1x400",
+              "links": 1,
+              "speed_gbps": 400
+            }
+          ],
+          "scope_note": null,
+          "source_url": "https://docs.nvidia.com/dgx/dgxgb200-user-guide/hardware.html",
+          "accepted_connector_families": [
+            "QSFP112"
+          ]
         }
       ]
     },
@@ -140,19 +229,3017 @@
           "label": "NDR fabric — 32 × twin-port finned OSFP (64 × 400G)",
           "count": 32,
           "connector_family": "OSFP",
-          "accepted_interface_types": ["OSFP-finned"],
+          "accepted_interface_types": [
+            "OSFP-finned"
+          ],
           "module_speed_gbps": 800,
-          "supported_module_speeds_gbps": [800],
-          "fabrics": ["IB"],
-          "breakouts": [
-            {"links_per_port": 2, "link_speed_gbps": 400},
-            {"links_per_port": 4, "link_speed_gbps": 200}
+          "fabrics": [
+            "IB"
           ],
           "pluggable": true,
-          "confidence": "exact",
-          "notes": "One physical cage carries two NDR 400G ports; NDR ports are individually splittable to 2 × 200G."
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400
+            },
+            {
+              "id": "4x200",
+              "links": 4,
+              "speed_gbps": 200
+            }
+          ],
+          "scope_note": "One physical cage carries two NDR 400G ports; NDR ports are individually splittable to 2 × 200G.",
+          "source_url": "https://networking-docs.nvidia.com/qm97x0hw/introduction",
+          "accepted_connector_families": [
+            "OSFP"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ethernet:SN6810-LD",
+      "kind": "Ethernet switch",
+      "model": "SN6810-LD",
+      "family": "Spectrum-6 SN6000",
+      "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+      "port_groups": [
+        {
+          "id": "ports-1",
+          "label": "128 × MMC-12",
+          "connector_family": "MMC-12",
+          "count": 128,
+          "module_speed_gbps": null,
+          "modes": [],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": false,
+          "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+          "accepted_connector_families": [],
+          "accepted_interface_types": [],
+          "conditions": []
+        }
+      ]
+    },
+    {
+      "id": "ethernet:SN6800-LD",
+      "kind": "Ethernet switch",
+      "model": "SN6800-LD",
+      "family": "Spectrum-6 SN6000",
+      "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+      "port_groups": [
+        {
+          "id": "ports-1",
+          "label": "512 × MMC-12",
+          "connector_family": "MMC-12",
+          "count": 512,
+          "module_speed_gbps": null,
+          "modes": [],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": false,
+          "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+          "accepted_connector_families": [],
+          "accepted_interface_types": [],
+          "conditions": []
+        }
+      ]
+    },
+    {
+      "id": "ethernet:SN6600-LD",
+      "kind": "Ethernet switch",
+      "model": "SN6600-LD",
+      "family": "Spectrum-6 SN6000",
+      "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+      "port_groups": [
+        {
+          "id": "ports-1",
+          "label": "64 × OSFP",
+          "connector_family": "OSFP",
+          "count": 64,
+          "module_speed_gbps": 1600,
+          "modes": [
+            {
+              "id": "2x800",
+              "links": 2,
+              "speed_gbps": 800
+            },
+            {
+              "id": "4x400",
+              "links": 4,
+              "speed_gbps": 400
+            },
+            {
+              "id": "8x200",
+              "links": 8,
+              "speed_gbps": 200
+            }
+          ],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": true,
+          "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+          "accepted_connector_families": [
+            "OSFP"
+          ],
+          "accepted_interface_types": [],
+          "conditions": [],
+          "scope_note": "OSFP mechanical variant is not documented in this catalog entry."
+        }
+      ]
+    },
+    {
+      "id": "ethernet:SN6600",
+      "kind": "Ethernet switch",
+      "model": "SN6600",
+      "family": "Spectrum-6 SN6000",
+      "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+      "port_groups": [
+        {
+          "id": "ports-1",
+          "label": "64 × OSFP",
+          "connector_family": "OSFP",
+          "count": 64,
+          "module_speed_gbps": 1600,
+          "modes": [
+            {
+              "id": "2x800",
+              "links": 2,
+              "speed_gbps": 800
+            },
+            {
+              "id": "4x400",
+              "links": 4,
+              "speed_gbps": 400
+            },
+            {
+              "id": "8x200",
+              "links": 8,
+              "speed_gbps": 200
+            }
+          ],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": true,
+          "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+          "accepted_connector_families": [
+            "OSFP"
+          ],
+          "accepted_interface_types": [],
+          "conditions": [],
+          "scope_note": "OSFP mechanical variant is not documented in this catalog entry."
+        }
+      ]
+    },
+    {
+      "id": "ethernet:SN6200-LD",
+      "kind": "Ethernet switch",
+      "model": "SN6200-LD",
+      "family": "Spectrum-6 SN6000",
+      "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+      "port_groups": [
+        {
+          "id": "ports-1",
+          "label": "32 × OSFP",
+          "connector_family": "OSFP",
+          "count": 32,
+          "module_speed_gbps": 1600,
+          "modes": [
+            {
+              "id": "2x800",
+              "links": 2,
+              "speed_gbps": 800
+            }
+          ],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": true,
+          "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+          "accepted_connector_families": [
+            "OSFP"
+          ],
+          "accepted_interface_types": [],
+          "conditions": [
+            "Front-panel modes beyond 2×800G require a port-specific reference; backplane counts are excluded."
+          ],
+          "scope_note": "OSFP mechanical variant is not documented in this catalog entry."
+        }
+      ]
+    },
+    {
+      "id": "ethernet:SN5610",
+      "kind": "Ethernet switch",
+      "model": "SN5610",
+      "family": "Spectrum-4 SN5000",
+      "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+      "port_groups": [
+        {
+          "id": "ports-1",
+          "label": "64 × OSFP",
+          "connector_family": "OSFP",
+          "count": 64,
+          "module_speed_gbps": 800,
+          "modes": [
+            {
+              "id": "1x800",
+              "links": 1,
+              "speed_gbps": 800
+            },
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400
+            },
+            {
+              "id": "4x200",
+              "links": 4,
+              "speed_gbps": 200
+            },
+            {
+              "id": "4x100",
+              "links": 4,
+              "speed_gbps": 100
+            }
+          ],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": true,
+          "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+          "accepted_connector_families": [
+            "OSFP"
+          ],
+          "accepted_interface_types": [
+            "OSFP-finned"
+          ],
+          "conditions": []
+        },
+        {
+          "id": "ports-2",
+          "label": "2 × SFP28",
+          "connector_family": "SFP28",
+          "count": 2,
+          "module_speed_gbps": 25,
+          "modes": [
+            {
+              "id": "1x25",
+              "links": 1,
+              "speed_gbps": 25
+            }
+          ],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": true,
+          "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+          "accepted_connector_families": [
+            "SFP28"
+          ],
+          "accepted_interface_types": [],
+          "conditions": []
+        }
+      ]
+    },
+    {
+      "id": "ethernet:SN5600",
+      "kind": "Ethernet switch",
+      "model": "SN5600",
+      "family": "Spectrum-4 SN5000",
+      "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+      "port_groups": [
+        {
+          "id": "ports-1",
+          "label": "64 × OSFP",
+          "connector_family": "OSFP",
+          "count": 64,
+          "module_speed_gbps": 800,
+          "modes": [
+            {
+              "id": "1x800",
+              "links": 1,
+              "speed_gbps": 800
+            },
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400
+            },
+            {
+              "id": "4x200",
+              "links": 4,
+              "speed_gbps": 200
+            },
+            {
+              "id": "4x100",
+              "links": 4,
+              "speed_gbps": 100
+            }
+          ],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": true,
+          "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+          "accepted_connector_families": [
+            "OSFP"
+          ],
+          "accepted_interface_types": [
+            "OSFP-finned"
+          ],
+          "conditions": []
+        },
+        {
+          "id": "ports-2",
+          "label": "1 × SFP28",
+          "connector_family": "SFP28",
+          "count": 1,
+          "module_speed_gbps": 25,
+          "modes": [
+            {
+              "id": "1x25",
+              "links": 1,
+              "speed_gbps": 25
+            }
+          ],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": true,
+          "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+          "accepted_connector_families": [
+            "SFP28"
+          ],
+          "accepted_interface_types": [],
+          "conditions": []
+        }
+      ]
+    },
+    {
+      "id": "ethernet:SN5600D",
+      "kind": "Ethernet switch",
+      "model": "SN5600D",
+      "family": "Spectrum-4 SN5000",
+      "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+      "port_groups": [
+        {
+          "id": "ports-1",
+          "label": "64 × OSFP",
+          "connector_family": "OSFP",
+          "count": 64,
+          "module_speed_gbps": 800,
+          "modes": [
+            {
+              "id": "1x800",
+              "links": 1,
+              "speed_gbps": 800
+            },
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400
+            },
+            {
+              "id": "4x200",
+              "links": 4,
+              "speed_gbps": 200
+            },
+            {
+              "id": "4x100",
+              "links": 4,
+              "speed_gbps": 100
+            }
+          ],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": true,
+          "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+          "accepted_connector_families": [
+            "OSFP"
+          ],
+          "accepted_interface_types": [
+            "OSFP-finned"
+          ],
+          "conditions": []
+        },
+        {
+          "id": "ports-2",
+          "label": "1 × SFP28",
+          "connector_family": "SFP28",
+          "count": 1,
+          "module_speed_gbps": 25,
+          "modes": [
+            {
+              "id": "1x25",
+              "links": 1,
+              "speed_gbps": 25
+            }
+          ],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": true,
+          "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+          "accepted_connector_families": [
+            "SFP28"
+          ],
+          "accepted_interface_types": [],
+          "conditions": []
+        }
+      ]
+    },
+    {
+      "id": "ethernet:SN5400",
+      "kind": "Ethernet switch",
+      "model": "SN5400",
+      "family": "Spectrum-4 SN5000",
+      "source_url": "https://docs.nvidia.com/networking/display/nvidia-spectrum-4-sn5000-2u-switch-systems-hardware-user-manual.pdf",
+      "port_groups": [
+        {
+          "id": "ports-1",
+          "label": "64 × QSFP-DD",
+          "connector_family": "QSFP-DD",
+          "count": 64,
+          "module_speed_gbps": 400,
+          "modes": [
+            {
+              "id": "1x400",
+              "links": 1,
+              "speed_gbps": 400
+            },
+            {
+              "id": "2x200",
+              "links": 2,
+              "speed_gbps": 200
+            },
+            {
+              "id": "4x100",
+              "links": 4,
+              "speed_gbps": 100
+            }
+          ],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": true,
+          "source_url": "https://docs.nvidia.com/networking/display/nvidia-spectrum-4-sn5000-2u-switch-systems-hardware-user-manual.pdf",
+          "accepted_connector_families": [
+            "QSFP-DD",
+            "QSFP56",
+            "QSFP28"
+          ],
+          "accepted_interface_types": [],
+          "conditions": []
+        },
+        {
+          "id": "ports-2",
+          "label": "2 × SFP28",
+          "connector_family": "SFP28",
+          "count": 2,
+          "module_speed_gbps": 25,
+          "modes": [
+            {
+              "id": "1x25",
+              "links": 1,
+              "speed_gbps": 25
+            }
+          ],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": true,
+          "source_url": "https://docs.nvidia.com/networking/display/nvidia-spectrum-4-sn5000-2u-switch-systems-hardware-user-manual.pdf",
+          "accepted_connector_families": [
+            "SFP28"
+          ],
+          "accepted_interface_types": [],
+          "conditions": []
+        }
+      ]
+    },
+    {
+      "id": "ethernet:SN4600C",
+      "kind": "Ethernet switch",
+      "model": "SN4600C",
+      "family": "Spectrum-3 SN4000",
+      "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+      "port_groups": [
+        {
+          "id": "ports-1",
+          "label": "64 × QSFP28",
+          "connector_family": "QSFP28",
+          "count": 64,
+          "module_speed_gbps": 100,
+          "modes": [
+            {
+              "id": "1x100",
+              "links": 1,
+              "speed_gbps": 100
+            },
+            {
+              "id": "2x50",
+              "links": 2,
+              "speed_gbps": 50
+            },
+            {
+              "id": "1x40",
+              "links": 1,
+              "speed_gbps": 40
+            },
+            {
+              "id": "2x25",
+              "links": 2,
+              "speed_gbps": 25
+            }
+          ],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": true,
+          "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+          "accepted_connector_families": [
+            "QSFP28"
+          ],
+          "accepted_interface_types": [],
+          "conditions": []
+        }
+      ]
+    },
+    {
+      "id": "ethernet:SN4700",
+      "kind": "Ethernet switch",
+      "model": "SN4700",
+      "family": "Spectrum-3 SN4000",
+      "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+      "port_groups": [
+        {
+          "id": "ports-1",
+          "label": "32 × QSFP-DD",
+          "connector_family": "QSFP-DD",
+          "count": 32,
+          "module_speed_gbps": 400,
+          "modes": [
+            {
+              "id": "1x400",
+              "links": 1,
+              "speed_gbps": 400
+            },
+            {
+              "id": "2x200",
+              "links": 2,
+              "speed_gbps": 200
+            },
+            {
+              "id": "4x100",
+              "links": 4,
+              "speed_gbps": 100
+            },
+            {
+              "id": "4x50",
+              "links": 4,
+              "speed_gbps": 50
+            },
+            {
+              "id": "2x40",
+              "links": 2,
+              "speed_gbps": 40
+            },
+            {
+              "id": "4x25",
+              "links": 4,
+              "speed_gbps": 25
+            }
+          ],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": true,
+          "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+          "accepted_connector_families": [
+            "QSFP-DD",
+            "QSFP56",
+            "QSFP28"
+          ],
+          "accepted_interface_types": [],
+          "conditions": []
+        }
+      ]
+    },
+    {
+      "id": "ethernet:SN3420",
+      "kind": "Ethernet switch",
+      "model": "SN3420",
+      "family": "Spectrum-2 SN3000",
+      "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+      "port_groups": [
+        {
+          "id": "ports-1",
+          "label": "12 × QSFP28",
+          "connector_family": "QSFP28",
+          "count": 12,
+          "module_speed_gbps": 100,
+          "modes": [
+            {
+              "id": "1x100",
+              "links": 1,
+              "speed_gbps": 100
+            },
+            {
+              "id": "1x40",
+              "links": 1,
+              "speed_gbps": 40
+            }
+          ],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": true,
+          "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+          "accepted_connector_families": [
+            "QSFP28"
+          ],
+          "accepted_interface_types": [],
+          "conditions": [
+            "25G breakout mapping is not asserted: the catalog count includes separate SFP28 ports."
+          ]
+        },
+        {
+          "id": "ports-2",
+          "label": "48 × SFP28",
+          "connector_family": "SFP28",
+          "count": 48,
+          "module_speed_gbps": 25,
+          "modes": [
+            {
+              "id": "1x25",
+              "links": 1,
+              "speed_gbps": 25
+            }
+          ],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": true,
+          "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+          "accepted_connector_families": [
+            "SFP28"
+          ],
+          "accepted_interface_types": [],
+          "conditions": []
+        }
+      ]
+    },
+    {
+      "id": "ethernet:SN2201",
+      "kind": "Ethernet switch",
+      "model": "SN2201",
+      "family": "Spectrum SN2000",
+      "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+      "port_groups": [
+        {
+          "id": "ports-1",
+          "label": "48 × RJ45",
+          "connector_family": "RJ45",
+          "count": 48,
+          "module_speed_gbps": 1,
+          "modes": [],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": false,
+          "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+          "accepted_connector_families": [],
+          "accepted_interface_types": [],
+          "conditions": []
+        },
+        {
+          "id": "ports-2",
+          "label": "4 × QSFP28",
+          "connector_family": "QSFP28",
+          "count": 4,
+          "module_speed_gbps": 100,
+          "modes": [
+            {
+              "id": "1x100",
+              "links": 1,
+              "speed_gbps": 100
+            },
+            {
+              "id": "2x50",
+              "links": 2,
+              "speed_gbps": 50
+            },
+            {
+              "id": "1x40",
+              "links": 1,
+              "speed_gbps": 40
+            },
+            {
+              "id": "4x25",
+              "links": 4,
+              "speed_gbps": 25
+            }
+          ],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": true,
+          "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
+          "accepted_connector_families": [
+            "QSFP28"
+          ],
+          "accepted_interface_types": [],
+          "conditions": []
+        }
+      ]
+    },
+    {
+      "id": "infiniband:Q3200-RA",
+      "kind": "InfiniBand switch / appliance",
+      "model": "Q3200-RA",
+      "family": "Quantum-X800",
+      "source_url": "https://networking-docs.nvidia.com/xdrswitcheshw/introduction",
+      "port_groups": [
+        {
+          "id": "ports-1",
+          "label": "36 × twin-port OSFP",
+          "connector_family": "OSFP",
+          "count": 36,
+          "module_speed_gbps": 1600,
+          "modes": [
+            {
+              "id": "2x800",
+              "links": 2,
+              "speed_gbps": 800
+            }
+          ],
+          "fabrics": [
+            "IB"
+          ],
+          "pluggable": true,
+          "source_url": "https://networking-docs.nvidia.com/xdrswitcheshw/introduction",
+          "accepted_connector_families": [
+            "OSFP"
+          ],
+          "accepted_interface_types": [
+            "OSFP-finned"
+          ],
+          "conditions": []
+        }
+      ]
+    },
+    {
+      "id": "infiniband:Q3400-RA",
+      "kind": "InfiniBand switch / appliance",
+      "model": "Q3400-RA",
+      "family": "Quantum-X800",
+      "source_url": "https://networking-docs.nvidia.com/xdrswitcheshw/introduction",
+      "port_groups": [
+        {
+          "id": "ports-1",
+          "label": "72 × twin-port OSFP",
+          "connector_family": "OSFP",
+          "count": 72,
+          "module_speed_gbps": 1600,
+          "modes": [
+            {
+              "id": "2x800",
+              "links": 2,
+              "speed_gbps": 800
+            }
+          ],
+          "fabrics": [
+            "IB"
+          ],
+          "pluggable": true,
+          "source_url": "https://networking-docs.nvidia.com/xdrswitcheshw/introduction",
+          "accepted_connector_families": [
+            "OSFP"
+          ],
+          "accepted_interface_types": [
+            "OSFP-finned"
+          ],
+          "conditions": []
+        }
+      ]
+    },
+    {
+      "id": "infiniband:Q3401-RD",
+      "kind": "InfiniBand switch / appliance",
+      "model": "Q3401-RD",
+      "family": "Quantum-X800",
+      "source_url": "https://networking-docs.nvidia.com/xdrswitcheshw/introduction",
+      "port_groups": [
+        {
+          "id": "ports-1",
+          "label": "72 × twin-port OSFP",
+          "connector_family": "OSFP",
+          "count": 72,
+          "module_speed_gbps": 1600,
+          "modes": [
+            {
+              "id": "2x800",
+              "links": 2,
+              "speed_gbps": 800
+            }
+          ],
+          "fabrics": [
+            "IB"
+          ],
+          "pluggable": true,
+          "source_url": "https://networking-docs.nvidia.com/xdrswitcheshw/introduction",
+          "accepted_connector_families": [
+            "OSFP"
+          ],
+          "accepted_interface_types": [
+            "OSFP-finned"
+          ],
+          "conditions": []
+        }
+      ]
+    },
+    {
+      "id": "infiniband:Q3450-LD",
+      "kind": "InfiniBand switch / appliance",
+      "model": "Q3450-LD",
+      "family": "Quantum-X Photonics / Quantum-X800",
+      "source_url": "https://networking-docs.nvidia.com/xdrswitcheshw/introduction",
+      "port_groups": [
+        {
+          "id": "cpo",
+          "label": "144 × fixed CPO",
+          "connector_family": "MPO-12",
+          "count": 144,
+          "module_speed_gbps": null,
+          "modes": [],
+          "fabrics": [
+            "IB"
+          ],
+          "pluggable": false,
+          "source_url": "https://networking-docs.nvidia.com/xdrswitcheshw/introduction",
+          "accepted_connector_families": [],
+          "accepted_interface_types": [],
+          "conditions": []
+        }
+      ]
+    },
+    {
+      "id": "infiniband:QM9700 family",
+      "kind": "InfiniBand switch / appliance",
+      "model": "QM9700 family",
+      "family": "Quantum-2 QM9700",
+      "source_url": "https://networking-docs.nvidia.com/qm97x0hw/introduction",
+      "notes": "Managed P2C QM9700 variant. 32 physical OSFP cages expose 64 NDR 400G ports; each cage contains two NDR ports. NVIDIA states the air-cooled cages accept finned OSFP connectors.",
+      "port_groups": [
+        {
+          "id": "ndr",
+          "label": "NDR fabric — 32 × twin-port finned OSFP (64 × 400G)",
+          "count": 32,
+          "connector_family": "OSFP",
+          "accepted_interface_types": [
+            "OSFP-finned"
+          ],
+          "module_speed_gbps": 800,
+          "fabrics": [
+            "IB"
+          ],
+          "pluggable": true,
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400
+            },
+            {
+              "id": "4x200",
+              "links": 4,
+              "speed_gbps": 200
+            }
+          ],
+          "scope_note": "QM9700 reference layout; choose MQM9700-NS2F for the exact SKU.",
+          "source_url": "https://networking-docs.nvidia.com/qm97x0hw/introduction",
+          "accepted_connector_families": [
+            "OSFP"
+          ],
+          "conditions": [
+            "Confirm the exact QM9700 SKU against the reference layout."
+          ]
+        }
+      ],
+      "sku": null
+    },
+    {
+      "id": "infiniband:Skyway",
+      "kind": "InfiniBand switch / appliance",
+      "model": "Skyway",
+      "family": "InfiniBand-to-Ethernet Gateway",
+      "source_url": "https://www.nvidia.com/en-au/networking/infiniband/skyway/",
+      "port_groups": [
+        {
+          "id": "ib",
+          "label": "ib — QSFP56",
+          "connector_family": "QSFP56",
+          "count": null,
+          "module_speed_gbps": null,
+          "modes": [],
+          "fabrics": [
+            "IB"
+          ],
+          "pluggable": true,
+          "source_url": "https://www.nvidia.com/en-au/networking/infiniband/skyway/",
+          "accepted_connector_families": [
+            "QSFP56"
+          ],
+          "accepted_interface_types": [],
+          "conditions": []
+        },
+        {
+          "id": "eth",
+          "label": "eth — QSFP56",
+          "connector_family": "QSFP56",
+          "count": null,
+          "module_speed_gbps": null,
+          "modes": [],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": true,
+          "source_url": "https://www.nvidia.com/en-au/networking/infiniband/skyway/",
+          "accepted_connector_families": [
+            "QSFP56"
+          ],
+          "accepted_interface_types": [],
+          "conditions": []
+        }
+      ]
+    },
+    {
+      "id": "infiniband:MetroX-3 XC",
+      "kind": "InfiniBand switch / appliance",
+      "model": "MetroX-3 XC",
+      "family": "Long-haul InfiniBand",
+      "source_url": "https://networking-docs.nvidia.com/metrox3xc",
+      "port_groups": [
+        {
+          "id": "ib",
+          "label": "IB-facing OSFP",
+          "connector_family": "OSFP",
+          "count": null,
+          "module_speed_gbps": null,
+          "modes": [],
+          "fabrics": [
+            "IB"
+          ],
+          "pluggable": true,
+          "source_url": "https://networking-docs.nvidia.com/metrox3xc",
+          "accepted_connector_families": [
+            "OSFP"
+          ],
+          "accepted_interface_types": [],
+          "conditions": []
+        },
+        {
+          "id": "long-haul",
+          "label": "Long-haul QSFP112",
+          "connector_family": "QSFP112",
+          "count": 2,
+          "module_speed_gbps": null,
+          "modes": [],
+          "fabrics": [],
+          "pluggable": true,
+          "source_url": "https://networking-docs.nvidia.com/metrox3xc",
+          "accepted_connector_families": [
+            "QSFP112"
+          ],
+          "accepted_interface_types": [],
+          "conditions": []
+        }
+      ]
+    },
+    {
+      "id": "dpu:BlueField-4 DPU",
+      "kind": "DPU",
+      "model": "BlueField-4 DPU",
+      "family": "dpu",
+      "source_url": "https://www.nvidia.com/en-eu/data-center/dgx-rubin-nvl8/",
+      "notes": "publicly documented DGX Rubin NVL8 configuration; family may expose additional SKUs",
+      "port_groups": [
+        {
+          "id": "catalog-1",
+          "label": "QSFP112",
+          "connector_family": "QSFP112",
+          "count": null,
+          "module_speed_gbps": null,
+          "modes": [],
+          "fabrics": [],
+          "pluggable": true,
+          "source_url": "https://www.nvidia.com/en-eu/data-center/dgx-rubin-nvl8/",
+          "accepted_connector_families": [
+            "QSFP112"
+          ],
+          "accepted_interface_types": [],
+          "conditions": [],
+          "scope_note": "Select a documented board SKU and port mode; aggregate adapter bandwidth is not a per-cage limit."
+        }
+      ]
+    },
+    {
+      "id": "dpu:BlueField-4 STX Storage Processor",
+      "kind": "DPU",
+      "model": "BlueField-4 STX Storage Processor",
+      "family": "dpu",
+      "source_url": "https://www.nvidia.com/en-us/networking/products/data-processing-unit/",
+      "notes": "public portfolio confirms ConnectX-9 networking but accessible public source does not expose external cage type",
+      "port_groups": []
+    },
+    {
+      "id": "dpu:BlueField-3 DPU",
+      "kind": "DPU",
+      "model": "BlueField-3 DPU",
+      "family": "dpu",
+      "source_url": "https://networking-docs.nvidia.com/bf3dpu/supported-interfaces",
+      "notes": null,
+      "port_groups": [
+        {
+          "id": "catalog-1",
+          "label": "QSFP112 / QSFP56 / QSFP28",
+          "connector_family": "QSFP112",
+          "count": null,
+          "module_speed_gbps": null,
+          "modes": [],
+          "fabrics": [],
+          "pluggable": true,
+          "source_url": "https://networking-docs.nvidia.com/bf3dpu/supported-interfaces",
+          "accepted_connector_families": [
+            "QSFP112",
+            "QSFP56",
+            "QSFP28"
+          ],
+          "accepted_interface_types": [],
+          "conditions": [],
+          "scope_note": "Select a documented board SKU and port mode; aggregate adapter bandwidth is not a per-cage limit."
+        }
+      ]
+    },
+    {
+      "id": "supernic:ConnectX-9 SuperNIC",
+      "kind": "SuperNIC / adapter",
+      "model": "ConnectX-9 SuperNIC",
+      "family": "supernic",
+      "source_url": "https://networking-docs.nvidia.com/connectx9hw/specifications",
+      "notes": null,
+      "port_groups": [
+        {
+          "id": "catalog-1",
+          "label": "OSFP (RHS cage)",
+          "connector_family": "OSFP",
+          "count": null,
+          "module_speed_gbps": null,
+          "modes": [],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": true,
+          "source_url": "https://networking-docs.nvidia.com/connectx9hw/specifications",
+          "accepted_connector_families": [
+            "OSFP"
+          ],
+          "accepted_interface_types": [
+            "OSFP-flattop"
+          ],
+          "conditions": [],
+          "scope_note": "Select a documented board SKU and port mode; aggregate adapter bandwidth is not a per-cage limit."
+        },
+        {
+          "id": "catalog-2",
+          "label": "QSFP112",
+          "connector_family": "QSFP112",
+          "count": null,
+          "module_speed_gbps": null,
+          "modes": [],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": true,
+          "source_url": "https://networking-docs.nvidia.com/connectx9hw/specifications",
+          "accepted_connector_families": [
+            "QSFP112"
+          ],
+          "accepted_interface_types": [],
+          "conditions": [],
+          "scope_note": "Select a documented board SKU and port mode; aggregate adapter bandwidth is not a per-cage limit."
+        }
+      ]
+    },
+    {
+      "id": "supernic:ConnectX-8 SuperNIC",
+      "kind": "SuperNIC / adapter",
+      "model": "ConnectX-8 SuperNIC",
+      "family": "supernic",
+      "source_url": "https://networking-docs.nvidia.com/connectx8hw/specifications",
+      "notes": null,
+      "port_groups": [
+        {
+          "id": "catalog-1",
+          "label": "OSFP (RHS cage)",
+          "connector_family": "OSFP",
+          "count": null,
+          "module_speed_gbps": null,
+          "modes": [],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": true,
+          "source_url": "https://networking-docs.nvidia.com/connectx8hw/specifications",
+          "accepted_connector_families": [
+            "OSFP"
+          ],
+          "accepted_interface_types": [
+            "OSFP-flattop"
+          ],
+          "conditions": [],
+          "scope_note": "Select a documented board SKU and port mode; aggregate adapter bandwidth is not a per-cage limit."
+        },
+        {
+          "id": "catalog-2",
+          "label": "QSFP112",
+          "connector_family": "QSFP112",
+          "count": null,
+          "module_speed_gbps": null,
+          "modes": [],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": true,
+          "source_url": "https://networking-docs.nvidia.com/connectx8hw/specifications",
+          "accepted_connector_families": [
+            "QSFP112"
+          ],
+          "accepted_interface_types": [],
+          "conditions": [],
+          "scope_note": "Select a documented board SKU and port mode; aggregate adapter bandwidth is not a per-cage limit."
+        }
+      ]
+    },
+    {
+      "id": "supernic:BlueField-3 SuperNIC",
+      "kind": "SuperNIC / adapter",
+      "model": "BlueField-3 SuperNIC",
+      "family": "supernic",
+      "source_url": "https://docs.nvidia.com/networking/display/nvidia-bluefield-3-networking-platform-user-guide.pdf",
+      "notes": null,
+      "port_groups": [
+        {
+          "id": "catalog-1",
+          "label": "QSFP112 / QSFP56 / QSFP28",
+          "connector_family": "QSFP112",
+          "count": null,
+          "module_speed_gbps": null,
+          "modes": [],
+          "fabrics": [
+            "ETH"
+          ],
+          "pluggable": true,
+          "source_url": "https://docs.nvidia.com/networking/display/nvidia-bluefield-3-networking-platform-user-guide.pdf",
+          "accepted_connector_families": [
+            "QSFP112",
+            "QSFP56",
+            "QSFP28"
+          ],
+          "accepted_interface_types": [],
+          "conditions": [],
+          "scope_note": "Select a documented board SKU and port mode; aggregate adapter bandwidth is not a per-cage limit."
         }
       ]
     }
-  ]
+  ],
+  "interconnect_details": {
+    "Transceiver|MMS4B10-XM|RHS/TRO": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "2x800",
+              "links": 2,
+              "speed_gbps": 800
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9IAJ0-00XM00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mms4b10xmtro1600g"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/mms4b10xmtro1600g",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC"
+      }
+    },
+    "Transceiver|MMS4C10|RHS/FRO Gen2 (XDR)": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "2x800",
+              "links": 2,
+              "speed_gbps": 800
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9IAU0-00XM00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/9iau000xmosfptcvr1600"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/9iau000xmosfptcvr1600",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC"
+      }
+    },
+    "Transceiver|MMS4C10|IHS/FRO Gen2 (XDR)": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-finned",
+          "modes": [
+            {
+              "id": "2x800",
+              "links": 2,
+              "speed_gbps": 800
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9IAU0-00XM01",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/9iau000xmosfptcvr1600"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/9iau000xmosfptcvr1600",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC"
+      }
+    },
+    "Transceiver|MMS4C11|RHS/FRO Gen2 (Ethernet)": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "2x800",
+              "links": 2,
+              "speed_gbps": 800
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9IAU1-00XM00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/9iau000xmosfptcvr1600"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/9iau000xmosfptcvr1600",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC"
+      }
+    },
+    "Transceiver|MMS4C11|IHS/FRO Gen2 (Ethernet)": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-finned",
+          "modes": [
+            {
+              "id": "2x800",
+              "links": 2,
+              "speed_gbps": 800
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9IAU1-00XM01",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/9iau000xmosfptcvr1600"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/9iau000xmosfptcvr1600",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC"
+      }
+    },
+    "Transceiver|MMS4A00|IHS": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-finned",
+          "modes": [
+            {
+              "id": "2x800",
+              "links": 2,
+              "speed_gbps": 800
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9IAH1-00XM00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/9iahx00xmosfptcvr1600"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/9iahx00xmosfptcvr1600",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC"
+      }
+    },
+    "Transceiver|MMS4A00|RHS": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "2x800",
+              "links": 2,
+              "speed_gbps": 800
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9IAH0-00XM00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/9iahx00xmosfptcvr1600"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/9iahx00xmosfptcvr1600",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC"
+      }
+    },
+    "Transceiver|MMA1Z00-NS400|-": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "QSFP112",
+          "interface_type": "QSFP112",
+          "modes": [
+            {
+              "id": "1x400",
+              "links": 1,
+              "speed_gbps": 400
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I693-00NS00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mms1z00ns400sr4"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/mms1z00ns400sr4",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC"
+      }
+    },
+    "Transceiver|MMS1V00-WM|-": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "QSFP-DD",
+          "interface_type": "QSFP-DD",
+          "modes": [
+            {
+              "id": "1x400",
+              "links": 1,
+              "speed_gbps": 400
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I16Y-00W000",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mms1v00wm10"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/mms1v00wm10",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC"
+      }
+    },
+    "Transceiver|MMS4X00-NS400|-": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "1x400",
+              "links": 1,
+              "speed_gbps": 400
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I31N-00NM00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mms4x00ns400"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/mms4x00ns400",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC"
+      }
+    },
+    "Transceiver|MMA4Z00-NS400|-": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "1x400",
+              "links": 1,
+              "speed_gbps": 400
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I51S-00NS00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mma4z00ns400"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/mma4z00ns400",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC"
+      }
+    },
+    "Transceiver|MMA4Z00-NS400-T|-": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "1x400",
+              "links": 1,
+              "speed_gbps": 400
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I51S-F4NS00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mma4z00ns400t"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/mma4z00ns400t",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC"
+      }
+    },
+    "Transceiver|MMA1Z00-NS400-T|-": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "QSFP112",
+          "interface_type": "QSFP112",
+          "modes": [
+            {
+              "id": "1x400",
+              "links": 1,
+              "speed_gbps": 400
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I693-F4NS00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mma1z00ns400t"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/mma1z00ns400t",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC"
+      }
+    },
+    "Transceiver|MMS1X00-NS400|-": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "QSFP112",
+          "interface_type": "QSFP112",
+          "modes": [
+            {
+              "id": "1x400",
+              "links": 1,
+              "speed_gbps": 400,
+              "electrical_lanes": 4,
+              "lane_rate_gbps": 100.0
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I068-00NM00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mms1x00ns400"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/mms1x00ns400",
+      "conditions": [
+        "Catalog reach differs between the specification (500m) and ordering description (100m); resolve with the manufacturer before deployment."
+      ],
+      "optics": {
+        "connector": "MPO-12/APC",
+        "standard": "DR4",
+        "lanes": 4,
+        "lane_rate_gbps": 100.0,
+        "wavelengths_nm": [
+          1310.0
+        ]
+      }
+    },
+    "Transceiver|MMS1V70-CM|-": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "QSFP28",
+          "interface_type": "QSFP28",
+          "modes": [
+            {
+              "id": "1x100",
+              "links": 1,
+              "speed_gbps": 100,
+              "electrical_lanes": 4,
+              "lane_rate_gbps": 25.0
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I042-00C000",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mms1v70cm10"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/mms1v70cm10",
+      "conditions": [],
+      "optics": {
+        "connector": "LC duplex",
+        "standard": "DR1",
+        "lanes": 1,
+        "lane_rate_gbps": 100.0,
+        "wavelengths_nm": [
+          1310.0
+        ]
+      }
+    },
+    "Transceiver|MMA1B00-C100D|-": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "QSFP28",
+          "interface_type": "QSFP28",
+          "modes": [
+            {
+              "id": "1x100",
+              "links": 1,
+              "speed_gbps": 100
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I149-00CS00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mma1b00c100dspec"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/mma1b00c100dspec",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/UPC"
+      }
+    },
+    "Transceiver|MMS4C10-XM800|RHS/FRO Gen2": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "1x800",
+              "links": 1,
+              "speed_gbps": 800
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9IAY0-00XM00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mms4c1x800"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/mms4c1x800",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC"
+      }
+    },
+    "Transceiver|MMS4X00-NM-T|-": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-finned",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I30G-F4NM00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mms4x00nmt800g"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/mms4x00nmt800g",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC"
+      }
+    },
+    "Transceiver|MMS4X00-NM|finned": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-finned",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400,
+              "electrical_lanes": 8,
+              "lane_rate_gbps": 100.0
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I30G-00NM00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mms4x00nm800g500m"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/mms4x00nm800g500m",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC",
+        "standard": "DR4",
+        "lanes": 4,
+        "lane_rate_gbps": 100.0,
+        "wavelengths_nm": [
+          1310.0
+        ]
+      }
+    },
+    "Transceiver|MMS4X00-NM-FLT|flat-top": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400,
+              "electrical_lanes": 8,
+              "lane_rate_gbps": 100.0
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I301-00NM00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mms4x00nm800g500m"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/mms4x00nm800g500m",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC",
+        "standard": "DR4",
+        "lanes": 4,
+        "lane_rate_gbps": 100.0,
+        "wavelengths_nm": [
+          1310.0
+        ]
+      }
+    },
+    "Transceiver|MMS4X50-NM|-": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-finned",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I30L-00N000",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mms4x50nm800g2kmpub"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/mms4x50nm800g2kmpub",
+      "conditions": [],
+      "optics": {
+        "connector": "Duplex LC"
+      }
+    },
+    "Transceiver|MMS4X00-NS|finned": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-finned",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I30H-00NM00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/800gmms4x00ns"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/800gmms4x00ns",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC"
+      }
+    },
+    "Transceiver|MMS4X00-NS-FLT|flat-top": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I30I-00NM00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/800gmms4x00ns"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/800gmms4x00ns",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC"
+      }
+    },
+    "Transceiver|MMA4Z00-NS-T|-": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-finned",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I510-F4NS00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/800gmma4z00nst"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/800gmma4z00nst",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC"
+      }
+    },
+    "Transceiver|MMS4X00-NS-T|-": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-finned",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I30H-F4NM00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/800gmms4x00nst"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/800gmms4x00nst",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC"
+      }
+    },
+    "Transceiver|MMS4A20|RHS": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "1x800",
+              "links": 1,
+              "speed_gbps": 800
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9IAT0-00XM00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/9iat0mosfp800sprhs"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/9iat0mosfp800sprhs",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC"
+      }
+    },
+    "Transceiver|MMS4X00-NM16|-": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-finned",
+          "modes": [
+            {
+              "id": "1x800",
+              "links": 1,
+              "speed_gbps": 800
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I30J-F4NM00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mms4x00nm16"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/mms4x00nm16",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-16/APC"
+      }
+    },
+    "Transceiver|MMS4X00-NM-HGX|HGX Rubin NVL8": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I302-00NM00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mms4x00nmhgx500"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/mms4x00nmhgx500",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC"
+      }
+    },
+    "Transceiver|MMS4X90-NR|-": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-finned",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400
+            }
+          ]
+        }
+      ],
+      "skus": [],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/mms4x90nr800g",
+      "conditions": [],
+      "optics": {
+        "connector": "Duplex LC"
+      }
+    },
+    "Transceiver|MMS1W50-HM|-": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "QSFP56",
+          "interface_type": "QSFP56",
+          "modes": [
+            {
+              "id": "1x200",
+              "links": 1,
+              "speed_gbps": 200
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "MMS1W50-HM",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mms1w50hmspec"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/mms1w50hmspec",
+      "conditions": [],
+      "optics": {
+        "connector": "Duplex LC/UPC"
+      }
+    },
+    "Transceiver|MMA2P00-AS|-": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "SFP28",
+          "interface_type": "SFP28",
+          "modes": [
+            {
+              "id": "1x25",
+              "links": 1,
+              "speed_gbps": 25
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "MMA2P00-AS",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mma2p00asspec"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/mma2p00asspec",
+      "conditions": [],
+      "optics": {
+        "connector": "Duplex LC/UPC"
+      }
+    },
+    "AOC|MFA7U10-H00x|finned OSFP head": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "head",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-finned",
+          "modes": [
+            {
+              "id": "2x200",
+              "links": 2,
+              "speed_gbps": 200
+            }
+          ]
+        },
+        {
+          "id": "B",
+          "role": "branch",
+          "count": 2,
+          "connector_family": "QSFP56",
+          "interface_type": "QSFP56",
+          "modes": [
+            {
+              "id": "1x200",
+              "links": 1,
+              "speed_gbps": 200
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I41X-00H003",
+          "length_m": 3.0,
+          "source_url": "https://networking-docs.nvidia.com/mfa7u10h00x10/ordering-information"
+        },
+        {
+          "part_number": "980-9I11Z-00H005",
+          "length_m": 5.0,
+          "source_url": "https://networking-docs.nvidia.com/mfa7u10h00x10/ordering-information"
+        },
+        {
+          "part_number": "980-9I111-00H010",
+          "length_m": 10.0,
+          "source_url": "https://networking-docs.nvidia.com/mfa7u10h00x10/ordering-information"
+        },
+        {
+          "part_number": "980-9I113-00H015",
+          "length_m": 15.0,
+          "source_url": "https://networking-docs.nvidia.com/mfa7u10h00x10/ordering-information"
+        },
+        {
+          "part_number": "980-9I115-00H020",
+          "length_m": 20.0,
+          "source_url": "https://networking-docs.nvidia.com/mfa7u10h00x10/ordering-information"
+        },
+        {
+          "part_number": "980-9I117-00H030",
+          "length_m": 30.0,
+          "source_url": "https://networking-docs.nvidia.com/mfa7u10h00x10/ordering-information"
+        }
+      ],
+      "cable_type": "AOC",
+      "source_url": "https://networking-docs.nvidia.com/mfa7u10h00x10",
+      "conditions": [
+        "Manufacturer limits supported adapter applications to ConnectX-6; verify the exact endpoint combination."
+      ]
+    },
+    "AOC|MFA7U10-H00x-FLT|flat-top OSFP head": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "head",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "2x200",
+              "links": 2,
+              "speed_gbps": 200
+            }
+          ]
+        },
+        {
+          "id": "B",
+          "role": "branch",
+          "count": 2,
+          "connector_family": "QSFP56",
+          "interface_type": "QSFP56",
+          "modes": [
+            {
+              "id": "1x200",
+              "links": 1,
+              "speed_gbps": 200
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I41Y-00H003",
+          "length_m": 3.0,
+          "source_url": "https://networking-docs.nvidia.com/mfa7u10h00x10/ordering-information"
+        },
+        {
+          "part_number": "980-9I110-00H005",
+          "length_m": 5.0,
+          "source_url": "https://networking-docs.nvidia.com/mfa7u10h00x10/ordering-information"
+        },
+        {
+          "part_number": "980-9I112-00H010",
+          "length_m": 10.0,
+          "source_url": "https://networking-docs.nvidia.com/mfa7u10h00x10/ordering-information"
+        },
+        {
+          "part_number": "980-9I114-00H015",
+          "length_m": 15.0,
+          "source_url": "https://networking-docs.nvidia.com/mfa7u10h00x10/ordering-information"
+        },
+        {
+          "part_number": "980-9I116-00H020",
+          "length_m": 20.0,
+          "source_url": "https://networking-docs.nvidia.com/mfa7u10h00x10/ordering-information"
+        },
+        {
+          "part_number": "980-9I118-00H030",
+          "length_m": 30.0,
+          "source_url": "https://networking-docs.nvidia.com/mfa7u10h00x10/ordering-information"
+        }
+      ],
+      "cable_type": "AOC",
+      "source_url": "https://networking-docs.nvidia.com/mfa7u10h00x10",
+      "conditions": [
+        "Manufacturer limits supported adapter applications to ConnectX-6; verify the exact endpoint combination."
+      ]
+    },
+    "AOC|MFS1S00-HxxxV|-": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "peer",
+          "count": 1,
+          "connector_family": "QSFP56",
+          "interface_type": "QSFP56",
+          "modes": [
+            {
+              "id": "1x200",
+              "links": 1,
+              "speed_gbps": 200
+            }
+          ]
+        },
+        {
+          "id": "B",
+          "role": "peer",
+          "count": 1,
+          "connector_family": "QSFP56",
+          "interface_type": "QSFP56",
+          "modes": [
+            {
+              "id": "1x200",
+              "links": 1,
+              "speed_gbps": 200
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I457-00H003",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mfs1s00hxxxv10"
+        },
+        {
+          "part_number": "980-9I45D-00H005",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mfs1s00hxxxv10"
+        },
+        {
+          "part_number": "980-9I45J-00H010",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mfs1s00hxxxv10"
+        },
+        {
+          "part_number": "980-9I45O-00H015",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mfs1s00hxxxv10"
+        },
+        {
+          "part_number": "980-9I45T-00H020",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mfs1s00hxxxv10"
+        },
+        {
+          "part_number": "980-9I440-00H030",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mfs1s00hxxxv10"
+        },
+        {
+          "part_number": "980-9I447-00H050",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mfs1s00hxxxv10"
+        },
+        {
+          "part_number": "980-9I44H-00H100",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mfs1s00hxxxv10"
+        }
+      ],
+      "cable_type": "AOC",
+      "source_url": "https://networking-docs.nvidia.com/mfs1s00hxxxv10",
+      "conditions": []
+    },
+    "Copper|MCA4K00|RHS-to-RHS": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "peer",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "1x1600",
+              "links": 1,
+              "speed_gbps": 1600
+            }
+          ]
+        },
+        {
+          "id": "B",
+          "role": "peer",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "1x1600",
+              "links": 1,
+              "speed_gbps": 1600
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9IAM1-00X001",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mca4k00hw"
+        },
+        {
+          "part_number": "980-9IAM2-00X001",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mca4k00hw"
+        },
+        {
+          "part_number": "980-9IAM4-00X001",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mca4k00hw"
+        }
+      ],
+      "cable_type": "Copper",
+      "source_url": "https://networking-docs.nvidia.com/mca4k00hw",
+      "conditions": []
+    },
+    "Copper|MCA4K50|IHS-to-IHS": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "peer",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-finned",
+          "modes": [
+            {
+              "id": "1x1600",
+              "links": 1,
+              "speed_gbps": 1600
+            }
+          ]
+        },
+        {
+          "id": "B",
+          "role": "peer",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-finned",
+          "modes": [
+            {
+              "id": "1x1600",
+              "links": 1,
+              "speed_gbps": 1600
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9IAM5-00X001",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mca4k50osfp1600"
+        },
+        {
+          "part_number": "980-9IAM5-00X01A",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mca4k50osfp1600"
+        },
+        {
+          "part_number": "980-9IAM3-00X002",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mca4k50osfp1600"
+        },
+        {
+          "part_number": "980-9IAM3-00X02A",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mca4k50osfp1600"
+        },
+        {
+          "part_number": "980-9IAM3-00X003",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/mca4k50osfp1600"
+        }
+      ],
+      "cable_type": "Copper",
+      "source_url": "https://networking-docs.nvidia.com/mca4k50osfp1600",
+      "conditions": []
+    },
+    "Copper|MCA7K10|IHS-to-2xRHS": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "head",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-finned",
+          "modes": [
+            {
+              "id": "2x800",
+              "links": 2,
+              "speed_gbps": 800
+            }
+          ]
+        },
+        {
+          "id": "B",
+          "role": "branch",
+          "count": 2,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "1x800",
+              "links": 1,
+              "speed_gbps": 800
+            }
+          ]
+        }
+      ],
+      "skus": [],
+      "cable_type": "Copper",
+      "source_url": "https://networking-docs.nvidia.com/9809iao500xxxxrhs2x800",
+      "conditions": []
+    },
+    "Copper|MCA4J80-Nxxx|finned": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "peer",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-finned",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400,
+              "electrical_lanes": 8,
+              "lane_rate_gbps": 100.0
+            }
+          ]
+        },
+        {
+          "id": "B",
+          "role": "peer",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-finned",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400,
+              "electrical_lanes": 8,
+              "lane_rate_gbps": 100.0
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I60Z-00N003",
+          "length_m": 3.0,
+          "source_url": "https://networking-docs.nvidia.com/mca4j80nxxx800pub/ordering-information"
+        },
+        {
+          "part_number": "980-9I601-00N004",
+          "length_m": 4.0,
+          "source_url": "https://networking-docs.nvidia.com/mca4j80nxxx800pub/ordering-information"
+        },
+        {
+          "part_number": "980-9I602-00N005",
+          "length_m": 5.0,
+          "source_url": "https://networking-docs.nvidia.com/mca4j80nxxx800pub/ordering-information"
+        }
+      ],
+      "cable_type": "LACC",
+      "source_url": "https://networking-docs.nvidia.com/mca4j80nxxx800pub",
+      "conditions": []
+    },
+    "Copper|MCA4J80-Nxxx-FLT|flat-top": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "peer",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400,
+              "electrical_lanes": 8,
+              "lane_rate_gbps": 100.0
+            }
+          ]
+        },
+        {
+          "id": "B",
+          "role": "peer",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400,
+              "electrical_lanes": 8,
+              "lane_rate_gbps": 100.0
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I600-00N003",
+          "length_m": 3.0,
+          "source_url": "https://networking-docs.nvidia.com/mca4j80nxxx800pub/ordering-information"
+        }
+      ],
+      "cable_type": "LACC",
+      "source_url": "https://networking-docs.nvidia.com/mca4j80nxxx800pub",
+      "conditions": []
+    },
+    "Copper|MCA4J80-Nxxx-FTF|flat-to-finned": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "peer",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400,
+              "electrical_lanes": 8,
+              "lane_rate_gbps": 100.0
+            }
+          ]
+        },
+        {
+          "id": "B",
+          "role": "peer",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-finned",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400,
+              "electrical_lanes": 8,
+              "lane_rate_gbps": 100.0
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I601-00N003",
+          "length_m": 3.0,
+          "source_url": "https://networking-docs.nvidia.com/mca4j80nxxx800pub/ordering-information"
+        }
+      ],
+      "cable_type": "LACC",
+      "source_url": "https://networking-docs.nvidia.com/mca4j80nxxx800pub",
+      "conditions": []
+    },
+    "Copper|MCP4Y10-Nxxx|finned": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "peer",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-finned",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400,
+              "electrical_lanes": 8,
+              "lane_rate_gbps": 100.0
+            }
+          ]
+        },
+        {
+          "id": "B",
+          "role": "peer",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-finned",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400,
+              "electrical_lanes": 8,
+              "lane_rate_gbps": 100.0
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9IA0K-00N00A",
+          "length_m": 0.5,
+          "source_url": "https://networking-docs.nvidia.com/mcp4y10nxxx2x400pub/ordering-information"
+        },
+        {
+          "part_number": "980-9IA0F-00N001",
+          "length_m": 1.0,
+          "source_url": "https://networking-docs.nvidia.com/mcp4y10nxxx2x400pub/ordering-information"
+        },
+        {
+          "part_number": "980-9IA0Q-00N01A",
+          "length_m": 1.5,
+          "source_url": "https://networking-docs.nvidia.com/mcp4y10nxxx2x400pub/ordering-information"
+        },
+        {
+          "part_number": "980-9IA0I-00N002",
+          "length_m": 2.0,
+          "source_url": "https://networking-docs.nvidia.com/mcp4y10nxxx2x400pub/ordering-information"
+        }
+      ],
+      "cable_type": "DAC",
+      "source_url": "https://networking-docs.nvidia.com/mcp4y10nxxx2x400pub",
+      "conditions": []
+    },
+    "Copper|MCP4Y10-Nxxx-FLT|flat-top": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "peer",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400,
+              "electrical_lanes": 8,
+              "lane_rate_gbps": 100.0
+            }
+          ]
+        },
+        {
+          "id": "B",
+          "role": "peer",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400,
+              "electrical_lanes": 8,
+              "lane_rate_gbps": 100.0
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9IA0L-00N00A",
+          "length_m": 0.5,
+          "source_url": "https://networking-docs.nvidia.com/mcp4y10nxxx2x400pub/ordering-information"
+        },
+        {
+          "part_number": "980-9IA0G-00N001",
+          "length_m": 1.0,
+          "source_url": "https://networking-docs.nvidia.com/mcp4y10nxxx2x400pub/ordering-information"
+        },
+        {
+          "part_number": "980-9IA0J-00N002",
+          "length_m": 2.0,
+          "source_url": "https://networking-docs.nvidia.com/mcp4y10nxxx2x400pub/ordering-information"
+        }
+      ],
+      "cable_type": "DAC",
+      "source_url": "https://networking-docs.nvidia.com/mcp4y10nxxx2x400pub",
+      "conditions": []
+    },
+    "Copper|MCP7Y00-Nxxx|finned head": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "head",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-finned",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400,
+              "electrical_lanes": 8,
+              "lane_rate_gbps": 100.0
+            }
+          ]
+        },
+        {
+          "id": "B",
+          "role": "branch",
+          "count": 2,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "1x400",
+              "links": 1,
+              "speed_gbps": 400,
+              "electrical_lanes": 4,
+              "lane_rate_gbps": 100.0
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "MCP7Y00-N001",
+          "length_m": 1.0,
+          "source_url": "https://networking-docs.nvidia.com/mcp7y00nxxx800pub/ordering-information"
+        },
+        {
+          "part_number": "MCP7Y00-N01A",
+          "length_m": 1.5,
+          "source_url": "https://networking-docs.nvidia.com/mcp7y00nxxx800pub/ordering-information"
+        },
+        {
+          "part_number": "MCP7Y00-N002",
+          "length_m": 2.0,
+          "source_url": "https://networking-docs.nvidia.com/mcp7y00nxxx800pub/ordering-information"
+        },
+        {
+          "part_number": "MCP7Y00-N02A",
+          "length_m": 2.5,
+          "source_url": "https://networking-docs.nvidia.com/mcp7y00nxxx800pub/ordering-information"
+        },
+        {
+          "part_number": "MCP7Y00-N003",
+          "length_m": 3.0,
+          "source_url": "https://networking-docs.nvidia.com/mcp7y00nxxx800pub/ordering-information"
+        }
+      ],
+      "cable_type": "DAC",
+      "source_url": "https://networking-docs.nvidia.com/mcp7y00nxxx800pub",
+      "conditions": []
+    },
+    "Copper|MCP7Y00-Nxxx-FLT|flat-top head": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "head",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400,
+              "electrical_lanes": 8,
+              "lane_rate_gbps": 100.0
+            }
+          ]
+        },
+        {
+          "id": "B",
+          "role": "branch",
+          "count": 2,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "1x400",
+              "links": 1,
+              "speed_gbps": 400,
+              "electrical_lanes": 4,
+              "lane_rate_gbps": 100.0
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "MCP7Y00-N001-FLT1",
+          "length_m": 1.0,
+          "source_url": "https://networking-docs.nvidia.com/mcp7y00nxxx800pub/ordering-information"
+        },
+        {
+          "part_number": "MCP7Y00-N01A-FLT",
+          "length_m": 1.5,
+          "source_url": "https://networking-docs.nvidia.com/mcp7y00nxxx800pub/ordering-information"
+        },
+        {
+          "part_number": "MCP7Y00-N002-FLT",
+          "length_m": 2.0,
+          "source_url": "https://networking-docs.nvidia.com/mcp7y00nxxx800pub/ordering-information"
+        }
+      ],
+      "cable_type": "DAC",
+      "source_url": "https://networking-docs.nvidia.com/mcp7y00nxxx800pub",
+      "conditions": []
+    },
+    "Copper|MCP1600-E0xxEyy|-": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "peer",
+          "count": 1,
+          "connector_family": "QSFP28",
+          "interface_type": "QSFP28",
+          "modes": [
+            {
+              "id": "1x100",
+              "links": 1,
+              "speed_gbps": 100,
+              "electrical_lanes": 4,
+              "lane_rate_gbps": 25.0
+            }
+          ]
+        },
+        {
+          "id": "B",
+          "role": "peer",
+          "count": 1,
+          "connector_family": "QSFP28",
+          "interface_type": "QSFP28",
+          "modes": [
+            {
+              "id": "1x100",
+              "links": 1,
+              "speed_gbps": 100,
+              "electrical_lanes": 4,
+              "lane_rate_gbps": 25.0
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "MCP1600-E00AE30",
+          "length_m": 0.5,
+          "source_url": "https://networking-docs.nvidia.com/mcp1600e0xxxeyyspec/ordering-information"
+        },
+        {
+          "part_number": "MCP1600-E001E30",
+          "length_m": 1.0,
+          "source_url": "https://networking-docs.nvidia.com/mcp1600e0xxxeyyspec/ordering-information"
+        },
+        {
+          "part_number": "MCP1600-E01AE30",
+          "length_m": 1.5,
+          "source_url": "https://networking-docs.nvidia.com/mcp1600e0xxxeyyspec/ordering-information"
+        },
+        {
+          "part_number": "MCP1600-E002E30",
+          "length_m": 2.0,
+          "source_url": "https://networking-docs.nvidia.com/mcp1600e0xxxeyyspec/ordering-information"
+        },
+        {
+          "part_number": "MCP1600-E02AE26",
+          "length_m": 2.5,
+          "source_url": "https://networking-docs.nvidia.com/mcp1600e0xxxeyyspec/ordering-information"
+        },
+        {
+          "part_number": "MCP1600-E003E26",
+          "length_m": 3.0,
+          "source_url": "https://networking-docs.nvidia.com/mcp1600e0xxxeyyspec/ordering-information"
+        },
+        {
+          "part_number": "MCP1600-E004E26",
+          "length_m": 4.0,
+          "source_url": "https://networking-docs.nvidia.com/mcp1600e0xxxeyyspec/ordering-information"
+        },
+        {
+          "part_number": "MCP1600-E005E26",
+          "length_m": 5.0,
+          "source_url": "https://networking-docs.nvidia.com/mcp1600e0xxxeyyspec/ordering-information"
+        }
+      ],
+      "cable_type": "DAC",
+      "source_url": "https://networking-docs.nvidia.com/mcp1600e0xxxeyyspec",
+      "conditions": []
+    }
+  }
 }

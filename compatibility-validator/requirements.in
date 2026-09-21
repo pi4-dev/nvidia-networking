@@ -1,5 +1,6 @@
-# Direct runtime dependencies.
+# Direct runtime dependencies (Pydantic provides the strict catalog contracts).
 # Regenerate the hash-locked file with Python 3.12:
 #   pip-compile --generate-hashes --output-file=requirements.txt requirements.in
 fastapi==0.141.1
 uvicorn==0.53.0
+pydantic==2.13.4

@@ -1,96 +1,84 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>NVIDIA Networking Compatibility Validator</title>
-  <style>
-    :root{color-scheme:dark;--bg:#080c10;--panel:#10161d;--panel2:#0c1218;--line:#26323e;--line2:#334250;--text:#eef4f8;--muted:#8fa2b4;--ok:#74d88b;--warn:#f3c96b;--bad:#ff7b72;--accent:#76b900;--shadow:0 12px 32px rgba(0,0,0,.22)}
-    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,#090e13 0,#080c10 240px);color:var(--text)}
-    button,select,input{font:inherit}header{position:sticky;top:0;z-index:20;background:rgba(9,14,19,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-    .header-inner{max-width:1500px;margin:auto;padding:18px 24px;display:flex;align-items:center;gap:22px;justify-content:space-between}.brand{display:flex;gap:13px;align-items:center}.logo{width:38px;height:38px;border-radius:10px;background:var(--accent);display:grid;place-items:center;color:#071000;font-weight:900;font-size:18px;box-shadow:0 0 24px rgba(118,185,0,.2)}
-    h1{font-size:20px;margin:0 0 4px}.subtitle{font-size:12px;color:var(--muted)}.statusline{display:flex;gap:14px;flex-wrap:wrap;justify-content:flex-end;color:var(--muted);font-size:11px}.statusline b{color:var(--text)}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);margin-right:5px;box-shadow:0 0 8px rgba(116,216,139,.45)}
-    main{max-width:1500px;margin:auto;padding:24px}.stack{display:grid;gap:18px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}.panel-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}.panel-body{padding:18px}.panel h2{font-size:15px;margin:0}.step{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#17220d;color:#aee269;border:1px solid #385318;font-size:12px;font-weight:700;margin-right:8px}
-    .grid3{display:grid;grid-template-columns:1fr 1.5fr 1.5fr;gap:14px}.details-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
-    label{display:block;color:var(--muted);font-size:11px;margin:0 0 6px;text-transform:uppercase;letter-spacing:.04em}select,input{width:100%;background:#0b1117;color:var(--text);border:1px solid var(--line2);border-radius:8px;padding:10px 11px;outline:none}select:focus,input:focus{border-color:#5f7c40;box-shadow:0 0 0 2px rgba(118,185,0,.08)}
-    .message{margin-top:14px;padding:11px 12px;border:1px solid var(--line);background:var(--panel2);border-radius:9px;color:var(--muted);font-size:12px;line-height:1.45}.hidden{display:none!important}.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}
-    .pill{display:inline-flex;align-items:center;border:1px solid var(--line2);border-radius:999px;padding:3px 8px;font-size:10px;color:var(--muted);margin:2px 3px 2px 0;background:#0a1015}.pill.ok{border-color:#305f3a;color:var(--ok)}.pill.warn{border-color:#65542b;color:var(--warn)}.pill.fabric{font-weight:750;letter-spacing:.03em}.pill.eth{border-color:#356a82;color:#8bd7ff}.pill.ib{border-color:#744ca3;color:#cba6ff}.pill.nvl{border-color:#4f7c2e;color:#b9e783}
-    .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}.summary-box{background:#0b1117;border:1px solid var(--line);border-radius:9px;padding:10px}.summary-box .k{font-size:10px;color:var(--muted);text-transform:uppercase}.summary-box .v{font-size:14px;font-weight:700;margin-top:4px;word-break:break-word}
-    .toolbar{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.toolbar .grow{flex:1;min-width:260px}.toolbar .filter{min-width:145px}.counter{font-size:11px;color:var(--muted);white-space:nowrap;padding-bottom:11px}.tablewrap{overflow:auto;max-height:590px;border:1px solid var(--line);border-radius:9px;margin-top:12px}
-    table{width:100%;border-collapse:collapse;font-size:12px}th{position:sticky;top:0;background:#111922;color:var(--muted);z-index:1;font-weight:600;text-align:left}th,td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top;white-space:nowrap}td.pn-cell{white-space:normal;overflow-wrap:anywhere;word-break:break-word;min-width:140px;max-width:260px;line-height:1.35}tbody tr{cursor:pointer}tbody tr:hover{background:#131d26}tbody tr.selected{background:#17260f;outline:1px solid #456c20;outline-offset:-1px}.model{font-weight:700;color:#fff}.small{font-size:10px;color:var(--muted)}.radio{width:15px;height:15px;accent-color:var(--accent)}
-    .side-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}.kv{display:grid;grid-template-columns:120px 1fr;gap:7px 10px;font-size:12px;padding:5px 0;border-bottom:1px dashed #202b35}.kv:last-child{border-bottom:0}.kv .k{color:var(--muted)}.kv .v{word-break:break-word}.source-link{color:#8bd7ff;text-decoration:none}.source-link:hover{text-decoration:underline}
-    details.panel{overflow:hidden}details.panel>summary{list-style:none;cursor:pointer;padding:15px 18px;font-size:14px;font-weight:650;display:flex;align-items:center;gap:10px}details.panel>summary::-webkit-details-marker{display:none}details.panel>summary:before{content:'▸';color:var(--accent);font-size:15px;transition:transform .15s}details.panel[open]>summary:before{transform:rotate(90deg)}details.panel[open]>summary{border-bottom:1px solid var(--line)}
-    .validation-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;padding:12px 14px;border:1px solid #305f3a;background:#0e1b12;border-radius:9px}.validation-banner .title{font-weight:750;color:var(--ok)}
-    code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.95em}.empty{padding:30px;text-align:center;color:var(--muted)}
-    @media(max-width:1150px){.grid3{grid-template-columns:1fr 1fr}.summary{grid-template-columns:1fr 1fr}.details-grid{grid-template-columns:1fr}}
-    @media(max-width:720px){.header-inner{align-items:flex-start;flex-direction:column}.statusline{justify-content:flex-start}.grid3,.summary{grid-template-columns:1fr}main{padding:12px}.panel-body{padding:14px}.toolbar{align-items:stretch;flex-direction:column}.toolbar .grow,.toolbar .filter{min-width:0}.counter{padding:0}}
-  </style>
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="/static/core.js" defer></script>
+  <script src="/static/app.js" defer></script>
 </head>
 <body>
-<header><div class="header-inner"><div class="brand"><div class="logo">N</div><div><h1>NVIDIA Networking Compatibility Validator</h1><div class="subtitle">Validate NVIDIA LinkX transceivers and cables against switches, adapters and DGX port profiles</div></div></div><div class="statusline" id="meta"><span><span class="dot"></span>loading catalog…</span></div></div></header>
+<header><div class="header-inner">
+  <div class="brand"><div class="logo" aria-hidden="true">N</div><div><h1>Networking Compatibility Validator</h1><div class="subtitle">NVIDIA LinkX · Port fit and complete link checks</div></div></div>
+  <div class="statusline" id="meta" role="status">Loading catalog…</div>
+</div></header>
 <main><div class="stack">
-  <section class="panel"><div class="panel-head"><h2><span class="step">1</span>Select equipment and port group</h2></div><div class="panel-body">
-    <div class="grid3"><div><label>Equipment category</label><select id="kind"></select></div><div><label>Device / system</label><select id="device"></select></div><div><label>Physical port group</label><select id="group"></select></div></div>
-    <div class="summary" id="deviceSummary"></div><div id="deviceMessage" class="message hidden"></div>
-  </div></section>
-
-  <section class="panel"><div class="panel-head"><h2><span class="step">2</span>Select compatible LinkX product</h2><span class="small">Only active products passing validation are shown</span></div><div class="panel-body">
-    <div class="toolbar"><div class="grow"><label>Filter compatible products</label><input id="search" type="search" placeholder="Model, PN, category, fabric, medium, connector…" /></div><div class="filter"><label>Category</label><select id="categoryFilter"><option value="">All categories</option></select></div><div class="filter"><label>Fabric</label><select id="fabricFilter"><option value="">All fabrics</option></select></div><div class="filter"><label>Medium</label><select id="mediumFilter"><option value="">All</option><option>SM</option><option>MM</option><option>Copper</option></select></div><div class="counter" id="compatibleCount">0 products</div></div>
-    <div class="tablewrap" id="compatibleWrap"><div class="empty">Select a validation-ready device and port group.</div></div>
-    <div id="compatMessage" class="message">Select a product to see why it is compatible.</div>
-    <div id="validationBanner" class="validation-banner hidden"><div><div class="title">VALID</div><div class="small" id="validationText"></div></div><span id="validationConfidence" class="pill ok">exact</span></div>
-  </div></section>
-
-  <details class="panel" id="selectionDetails" open><summary>Selection details</summary><div class="panel-body details-grid">
-    <div><div class="side-title">Device</div><div id="sideDevice" class="small">No device selected.</div></div>
-    <div><div class="side-title">Port group</div><div id="sideGroup" class="small">No port group selected.</div></div>
-    <div><div class="side-title">LinkX product</div><div id="sideProduct" class="small">No product selected.</div></div>
-    <div class="message" style="margin:0;grid-column:1/-1"><b>Validation</b> checks product status, fabric, module/cage compatibility, OSFP mechanics and supported speed/mode. Schema v8 <code>port_interface_compatibility</code> is used as the authoritative cage/module source when available.</div>
-  </div></details>
+  <div id="serviceMessage" class="message hidden" role="status"></div>
+  <div class="actionbar">
+    <div class="tabs" role="tablist" aria-label="Validation scope"><button id="portTab" role="tab" aria-selected="true" aria-controls="portView">Port fit</button><button id="linkTab" role="tab" aria-selected="false" aria-controls="linkView">Connection A ↔ B</button></div>
+    <div class="actions"><button id="retry">Refresh catalog</button><button id="share">Copy configuration link</button><button id="export" disabled>Export JSON</button></div>
+  </div>
+  <div id="actionMessage" class="small" role="status"></div>
+  <div id="portView" class="stack" role="tabpanel" aria-labelledby="portTab">
+    <section class="panel"><div class="panel-head"><h2><span class="step">1</span>Select equipment and operating mode</h2></div><div class="panel-body">
+      <div class="grid4"><div><label for="kind">Equipment category</label><select id="kind"></select></div><div><label for="device">Device / system</label><select id="device"></select></div><div><label for="group">Physical port group</label><select id="group"></select></div><div><label for="mode">Port mode</label><select id="mode"></select></div></div>
+      <div class="summary" id="deviceSummary"></div><div id="deviceMessage" class="message hidden"></div>
+    </div></section>
+    <section class="panel"><div class="panel-head"><h2><span class="step">2</span>Inspect products and rejected matches</h2><button id="whyRejected">Why was a product rejected?</button></div><div class="panel-body">
+      <div class="toolbar">
+        <div class="grow"><label for="search">Model or ordering part number</label><input id="search" type="search" placeholder="Model, PN, connector…"></div>
+        <div class="filter"><label for="outcomeFilter">Result</label><select id="outcomeFilter"><option value="candidates">Candidates + unknown</option><option value="compatible">Compatible</option><option value="conditional">Conditional</option><option value="unknown">Unknown</option><option value="incompatible">Incompatible</option><option value="all">All results</option></select></div>
+        <div class="filter"><label for="lifecycleFilter">Lifecycle</label><select id="lifecycleFilter"><option value="active">Active</option><option value="all">All, including retired</option></select></div>
+        <div class="filter"><label for="fabricFilter">Requested fabric</label><select id="fabricFilter"><option value="">Any documented fabric</option><option>ETH</option><option>IB</option><option>NVL</option></select></div>
+      </div>
+      <div class="toolbar secondary-filters">
+        <div class="filter"><label for="categoryFilter">Category</label><select id="categoryFilter"><option value="">All categories</option></select></div>
+        <div class="filter"><label for="typeFilter">Cable technology</label><select id="typeFilter"><option value="">All types</option></select></div>
+        <div class="filter"><label for="mediumFilter">Medium</label><select id="mediumFilter"><option value="">All media</option><option>SM</option><option>MM</option><option>Copper</option></select></div>
+        <div class="filter"><label for="speedFilter">Termination capacity</label><select id="speedFilter"><option value="">Any rate</option></select></div>
+        <div class="filter"><label for="reachFilter">Minimum reach (m)</label><input id="reachFilter" type="number" min="0" step="0.5" placeholder="Any"></div>
+        <span class="counter" id="compatibleCount">0 products</span>
+      </div>
+      <p class="small">Unknown values remain visible. A host-port match does not confirm the remote endpoint, fiber, FEC or firmware qualification.</p>
+      <div class="tablewrap" id="compatibleWrap"><div class="empty">Loading catalog…</div></div>
+    </div></section>
+    <section class="panel"><div class="panel-head"><h2><span class="step">3</span>Decision and evidence</h2><span id="selectedOutcome" class="pill">No selection</span></div><div class="panel-body">
+      <div id="validationText" class="message">Select a product to inspect every check.</div>
+      <div class="details-grid"><div><div class="side-title">Port</div><div id="sideGroup"></div></div><div><div class="side-title">Product</div><div id="sideProduct"></div></div><div><label for="partNumber">Ordering part number</label><select id="partNumber" disabled></select><div id="skuDetails" class="message"></div></div></div>
+      <div id="checks" class="checks" aria-live="polite"></div>
+    </div></section>
+  </div>
+  <div id="linkView" class="stack hidden" role="tabpanel" aria-labelledby="linkTab">
+    <section class="panel"><div class="panel-head"><h2>Validate one connection between two ports</h2></div><div class="panel-body">
+      <p class="small">Choose both optical modules and the fiber, or the two ends of the same DAC/LACC/AOC assembly. Each breakout leg is validated separately.</p>
+      <div class="link-sides">
+        <fieldset><legend>Device A</legend>
+          <label for="aDevice">Device / system</label><select id="aDevice"></select>
+          <label for="aGroup">Port group</label><select id="aGroup"></select>
+          <label for="aMode">Operating mode</label><select id="aMode"></select>
+          <label for="aProduct">Module or cable</label><select id="aProduct"></select>
+          <label for="aEnd">Cable termination at device A</label><select id="aEnd"></select>
+          <label for="aPn">Ordering part number</label><select id="aPn"></select>
+        </fieldset>
+        <fieldset><legend>Device B</legend>
+          <label for="bDevice">Device / system</label><select id="bDevice"></select>
+          <label for="bGroup">Port group</label><select id="bGroup"></select>
+          <label for="bMode">Operating mode</label><select id="bMode"></select>
+          <label for="bProduct">Module or cable</label><select id="bProduct"></select>
+          <label for="bEnd">Cable termination at device B</label><select id="bEnd"></select>
+          <label for="bPn">Ordering part number</label><select id="bPn"></select>
+        </fieldset>
+      </div>
+      <div class="grid3 link-options"><div><label for="linkFabric">Fabric</label><select id="linkFabric"><option>IB</option><option>ETH</option><option>NVL</option></select></div><div><label for="linkLength">Actual cable length (m)</label><input id="linkLength" type="number" min="0.1" max="1000000" step="0.1" placeholder="Required for reach check"></div></div>
+      <fieldset id="fiberOptions"><legend>Optical fiber</legend>
+        <div class="grid3"><div><label for="fiberType">Fiber type</label><select id="fiberType"><option>OS2</option><option>OM3</option><option>OM4</option><option>OM5</option></select></div><div><label for="connectorA">Cable connector at A</label><select id="connectorA"><option>MPO-12/APC</option><option>MPO-12/UPC</option><option>Duplex LC/UPC</option><option>LC duplex</option><option>Duplex LC</option></select></div><div><label for="connectorB">Cable connector at B</label><select id="connectorB"><option>MPO-12/APC</option><option>MPO-12/UPC</option><option>Duplex LC/UPC</option><option>LC duplex</option><option>Duplex LC</option></select></div></div>
+        <label class="check-label"><input id="pinout" type="checkbox"> I verified connector gender, polarity and lane mapping against the cable drawing.</label>
+      </fieldset>
+      <div class="actionbar"><button id="validateLink" class="primary">Validate connection</button><span id="linkStatus" role="status">Select the connection and run validation.</span></div>
+      <div id="linkChecks" class="checks" aria-live="polite"></div>
+    </div></section>
+  </div>
 </div></main>
-<script>
-let devices=[],currentCompatible=[],selectedId=null,lastRevision=null;
-const $=id=>document.getElementById(id);
-async function jget(url){const r=await fetch(url);const data=await r.json().catch(()=>({}));if(!r.ok)throw new Error(typeof data.detail==='string'?data.detail:JSON.stringify(data.detail||data));return data}
-function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-function fmtReach(v){if(!v)return'—';return Object.entries(v).map(([k,x])=>`${k.replaceAll('_',' ')}=${x}`).join(', ')}
-function option(s,v,t){const o=document.createElement('option');o.value=v;o.textContent=t;s.appendChild(o)}
-function pill(v,cls=''){return `<span class="pill ${cls}">${esc(v)}</span>`}
-function productById(){return currentCompatible.find(x=>x.id===selectedId)}
-function categoryGroup(item){const raw=String(item?.category||'Other').trim();if(/^transceiver$/i.test(raw))return'Transceiver';if(/^(aoc|copper|cable|dac|acc|lacc)$/i.test(raw))return'Cable';return raw||'Other'}
-function fabrics(item){return Array.isArray(item?.fabric_compatibility)?item.fabric_compatibility:[]}
-function fabricPills(item){const fs=fabrics(item);if(!fs.length)return'<span class="small">—</span>';return fs.map(f=>pill(f,`fabric ${String(f).toLowerCase()}`)).join('')}
-function externalLink(url,label='Open source ↗'){try{const u=new URL(url||'');if(!['http:','https:'].includes(u.protocol))return'—';return `<a class="source-link" href="${esc(u.href)}" target="_blank" rel="noopener noreferrer">${esc(label)}</a>`}catch{return'—'}}
-function sourceLink(item){return `<div class="kv"><div class="k">Documentation</div><div class="v">${externalLink(item?.source_url,'Open NVIDIA source ↗')}</div></div>`}
-function refreshCategoryFilter(){const s=$('categoryFilter'),p=s.value,c=[...new Set(currentCompatible.map(categoryGroup))].sort((a,b)=>a.localeCompare(b));s.innerHTML='<option value="">All categories</option>';c.forEach(x=>option(s,x,x));s.value=c.includes(p)?p:''}
-function refreshFabricFilter(){const s=$('fabricFilter'),p=s.value,f=[...new Set(currentCompatible.flatMap(fabrics))].sort();s.innerHTML='<option value="">All fabrics</option>';f.forEach(x=>option(s,x,x));s.value=f.includes(p)?p:''}
-function refreshFilters(){refreshCategoryFilter();refreshFabricFilter()}
-function summaryBox(k,v){return `<div class="summary-box"><div class="k">${esc(k)}</div><div class="v">${esc(v??'—')}</div></div>`}
-function resetSelection(){selectedId=null;$('validationBanner').classList.add('hidden');$('compatMessage').textContent='Select a product to see why it is compatible.';$('sideProduct').textContent='No product selected.'}
-async function loadMeta(){const m=await jget('/api/meta');$('meta').innerHTML=`<span><span class="dot"></span><b>LIVE</b></span><span>snapshot <b>${esc(m.snapshot_date)}</b></span><span>schema <b>v${esc(m.schema_version)}</b></span><span>revision <code>${esc(m.revision)}</code></span><span><b>${m.device_count}</b> devices</span><span><b>${m.interconnect_count}</b> LinkX records</span>`;if(lastRevision&&lastRevision!==m.revision)await loadDevices(true);lastRevision=m.revision}
-async function loadDevices(preserve=false){const old=preserve?$('device').value:null;devices=await jget('/api/devices');const kinds=[...new Set(devices.map(d=>d.kind))].sort();$('kind').innerHTML='';kinds.forEach(k=>option($('kind'),k,k));if(old){const d=devices.find(x=>x.id===old);if(d)$('kind').value=d.kind}fillDevice(old);await deviceChanged()}
-function fillDevice(preferred=null){const list=devices.filter(d=>d.kind===$('kind').value);$('device').innerHTML='';list.forEach(d=>option($('device'),d.id,`${d.model}${d.validation_ready?'':'  [not validation-ready]'}`));if(preferred&&list.some(d=>d.id===preferred))$('device').value=preferred}
-async function deviceChanged(){const d=devices.find(x=>x.id===$('device').value);currentCompatible=[];resetSelection();$('group').innerHTML='';refreshFilters();if(!d)return;
-  $('deviceSummary').innerHTML=summaryBox('Model',d.model)+summaryBox('Family',d.family)+summaryBox('Nominal speed',d.speed)+summaryBox('Source',d.source);
-  const accepted=(d.accepted_pluggables||[]).join(', ')||'—',fixed=(d.fixed_interfaces||[]).join(', ')||'—',variants=(d.variants||[]).join('; ')||'—';
-  $('sideDevice').innerHTML=`<div class="kv"><div class="k">Model</div><div class="v model">${esc(d.model)}</div></div><div class="kv"><div class="k">Kind</div><div class="v">${esc(d.kind)}</div></div><div class="kv"><div class="k">Family</div><div class="v">${esc(d.family||'—')}</div></div><div class="kv"><div class="k">Validation ready</div><div class="v ${d.validation_ready?'ok':'warn'}">${d.validation_ready?'yes':'no'}</div></div><div class="kv"><div class="k">Catalog accepts</div><div class="v">${esc(accepted)}</div></div><div class="kv"><div class="k">Fixed interfaces</div><div class="v">${esc(fixed)}</div></div>${(d.variants||[]).length?`<div class="kv"><div class="k">Variants</div><div class="v">${esc(variants)}</div></div>`:''}${d.scope_note?`<div class="kv"><div class="k">Scope note</div><div class="v">${esc(d.scope_note)}</div></div>`:''}${d.compatibility_source_url?`<div class="kv"><div class="k">Cage source</div><div class="v">${externalLink(d.compatibility_source_url,'Open compatibility source ↗')}</div></div>`:''}`;
-  if(!d.port_groups?.length){$('deviceMessage').classList.remove('hidden');$('deviceMessage').innerHTML=`<span class="warn"><b>Compatibility data insufficient.</b></span> ${esc(d.warning||'This catalog entry cannot yet be validated at pluggable-interface level.')}`;$('compatibleWrap').innerHTML='<div class="empty">No port-level compatibility validation is available for this device.</div>';$('compatibleCount').textContent='0 products';$('sideGroup').textContent='No port profile.';return}
-  $('deviceMessage').classList.add('hidden');d.port_groups.forEach(g=>option($('group'),g.id,g.label));await groupChanged()}
-async function groupChanged(){const d=devices.find(x=>x.id===$('device').value),g=d?.port_groups?.find(x=>x.id===$('group').value);resetSelection();if(!g)return;
-  const count=g.count==null?'—':g.count,accepted=(g.accepted_connector_families||[]).join(', ')||'—',catalog=(g.catalog_accepted_pluggables||[]).join(', ')||'—';
-  $('sideGroup').innerHTML=`<div class="kv"><div class="k">Group</div><div class="v">${esc(g.label)}</div></div><div class="kv"><div class="k">Physical ports</div><div class="v">${esc(count)}</div></div><div class="kv"><div class="k">Cage</div><div class="v">${esc(g.connector_family||'—')}</div></div><div class="kv"><div class="k">Accepted modules</div><div class="v">${esc(accepted)}</div></div><div class="kv"><div class="k">Catalog accepts</div><div class="v">${esc(catalog)}</div></div><div class="kv"><div class="k">Capacity</div><div class="v">${esc(g.module_speed_gbps?g.module_speed_gbps+'G':'—')}</div></div><div class="kv"><div class="k">Fabric</div><div class="v">${esc((g.fabrics||[]).join(' + ')||'—')}</div></div><div class="kv"><div class="k">Supported modes</div><div class="v">${esc((g.supported_module_speeds_gbps||[]).map(x=>x+'G').join(', ')||'—')}</div></div><div class="kv"><div class="k">Compat source</div><div class="v">${esc(g.compatibility_source||'—')}</div></div>${g.compatibility_source_url?`<div class="kv"><div class="k">Source link</div><div class="v">${externalLink(g.compatibility_source_url,'Open cage/module source ↗')}</div></div>`:''}${g.scope_note?`<div class="kv"><div class="k">Scope note</div><div class="v">${esc(g.scope_note)}</div></div>`:''}`;
-  $('compatibleWrap').innerHTML='<div class="empty">Loading compatible products…</div>';
-  try{currentCompatible=await jget(`/api/compatible?device_id=${encodeURIComponent(d.id)}&port_group_id=${encodeURIComponent(g.id)}`);refreshFilters();renderCompatible()}catch(e){currentCompatible=[];refreshFilters();$('compatibleWrap').innerHTML=`<div class="empty bad">${esc(e.message)}</div>`}}
-function filteredProducts(){const q=$('search').value.trim().toLowerCase(),cat=$('categoryFilter').value,fab=$('fabricFilter').value,med=$('mediumFilter').value;return currentCompatible.filter(i=>{const group=categoryGroup(i),fs=fabrics(i);const hay=[i.model,i.variant,i.category,group,...fs,i.medium,i.interface_type,i.interface_connector,...(i.part_numbers||[])].join(' ').toLowerCase();return(!q||hay.includes(q))&&(!cat||group===cat)&&(!fab||fs.includes(fab))&&(!med||i.medium===med)})}
-function renderCompatible(){const rows=filteredProducts();$('compatibleCount').textContent=`${rows.length} product${rows.length===1?'':'s'}`;if(!rows.length){$('compatibleWrap').innerHTML='<div class="empty">No matching active LinkX products.</div>';return}
-  const body=rows.map(i=>{const conf=i.compatibility_confidence==='exact'?'ok':'warn',group=categoryGroup(i);return `<tr data-id="${esc(i.id)}" class="${i.id===selectedId?'selected':''}"><td><input class="radio" type="radio" name="product" ${i.id===selectedId?'checked':''}></td><td><div class="model">${esc(i.model)}</div><div class="small">${esc(i.variant||'—')}</div></td><td>${esc(group)}${group!==i.category?`<div class="small">${esc(i.category)}</div>`:''}</td><td>${fabricPills(i)}</td><td>${esc(i.speed||'—')}</td><td>${esc(i.interface_type||'—')}<div class="small">${esc(i.interface_count||1)} × ${esc(i.interface_speed||'—')}</div></td><td>${esc(i.interface_connector||'—')}</td><td>${esc(i.medium||'—')}</td><td>${esc(fmtReach(i.reach))}</td><td>${pill(i.compatibility_confidence,conf)}</td><td class="small pn-cell">${esc((i.part_numbers||[]).join(', ')||'—')}</td></tr>`}).join('');
-  $('compatibleWrap').innerHTML=`<table><thead><tr><th></th><th>Model</th><th>Category</th><th>Fabric</th><th>Module</th><th>Host interface / breakout</th><th>Cable connector</th><th>Medium</th><th>Reach</th><th>Validation</th><th>Part number</th></tr></thead><tbody>${body}</tbody></table>`;$('compatibleWrap').querySelectorAll('tbody tr').forEach(tr=>tr.addEventListener('click',()=>selectProduct(tr.dataset.id)))}
-function selectProduct(id){selectedId=id;renderCompatible();const i=productById();if(!i)return;const cls=i.compatibility_confidence==='exact'?'ok':'warn';
-  $('compatMessage').innerHTML=`<b>Fabric:</b> ${fabricPills(i)} &nbsp; <span class="${cls}"><b>${esc(i.compatibility_confidence.toUpperCase())}</b></span> · ${i.compatibility_reasons.map(esc).join(' · ')}`;
-  $('validationBanner').classList.remove('hidden');$('validationConfidence').className=`pill ${cls}`;$('validationConfidence').textContent=i.compatibility_confidence;$('validationText').textContent=`${i.model}${i.variant?' — '+i.variant:''} is compatible with the selected port group.`;
-  $('sideProduct').innerHTML=`<div class="kv"><div class="k">Model</div><div class="v model">${esc(i.model)}</div></div><div class="kv"><div class="k">Variant</div><div class="v">${esc(i.variant||'—')}</div></div><div class="kv"><div class="k">Category</div><div class="v">${esc(categoryGroup(i))}${categoryGroup(i)!==i.category?` <span class="small">(${esc(i.category)})</span>`:''}</div></div><div class="kv"><div class="k">Fabric</div><div class="v">${fabricPills(i)}</div></div><div class="kv"><div class="k">Module speed</div><div class="v">${esc(i.speed||'—')}</div></div><div class="kv"><div class="k">Host interface</div><div class="v">${esc(i.interface_type||'—')}</div></div><div class="kv"><div class="k">Output</div><div class="v">${esc(i.interface_count||1)} × ${esc(i.interface_speed||'—')}</div></div><div class="kv"><div class="k">Connector</div><div class="v">${esc(i.interface_connector||'—')}</div></div><div class="kv"><div class="k">Medium</div><div class="v">${esc(i.medium||'—')}</div></div><div class="kv"><div class="k">Reach</div><div class="v">${esc(fmtReach(i.reach))}</div></div><div class="kv"><div class="k">PN</div><div class="v small">${esc((i.part_numbers||[]).join(', ')||'—')}</div></div>${sourceLink(i)}`}
-$('kind').addEventListener('change',()=>{fillDevice();deviceChanged()});$('device').addEventListener('change',deviceChanged);$('group').addEventListener('change',groupChanged);$('search').addEventListener('input',renderCompatible);$('categoryFilter').addEventListener('change',renderCompatible);$('fabricFilter').addEventListener('change',renderCompatible);$('mediumFilter').addEventListener('change',renderCompatible);
-(async()=>{try{await loadMeta();await loadDevices();setInterval(()=>loadMeta().catch(()=>{}),5000)}catch(e){$('meta').innerHTML=`<span class="bad">Startup error: ${esc(e.message)}</span>`}})();
-</script>
 </body>
 </html>
