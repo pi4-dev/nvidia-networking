@@ -4,6 +4,9 @@ Web application for evaluating NVIDIA LinkX modules and cable assemblies against
 
 The repository baseline is preserved in branch [`v0.01`](https://github.com/pi4-dev/nvidia-networking/tree/v0.01), at commit `6071fa9f05b7ea5e116094f518fd4b6c15992867`. Subsequent baselines are [`v0.02`](https://github.com/pi4-dev/nvidia-networking/tree/v0.02) at `d52782bd3ba8d282d1e999ba16b4f2073f501b67` and [`v0.03`](https://github.com/pi4-dev/nvidia-networking/tree/v0.03) at `a2a41c6210a3267068daae0b387a31fa0c49cee2`. Ongoing development (`0.04-dev`) is on `main`.
 
+Version history and subsequent changes are maintained in the repository's
+[CHANGELOG.md](../CHANGELOG.md).
+
 ## Run
 
 From the repository root:

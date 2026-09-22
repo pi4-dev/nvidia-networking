@@ -4,6 +4,9 @@ A compact technical reference for current NVIDIA networking products used in AI,
 
 The repository contains a human-readable equipment catalog together with the normalized JSON dataset used as its source of truth.
 
+See [CHANGELOG.md](CHANGELOG.md) for version history and ongoing changes, and
+[AGENTS.md](AGENTS.md) for the changelog maintenance instructions.
+
 ## Repository contents
 
 ```text
