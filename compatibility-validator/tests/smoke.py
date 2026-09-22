@@ -1,9 +1,11 @@
 """Exercise a running container through its public API using only stdlib."""
 
 import json
+import io
 import sys
 import urllib.parse
 import urllib.request
+from zipfile import ZipFile
 
 
 def main(base):
@@ -56,12 +58,29 @@ def main(base):
     split = request("/api/breakout", fanout)
     assert split["assigned_branches"] == split["expected_branches"] == 2
     assert split["status"] == "unknown"
-    project = request("/api/project", {"name": "Smoke project", "breakouts": [{**fanout, "id": "fanout-01"}],
-        "owned_parts": [{"part_number": "MCP7Y00-N003", "quantity": 1}], "revision": catalog["meta"]["revision"]})
+    project_request = {"name": "Smoke project", "breakouts": [{**fanout, "id": "fanout-01"}],
+        "owned_parts": [{"part_number": "MCP7Y00-N003", "quantity": 1}], "revision": catalog["meta"]["revision"]}
+    project = request("/api/project", project_request)
     assert project["bom"]["rows"][0]["required"] == 1 and project["bom"]["to_buy"] == 0
     assert project["summary"]["physical_cages"] == 3
+    plan = request("/api/project/cabling", project_request)
+    assert plan["summary"]["cables"] == 1 and plan["summary"]["legs"] == 2 and plan["summary"]["labels"] == 3
+    assert plan["status"] == "unknown" and plan["provisional"]
+    for filename in ("cabling.pdf", "labels.pdf", "cabling.xlsx"):
+        req = urllib.request.Request(base + "/api/project/" + filename, data=json.dumps(project_request).encode(),
+                                     headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=20) as response:
+            assert response.headers["X-Catalog-Revision"] == plan["revision"]
+            contents = response.read()
+            if filename.endswith(".pdf"):
+                assert response.headers["Content-Type"] == "application/pdf"
+                assert contents.startswith(b"%PDF-") and b"/FontFile2" in contents
+            else:
+                assert response.headers["Content-Type"].endswith("spreadsheetml.sheet")
+                with ZipFile(io.BytesIO(contents)) as archive:
+                    assert "xl/worksheets/sheet2.xml" in archive.namelist()
     print(f"Smoke passed: {len(catalog['devices'])} devices, {len(catalog['products'])} products, "
-          f"{proposed['total_candidates']} proposals, complete breakout and project BOM, revision {result['revision']}")
+          f"{proposed['total_candidates']} proposals, complete breakout, project BOM, cabling PDF/XLSX and labels, revision {result['revision']}")
 
 
 if __name__ == "__main__":

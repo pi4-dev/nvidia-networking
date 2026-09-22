@@ -20,14 +20,19 @@ from .recommendations import recommend
 from .topology_models import BreakoutRequest, ProjectRequest, ProjectCSV
 from .topology import validate_breakout
 from .projects import StaleProject, validate_project, import_project_csv, bom_csv, connection_csv, CSV_FIELDS
+from .cabling import build_cabling
+from .cabling_exports import cabling_pdf, cabling_xlsx
 
-VERSION = "0.04-dev"
+VERSION = "0.05-dev"
 logger = logging.getLogger("uvicorn.error")
 app = FastAPI(title="NVIDIA Networking Compatibility Validator", version=VERSION)
 catalog = LiveCatalog(DATA_PATH, PROFILE_PATH)
 _cache = OrderedDict()
 _cache_lock = threading.RLock()
 _cache_revision = None
+_document_slots = threading.BoundedSemaphore(2)
+PROJECT_ROUTES = {"/api/project", "/api/project/import-csv", "/api/project/bom.csv", "/api/project/connections.csv",
+                  "/api/project/cabling", "/api/project/cabling.pdf", "/api/project/labels.pdf", "/api/project/cabling.xlsx"}
 
 
 class BodyLimitMiddleware:
@@ -39,7 +44,7 @@ class BodyLimitMiddleware:
             await self.app(scope, receive, send)
             return
         body = bytearray()
-        limit = MAX_PROJECT_BYTES if scope["path"] in {"/api/project", "/api/project/import-csv", "/api/project/bom.csv", "/api/project/connections.csv"} else MAX_BREAKOUT_BYTES if scope["path"] == "/api/breakout" else MAX_REQUEST_BYTES
+        limit = MAX_PROJECT_BYTES if scope["path"] in PROJECT_ROUTES else MAX_BREAKOUT_BYTES if scope["path"] == "/api/breakout" else MAX_REQUEST_BYTES
         while True:
             message = await receive()
             if message["type"] == "http.disconnect":
@@ -272,6 +277,49 @@ def project_result(request):
 @app.post("/api/project")
 def project(request: ProjectRequest):
     return project_result(request)
+
+
+def cabling_result(request):
+    snapshot = snapshot_for_revision(request.revision)
+    try:
+        validation = validate_project(snapshot, request)
+    except StaleProject as exc:
+        raise HTTPException(409, str(exc)) from None
+    return {**build_cabling(snapshot, request, validation), "application_version": VERSION,
+            "evaluated_at": datetime.now(timezone.utc).isoformat()}
+
+
+@app.post("/api/project/cabling")
+def project_cabling(request: ProjectRequest):
+    return cabling_result(request)
+
+
+def document_response(request, format_):
+    if not _document_slots.acquire(blocking=False):
+        raise HTTPException(503, "Document export is busy; retry shortly", headers={"Retry-After": "2"})
+    try:
+        report = cabling_result(request)
+        content = cabling_xlsx(report) if format_ == "xlsx" else cabling_pdf(report, labels=format_ == "labels")
+        filename = "cable-labels.pdf" if format_ == "labels" else "cabling-plan." + format_
+        return Response(content, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" if format_ == "xlsx" else "application/pdf",
+            headers={"Content-Disposition": f'attachment; filename="{filename}"', "X-Catalog-Revision": report["revision"], "Cache-Control": "no-store"})
+    finally:
+        _document_slots.release()
+
+
+@app.post("/api/project/cabling.pdf")
+def project_cabling_pdf(request: ProjectRequest):
+    return document_response(request, "pdf")
+
+
+@app.post("/api/project/labels.pdf")
+def project_labels_pdf(request: ProjectRequest):
+    return document_response(request, "labels")
+
+
+@app.post("/api/project/cabling.xlsx")
+def project_cabling_xlsx(request: ProjectRequest):
+    return document_response(request, "xlsx")
 
 
 @app.post("/api/project/import-csv")

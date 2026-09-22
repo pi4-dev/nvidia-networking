@@ -331,7 +331,7 @@ class APITests(unittest.TestCase):
         result = json.loads(body)
         self.assertEqual(code, 200)
         self.assertEqual(result['revision'], revision)
-        self.assertEqual(result['application_version'], '0.04-dev')
+        self.assertEqual(result['application_version'], '0.05-dev')
         self.assertEqual(result['candidates'][0]['components'][0]['part_number'], '980-9I601-00N003')
         host = dict(device_id='supernic:ConnectX-8 SuperNIC', port_group_id='catalog-1',
                     hardware_profile_id='900-9X81E-00EX-ST0', revision=revision)
@@ -365,7 +365,7 @@ class APITests(unittest.TestCase):
         report = json.loads(body)
         self.assertEqual(code, 200)
         self.assertEqual(report['bom']['rows'][0]['required'], 1)
-        self.assertEqual(report['application_version'], '0.04-dev')
+        self.assertEqual(report['application_version'], '0.05-dev')
         code, headers, body = self.request('/api/project/bom.csv', p.model_dump_json().encode())
         self.assertEqual(code, 200)
         self.assertIn('text/csv', headers.get('content-type', headers.get('Content-Type', '')))
@@ -390,6 +390,40 @@ class APITests(unittest.TestCase):
         self.assertEqual(self.request('/api/connection', b'x' * 17000)[0], 413)
         for route in ['/api/breakout', '/api/project', '/api/project/import-csv']:
             with self.subTest(route=route): self.assertEqual(self.request(route, b'{}')[0], 422)
+
+    def test_cabling_plan_and_binary_exports_over_http(self):
+        from test_cabling import installed_project
+        from zipfile import ZipFile
+        import io
+        project = installed_project(); project.revision = api.catalog.get()['revision']
+        for entry in project.breakouts: entry.revision = project.revision
+        payload = project.model_dump_json().encode()
+        code, _, body = self.request('/api/project/cabling', payload)
+        data = json.loads(body)
+        self.assertEqual(code, 200)
+        self.assertEqual(data['summary']['labels'], 3)
+        self.assertEqual(data['summary']['checked'], 1)
+        for route, kind in [('cabling.pdf', 'application/pdf'), ('labels.pdf', 'application/pdf'),
+                            ('cabling.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')]:
+            code, headers, body = self.request('/api/project/' + route, payload)
+            with self.subTest(route=route):
+                self.assertEqual(code, 200)
+                normalized = {k.lower(): v for k, v in headers.items()}
+                self.assertIn(kind, normalized['content-type'])
+                self.assertEqual(normalized['x-catalog-revision'], project.revision)
+                self.assertIn('attachment;', normalized['content-disposition'])
+                if route.endswith('pdf'): self.assertTrue(body.startswith(b'%PDF-'))
+                else: self.assertIn('xl/workbook.xml', ZipFile(io.BytesIO(body)).namelist())
+
+    def test_cabling_routes_enforce_revision_limits_and_metadata(self):
+        from test_topology import project_of, point_connection
+        project = project_of(connections=[point_connection()]).model_dump()
+        project['revision'] = '000000000000'
+        for suffix in ['cabling', 'cabling.pdf', 'labels.pdf', 'cabling.xlsx']:
+            path = '/api/project/' + suffix
+            self.assertEqual(self.request(path, json.dumps(project).encode())[0], 409)
+            self.assertEqual(self.request(path, b'x' * (1024 * 1024 + 1))[0], 413)
+            self.assertEqual(self.request(path, b'{}')[0], 422)
 
 
 if __name__=='__main__':

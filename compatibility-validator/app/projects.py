@@ -251,6 +251,8 @@ def import_project_csv(snapshot, request):
 def connection_csv(project):
     if project.breakouts:
         raise ValueError("Use project JSON to preserve complete breakout definitions")
+    if any((project.cabling.locations, project.cabling.port_labels, project.cabling.cables)):
+        raise ValueError("Use project JSON to preserve cabling locations, labels and installation progress")
     out = io.StringIO(newline=""); writer = csv.DictWriter(out, fieldnames=CSV_FIELDS)
     writer.writeheader()
     for connection in project.connections:

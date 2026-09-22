@@ -109,13 +109,34 @@ Harness and interoperability evidence is supplied with the project and is not wr
 
 ## Connection projects and BOM
 
-`POST /api/project` accepts `format: "nvidia-connection-project-v1"`, `name`, `connections`, `breakouts`, `owned_parts`, and optional `revision`. A connection extends `ConnectionRequest` with a unique `id` and installed A/B selections. A breakout extends `BreakoutRequest` with a unique `id`. IDs are unique across both collections. Projects require at least one entry and permit at most 200 connections, 64 breakouts, 512 physical endpoint assignments, and 512 unique owned PNs. The body limit is 1 MiB; standalone breakout requests allow 256 KiB.
+`POST /api/project` accepts `format: "nvidia-connection-project-v1"`, `name`, `connections`, `breakouts`, `owned_parts`, optional `cabling`, and optional `revision`. A connection extends `ConnectionRequest` with a unique `id` and installed A/B selections. A breakout extends `BreakoutRequest` with a unique `id`. IDs are unique across both collections. Projects require at least one entry and permit at most 200 connections, 64 breakouts, 512 physical endpoint assignments, and 512 unique owned PNs. The body limit is 1 MiB; standalone breakout requests allow 256 KiB.
 
 Validation checks the complete project against one catalog snapshot. A stale nested entry also returns `409`. Unresolved catalog selections remain an `unknown` result for their entry while other entries are still evaluated. Repeated cages, conflicting device identities or incompatible runtime assertions for the same instance fail globally. Single-link scope warnings become required unknowns in a project; represent shared heads as complete breakout entries.
 
 The response contains `results`, `summary`, `checks`, `gaps`, `port_allocations`, the input `project`, and `bom`. The BOM counts physical cable/harness assemblies once per declared connection/breakout and optical modules once per occupied cage/product/PN. Conflicting selections remain visible instead of being silently discarded. Rows group by exact PN and expose `required`, `owned`, `reused`, `to_buy`, `verified_ordering`, source URLs and entry references. Inventory is allocated once globally; unused quantities appear in `unused_inventory`. `provisional` remains true whenever ordering evidence is incomplete or the project result is not `compatible`.
 
-JSON is the complete interchange format, including breakouts, physical mapping, runtime, evidence and inventory. The browser restores drafts locally, discards saved results on import, and clears physical confirmations for changed or absent revisions. It rejects obsolete responses after a draft edit. Unapplied JSON edits remain in the editor during catalog refresh and must be applied before validation/export.
+JSON is the complete interchange format, including breakouts, physical mapping, runtime, evidence, inventory and cabling metadata. The browser restores drafts locally, discards saved results on import, and clears physical mapping confirmations for changed or absent revisions. It rejects obsolete responses after a draft edit. Unapplied JSON edits remain in the editor during catalog refresh and must be applied before validation/export.
+
+## Cabling plans and installation declarations
+
+`cabling` is optional, so existing v1 projects remain valid. It defaults to empty `locations`, `port_labels` and `cables` arrays. See [cabling-project.json](examples/cabling-project.json) for a complete example without pre-asserted installation states.
+
+| Collection | Fields and limits |
+| --- | --- |
+| `locations` | Up to 512 records: unique project `instance_id`, nullable `rack` (1–64 printable characters) and nullable `rack_u` (integer 1–1000). |
+| `port_labels` | Up to 512 records: unique occupied `(instance_id, port_group_id, port_number)` and `label` (1–64 printable characters). The label does not replace the physical cage ordinal used for validation. |
+| `cables` | Up to 264 records: unique project `entry_id`, nullable `cable_id` using the asset-ID syntax, and up to 16 `progress` records. |
+| `progress` | Unique `branch_id` (null for a point-to-point connection), `installed`, `checked`, nullable `definition`, and printable `notes` up to 512 characters. |
+
+References outside the project are rejected. Effective cable IDs are the custom value or `C-<entry-id>` and must be unique case-insensitively, including generated/custom collisions. Each cable gets `/A` and `/B` labels; a cable breakout gets one `/H` and a `/BR-<branch-id>` for each branch. An optical fanout has `/H<number>` for each physical head connector. Each branch contributes one plan row. Declared but unassigned optical connectors stay visible in a provisional plan. Module ordering PNs are endpoint data; cable/fiber/harness ordering PNs identify the labeled assembly.
+
+`POST /api/project/cabling` validates against one snapshot and returns `rows`, `labels`, `issues`, `summary`, `status`, `provisional`, `revision`, `application_version` and `evaluated_at`. Rows include source/destination rack, device, physical cage, native marking and module PN; branch termination, logical links and optical lane mappings; cable PN and length; and effective installation states. The actual length is the requested value or the documented exact SKU length when omitted. Missing rack, native marking, ordering PN or length creates an issue. The plan is provisional whenever an issue remains or whole-project compatibility is not `compatible`.
+
+To record a declaration, first generate the plan and copy the row's 64-character SHA-256 `definition` into the matching `progress` record. `checked` requires `installed`, and either true state requires a fingerprint. It binds the declaration to the entry configuration, normalized branch order, cable ID, endpoint locations/markings, PN and effective length. Physical/configuration changes invalidate the declaration: the report returns `progress_stale: true` and effective false states while the original JSON declaration remains available. Unrelated catalog revision changes alone, reordered branches and edited notes do not invalidate it. A changed derived SKU length does. These are user declarations, not authentication, audit signatures, measured link tests or qualification evidence.
+
+`POST /api/project/cabling.pdf`, `/api/project/labels.pdf` and `/api/project/cabling.xlsx` accept the same project and revalidate it at export time. They return attachments with the document MIME type, `X-Catalog-Revision` and `Cache-Control: no-store`. All four routes enforce the same 1 MiB body limit and stale top-level/nested revision checks. PDF/XLSX generation is limited to two simultaneous exports per worker; a busy exporter returns `503` with `Retry-After: 2`.
+
+Plan PDFs use A4 landscape with repeated table headers. Label PDFs use A4 portrait and variable-size cut-out cards, including an embedded DejaVu Sans font. XLSX contains `Cabling plan` and `End labels` sheets with numeric lengths, boolean installation states, filters, frozen headers and wrapped text. User strings remain literal cells even if they start with `=`. These files are report snapshots; only JSON preserves editable installation metadata and fingerprints. No server-side project persistence or XLSX reimport is provided.
 
 ## Project CSV
 
@@ -133,7 +154,7 @@ JSON is the complete interchange format, including breakouts, physical mapping, 
 | `a_` / `b_` + `sku`, `opn`, `adapter_variant`, `psid`, `firmware`, `os_name`, `os_version` | Optional observed runtime values. |
 | `length_m`, `fiber_pn`, `fiber_type`, `connector_a`, `connector_b`, `pinout_verified` | Actual path/cable length and optical assembly data; confirmation accepts `true`/`false` or `1`/`0`. |
 
-`POST /api/project/connections.csv` exports point-to-point selections from a project request. Projects containing breakouts must use JSON to preserve topology. `POST /api/project/bom.csv` revalidates the complete project and exports quantities, entry references, project result and provisional status. CSV fields that could execute spreadsheet formulas are escaped. Keep JSON as the authoritative format when exact free-text round trips or full project context are needed.
+`POST /api/project/connections.csv` exports point-to-point selections from a project request. Projects containing breakouts or nonempty cabling metadata must use JSON to preserve that context; CSV export rejects them. `POST /api/project/bom.csv` revalidates the complete project and exports quantities, entry references, project result and provisional status. CSV fields that could execute spreadsheet formulas are escaped. Keep JSON as the authoritative format when exact free-text round trips or full project context are needed.
 
 ## Updating data
 

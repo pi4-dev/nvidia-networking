@@ -8,6 +8,7 @@ const html = fs.readFileSync(path.join(__dirname, '../app/static/index.html'), '
 const script = fs.readFileSync(path.join(__dirname, '../app/static/app.js'), 'utf8');
 const coreScript = fs.readFileSync(path.join(__dirname, '../app/static/core.js'), 'utf8');
 const topologyScript = fs.readFileSync(path.join(__dirname, '../app/static/topology.js'), 'utf8');
+const cablingScript = fs.readFileSync(path.join(__dirname, '../app/static/cabling.js'), 'utf8');
 const r1 = '111111111111', r2 = '222222222222';
 const tick = () => new Promise(resolve => setImmediate(resolve));
 async function settle() { for (let i = 0; i < 8; i++) await tick(); }
@@ -26,7 +27,7 @@ function harness(handler, options={}) {
   w.URL.createObjectURL=blob=>{exported=blob;return 'blob:test';};w.URL.revokeObjectURL=()=>{};
   w.HTMLAnchorElement.prototype.click=function(){};
   Object.defineProperty(w.navigator,'clipboard',{value:{writeText:async value=>{copied=value;}}});
-  w.eval(coreScript);w.eval(topologyScript);w.eval(script);
+  w.eval(coreScript);w.eval(cablingScript);w.eval(topologyScript);w.eval(script);
   return {dom,w,get copied(){return copied;},get exported(){return exported;},close(){dom.window.close();}};
 }
 function apiHandler(revision=()=>r1) { return async(url)=>{
@@ -363,5 +364,91 @@ test('physical identifiers and port ordinals are included when adding an A-to-B 
     click(h,'addConnectionToProject');click(h,'downloadProjectJSON');const p=JSON.parse(await h.exported.text());
     assert.equal(p.connections[0].a.instance_id,'leaf-01');assert.equal(p.connections[0].a.port_number,4);
     assert.equal(p.connections[0].b.instance_id,'dgx-02');assert.equal(p.connections[0].b.port_number,2);
+  }finally{h.close();}
+});
+
+function cablingResponse(project){
+  const value=project.breakouts[0], meta=project.cabling||{locations:[],port_labels:[],cables:[]};
+  const settings=meta.cables.find(c=>c.entry_id===value.id), id=settings?.cable_id||'C-'+value.id;
+  const end=s=>({...s,model:s.device_id,rack:meta.locations.find(l=>l.instance_id===s.instance_id)?.rack||null,rack_u:null,port_label:meta.port_labels.find(p=>p.instance_id===s.instance_id)?.label||null,optical_port:null});
+  const a=end(value.head), bs=value.branches.map(b=>end(b.selection));
+  const rows=value.branches.map((b,i)=>{const p=settings?.progress.find(v=>v.branch_id===b.id)||{};return {entry_id:value.id,branch_id:b.id,termination:b.termination,cable_id:id,part_number:'PN-fan',length_m:3,fabric:'IB',source:a,destination:bs[i],definition:'a'.repeat(64),installed:!!p.installed,checked:!!p.checked,notes:p.notes||'',progress_stale:false};});
+  const labels=[{label_id:id+'/H',cable_id:id,end:'H',local:a,peers:bs,part_number:'PN-fan'},...bs.map((b,i)=>({label_id:id+'/BR-'+value.branches[i].id,cable_id:id,end:'BR-'+value.branches[i].id,local:b,peers:[a],part_number:'PN-fan'}))];
+  return {revision:r1,status:'unknown',provisional:true,summary:{cables:1,legs:2,labels:3,installed:rows.filter(r=>r.installed).length,checked:rows.filter(r=>r.checked).length},rows,labels,issues:[]};
+}
+function enter(h,selector,value){const element=h.w.document.querySelector(selector);element.value=value;element.dispatchEvent(new h.w.Event('input',{bubbles:true}));}
+
+test('cabling editor persists rack, native port and unique cable ID in requests and project JSON',async()=>{
+  let posted;
+  const h=harness(async(url,opts)=>{if(url==='/api/project/cabling'){posted=JSON.parse(opts.body);return response(cablingResponse(posted));}return apiHandler()(url);});
+  try{
+    await settle();loadProject(h);
+    enter(h,'[data-location="head-01"][data-field="rack"]','Poznań A');
+    enter(h,'[data-location="head-01"][data-field="rack_u"]','12');
+    enter(h,'[data-port-index="0"]','1/1');enter(h,'[data-cable="fanout-1"]','IB-A001');
+    click(h,'buildCabling');await settle();
+    assert.equal(posted.cabling.locations[0].rack,'Poznań A');assert.equal(posted.cabling.locations[0].rack_u,12);
+    assert.equal(posted.cabling.port_labels[0].label,'1/1');assert.equal(posted.cabling.cables[0].cable_id,'IB-A001');
+    assert.equal(h.w.document.querySelectorAll('.label-preview article').length,3);
+    assert.match(h.w.document.getElementById('cablingStatus').textContent,/1 cables · 2 legs · 3 end labels/);
+    click(h,'downloadProjectJSON');const exported=JSON.parse(await h.exported.text());assert.equal(exported.cabling.locations[0].rack,'Poznań A');
+  }finally{h.close();}
+});
+
+test('checking a cabling leg also marks installed and binds progress to the current definition',async()=>{
+  let posted;
+  const h=harness(async(url,opts)=>{if(url==='/api/project/cabling'){posted=JSON.parse(opts.body);return response(cablingResponse(posted));}return apiHandler()(url);});
+  try{
+    await settle();loadProject(h);click(h,'buildCabling');await settle();
+    const checkbox=h.w.document.querySelector('[data-progress="0"][data-field="checked"]');checkbox.click();await settle();
+    const progress=posted.cabling.cables[0].progress[0];assert.equal(progress.branch_id,'branch-1');
+    assert.equal(progress.installed,true);assert.equal(progress.checked,true);assert.equal(progress.definition,'a'.repeat(64));
+    assert.match(h.w.document.getElementById('cablingReport').textContent,/unknown/);
+    h.w.document.querySelector('[data-progress="0"][data-field="installed"]').click();await settle();
+    assert.equal(posted.cabling.cables[0].progress[0].checked,false);
+  }finally{h.close();}
+});
+
+test('installation edits cancel an obsolete PDF download even when fetch ignores abort',async()=>{
+  let finish;
+  const h=harness(async(url,opts)=>{
+    if(url==='/api/project/cabling')return response(cablingResponse(JSON.parse(opts.body)));
+    if(url==='/api/project/cabling.pdf')return new Promise(done=>{finish=done;});
+    return apiHandler()(url);
+  });
+  try{
+    await settle();loadProject(h);click(h,'buildCabling');await settle();click(h,'downloadCablingPDF');await settle();
+    enter(h,'[data-location="head-01"][data-field="rack"]','Moved rack');
+    finish({ok:true,headers:{get:()=>r1},blob:async()=>new Blob(['%PDF-stale'],{type:'application/pdf'})});await settle();
+    assert.equal(h.exported,undefined);assert.equal(h.w.document.getElementById('downloadCablingPDF').disabled,true);
+    assert.equal(h.w.document.getElementById('cablingReport').textContent,'');
+  }finally{h.close();}
+});
+
+test('PDF, end-label and XLSX downloads preserve binary bodies and require the current revision',async()=>{
+  let revision=r1;
+  const h=harness(async(url,opts)=>{
+    if(url==='/api/project/cabling')return response(cablingResponse(JSON.parse(opts.body)));
+    if(/\.(pdf|xlsx)$/.test(url))return {ok:true,headers:{get:()=>revision},blob:async()=>new Blob([url.endsWith('xlsx')?'PK-Excel':'%PDF-test'],{type:url.endsWith('xlsx')?'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':'application/pdf'})};
+    return apiHandler()(url);
+  });
+  try{
+    await settle();loadProject(h);click(h,'buildCabling');await settle();
+    for(const button of ['downloadCablingPDF','downloadLabelsPDF','downloadCablingXLSX']){click(h,button);await settle();assert.equal((await h.exported.text()).startsWith(button.endsWith('XLSX')?'PK':'%PDF'),true);}
+    const previous=h.exported;revision=r2;click(h,'downloadCablingPDF');await settle();assert.equal(h.exported,previous);
+    assert.match(h.w.document.getElementById('cablingStatus').textContent,/Catalog changed/);
+  }finally{h.close();}
+});
+
+test('unapplied project JSON blocks cabling generation and removing an entry prunes its installation metadata',async()=>{
+  let calls=0;
+  const h=harness(async url=>{if(url==='/api/project/cabling')calls++;return apiHandler()(url);});
+  try{
+    await settle();loadProject(h);enter(h,'[data-location="head-01"][data-field="rack"]','Rack A');enter(h,'[data-cable="fanout-1"]','IB-001');
+    input(h,'projectDocument','{ pending edit');click(h,'buildCabling');await settle();assert.equal(calls,0);
+    assert.match(h.w.document.getElementById('cablingStatus').textContent,/pending project JSON/);
+    const saved=JSON.parse(h.w.localStorage.getItem('nvidia-project-v1'));loadProject(h,saved);
+    h.w.document.querySelector('[data-remove-entry="fanout-1"]').click();click(h,'downloadProjectJSON');
+    const exported=JSON.parse(await h.exported.text());assert.deepEqual(exported.cabling,{locations:[],port_labels:[],cables:[]});
   }finally{h.close();}
 });

@@ -1,0 +1,110 @@
+{
+  "format": "nvidia-connection-project-v1",
+  "name": "Example installation - replace rack and port markings",
+  "connections": [],
+  "breakouts": [
+    {
+      "head": {
+        "device_id": "profile:MQM9700-NS2F",
+        "port_group_id": "ndr",
+        "mode_id": "2x400",
+        "product_id": "Copper|MCP7Y00-Nxxx|finned head",
+        "part_number": "MCP7Y00-N003",
+        "instance_id": "switch-01",
+        "port_number": 1
+      },
+      "branches": [
+        {
+          "id": "branch-1",
+          "selection": {
+            "device_id": "supernic:ConnectX-8 SuperNIC",
+            "port_group_id": "catalog-1",
+            "mode_id": "1x400-ndr",
+            "hardware_profile_id": "900-9X81E-00EX-ST0",
+            "product_id": "Copper|MCP7Y00-Nxxx|finned head",
+            "part_number": "MCP7Y00-N003",
+            "instance_id": "cx8-1",
+            "port_number": 1
+          },
+          "termination": 1,
+          "head_links": [
+            1
+          ]
+        },
+        {
+          "id": "branch-2",
+          "selection": {
+            "device_id": "supernic:ConnectX-8 SuperNIC",
+            "port_group_id": "catalog-1",
+            "mode_id": "1x400-ndr",
+            "hardware_profile_id": "900-9X81E-00EX-ST0",
+            "product_id": "Copper|MCP7Y00-Nxxx|finned head",
+            "part_number": "MCP7Y00-N003",
+            "instance_id": "cx8-2",
+            "port_number": 1
+          },
+          "termination": 2,
+          "head_links": [
+            2
+          ]
+        }
+      ],
+      "fabric": "IB",
+      "length_m": 3.0,
+      "mapping_verified": false,
+      "id": "fanout-01"
+    }
+  ],
+  "owned_parts": [
+    {
+      "part_number": "MCP7Y00-N003",
+      "quantity": 1
+    }
+  ],
+  "cabling": {
+    "locations": [
+      {
+        "instance_id": "switch-01",
+        "rack": "Rack A",
+        "rack_u": 12
+      },
+      {
+        "instance_id": "cx8-1",
+        "rack": "Rack B",
+        "rack_u": 20
+      },
+      {
+        "instance_id": "cx8-2",
+        "rack": "Rack C",
+        "rack_u": 21
+      }
+    ],
+    "port_labels": [
+      {
+        "instance_id": "switch-01",
+        "port_group_id": "ndr",
+        "port_number": 1,
+        "label": "1/1"
+      },
+      {
+        "instance_id": "cx8-1",
+        "port_group_id": "catalog-1",
+        "port_number": 1,
+        "label": "NIC 1"
+      },
+      {
+        "instance_id": "cx8-2",
+        "port_group_id": "catalog-1",
+        "port_number": 1,
+        "label": "NIC 2"
+      }
+    ],
+    "cables": [
+      {
+        "entry_id": "fanout-01",
+        "cable_id": "IB-A001",
+        "progress": []
+      }
+    ]
+  }
+}

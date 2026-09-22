@@ -6,6 +6,7 @@
   <title>NVIDIA Networking Compatibility Validator</title>
   <link rel="stylesheet" href="/static/styles.css">
   <script src="/static/core.js" defer></script>
+  <script src="/static/cabling.js" defer></script>
   <script src="/static/topology.js" defer></script>
 <script src="/static/app.js" defer></script>
 </head>
@@ -137,6 +138,17 @@
       <p class="small">Inventory is consumed once across the project. The BOM counts one breakout assembly and one shared optical head once. Failed or unresolved selections remain in a provisional BOM.</p>
       <div class="actionbar"><button id="validateProject" class="primary">Validate project</button><button id="downloadBom" disabled>Export BOM CSV</button><span id="projectStatus" role="status"></span></div>
       <div id="projectReport" aria-live="polite"></div>
+      <section class="cabling-planner" aria-labelledby="cablingHeading">
+        <h3 id="cablingHeading">Cabling plan and end labels</h3>
+        <p class="small">Set rack locations and the actual port markings before installation. One breakout cable has one ID, a shared head label and separate branch labels.</p>
+        <div id="cablingLocations" class="tablewrap"></div>
+        <details><summary>Physical port markings</summary><p class="small">Enter labels printed on the device. Catalog cage ordinals remain unchanged.</p><div id="cablingPorts" class="tablewrap"></div></details>
+        <details><summary>Cable identifiers</summary><div id="cablingIds" class="tablewrap"></div></details>
+        <div class="actionbar"><button id="buildCabling" class="primary" disabled>Build cabling plan</button><button id="downloadCablingPDF" disabled>Plan PDF</button><button id="downloadLabelsPDF" disabled>Labels PDF</button><button id="downloadCablingXLSX" disabled>Plan + labels XLSX</button></div>
+        <p id="cablingStatus" role="status"></p>
+        <p class="small">Installed and checked are installer declarations. They do not change compatibility. Changed installation definitions require new confirmation. Save project JSON to retain this data; PDF/XLSX files are report snapshots.</p>
+        <div id="cablingReport" aria-live="polite"></div>
+      </section>
       <details><summary>Edit complete project JSON</summary><label for="projectDocument">Project JSON</label><textarea id="projectDocument" rows="16" maxlength="1048576" spellcheck="false"></textarea><button id="applyProjectJSON">Apply JSON edits</button></details>
     </div></section>
   </div>

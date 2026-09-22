@@ -1,8 +1,8 @@
 # NVIDIA Networking Compatibility Validator
 
-Web application for evaluating NVIDIA LinkX modules and cable assemblies against explicit switch, adapter and DGX port profiles. The interface supports **host-port fit**, **exact hardware and software qualification**, **connections between devices**, a **connection selection assistant**, **complete 1→N breakouts**, and **project validation with a consolidated BOM**.
+Web application for evaluating NVIDIA LinkX modules and cable assemblies against explicit switch, adapter and DGX port profiles. The interface supports **host-port fit**, **exact hardware and software qualification**, **connections between devices**, a **connection selection assistant**, **complete 1→N breakouts**, **project validation with a consolidated BOM**, and **cabling plans with end labels and installation progress**.
 
-The repository baseline is preserved in branch [`v0.01`](https://github.com/pi4-dev/nvidia-networking/tree/v0.01), at commit `6071fa9f05b7ea5e116094f518fd4b6c15992867`. Subsequent baselines are [`v0.02`](https://github.com/pi4-dev/nvidia-networking/tree/v0.02) at `d52782bd3ba8d282d1e999ba16b4f2073f501b67` and [`v0.03`](https://github.com/pi4-dev/nvidia-networking/tree/v0.03) at `a2a41c6210a3267068daae0b387a31fa0c49cee2`. Ongoing development (`0.04-dev`) is on `main`.
+The repository baseline is preserved in branch [`v0.01`](https://github.com/pi4-dev/nvidia-networking/tree/v0.01), at commit `6071fa9f05b7ea5e116094f518fd4b6c15992867`. Subsequent baselines are [`v0.02`](https://github.com/pi4-dev/nvidia-networking/tree/v0.02) at `d52782bd3ba8d282d1e999ba16b4f2073f501b67`, [`v0.03`](https://github.com/pi4-dev/nvidia-networking/tree/v0.03) at `a2a41c6210a3267068daae0b387a31fa0c49cee2`, and [`v0.04`](https://github.com/pi4-dev/nvidia-networking/tree/v0.04) at `231c96fe07230279edfe8817da89528c754ee4e5`. Ongoing development (`0.05-dev`) is on `main`.
 
 Version history and subsequent changes are maintained in the repository's
 [CHANGELOG.md](../CHANGELOG.md).
@@ -49,9 +49,17 @@ For an optical fanout, also describe the complete harness PN, connector count, f
 
 Project validation preserves each connection's checks and detects project-wide port conflicts. Enter owned inventory once for the whole project. The BOM counts each cable/harness once and each physical optical module once, then reports required, owned, reused, to-buy and unused quantities by exact PN. Failed or unresolved entries remain visible; the BOM is marked provisional until all required checks and ordering specifications pass. Inventory does not remove a failed compatibility check.
 
-Use JSON to preserve the complete project, including all breakout mappings, evidence and inventory. CSV imports/exports point-to-point connections; download the header template in the project panel. CSV accepts comma, semicolon or tab separators and reports invalid rows without partially replacing a draft. Device identifiers may be exact catalog IDs or unique model names; a unique catalog PN can resolve a product. A project containing breakouts must use JSON for topology export. The separate BOM CSV includes quantities, references and the provisional status.
+Use JSON to preserve the complete project, including all breakout mappings, evidence, inventory and installation metadata. CSV imports/exports point-to-point connections; download the header template in the project panel. CSV accepts comma, semicolon or tab separators and reports invalid rows without partially replacing a draft. Device identifiers may be exact catalog IDs or unique model names; a unique catalog PN can resolve a product. A project containing breakouts or cabling metadata must use JSON for topology export; flat CSV export rejects these projects to prevent data loss. The separate BOM CSV includes quantities, references and the provisional status.
 
-Ready-to-edit examples: [complete 2×400G cable breakout](examples/breakout-2x400.json), [project with inventory](examples/project.json), and [point-to-point CSV](examples/connections.csv). They use the shipped catalog and intentionally remain `unknown` where evidence or physical confirmation is missing.
+**Cabling plan and end labels:** in the Project / BOM panel, enter rack locations, optional rack units, and the port markings printed on each device. The generated plan lists the physical source and destination, branch termination, cable or harness PN, actual length and installation progress. Length comes from the project or, when omitted, the documented exact SKU. Optical module PNs remain separate from the fiber/harness PN. Missing locations, port markings, PNs or lengths are listed for completion; unresolved compatibility keeps the plan provisional.
+
+Every assembly gets a stable `C-<entry-id>` cable ID; optionally replace it with a unique site ID. Point-to-point cables have `/A` and `/B` labels. Complete breakouts have one shared `/H` label (or `/H1`, `/H2`, etc. for optical head connectors) and `/BR-<branch-id>` labels. A two-branch cable produces two installation rows and three labels. IDs must be unique across the project, including automatically generated IDs, without regard to letter case.
+
+Build the plan, then mark each connection/branch **Installed** and **Checked**. Checking implies installation; clearing installation clears checking. These are installer declarations, separate from compatibility and manufacturer qualification. Changes to the physical definition, rack/port markings, PN, length or cable ID require fresh confirmation. Reordering branches and changing notes preserve confirmations. Save/export project JSON to retain progress; browser drafts also retain it. Notes can be edited in project JSON.
+
+**Plan PDF** exports an A4 landscape installation list. **Labels PDF** exports A4 sheets of cut-out cards with the local end, remote destination and cable PN; print at 100% scale. Card sizes expand to fit text, so these are not templates for a particular pre-cut adhesive stock. **Plan + labels XLSX** contains two filterable worksheets with installation states. PDFs include the bundled DejaVu Sans font, including Polish characters. PDF/XLSX files are dated report snapshots; edits to XLSX are not imported back into the application. Any draft edit invalidates the plan and pending downloads until rebuilt.
+
+Ready-to-edit examples: [complete 2×400G cable breakout](examples/breakout-2x400.json), [project with inventory](examples/project.json), [cabling project with rack and port labels](examples/cabling-project.json), and [point-to-point CSV](examples/connections.csv). They use the shipped catalog and intentionally remain `unknown` where evidence or physical confirmation is missing. Example rack and port markings must be replaced with the actual installation values.
 
 “Copy configuration link” preserves single-connection selections, filters and catalog revision. Breakouts and projects use complete JSON files for sharing. Local storage restores the last configuration and project drafts. A shared/imported configuration for an older revision shows a notice and recalculates using the available catalog; it does not retrieve historical catalog bytes. “Export JSON” includes the result, checks, selections, revision, catalog freshness, application version and timestamp. Editing a draft invalidates its report; unapplied JSON edits must be applied before validation or export.
 
@@ -87,7 +95,7 @@ The canonical `../data/nvidia-interconnects.json` remains schema **8**. `data/de
 
 `port_interface_compatibility` remains authoritative for accepted module families and fixed interfaces. The overlay cannot broaden those permissions. Port capabilities are not inferred from free-text descriptions or aggregate adapter bandwidth. Generic and SKU-specific Quantum-2 profiles use the same twin-port capacity; SN3420 modes cannot exceed cage capacity. Unqualified OSFP shells remain unknown.
 
-`app/models.py` and `topology_models.py` own the strict Pydantic contracts; `catalog.py` handles loading and cross-file integrity, `rules.py` single-link compatibility, `hardware.py` scoped evidence/qualification, `recommendations.py` connection selection, `topology.py` complete breakouts, `projects.py` project/BOM/CSV operations, and `api.py` HTTP routes. `main.py` remains the Uvicorn entry point. Browser helpers and UI logic live in `static/core.js`, `static/app.js` and `static/topology.js`.
+`app/models.py` and `topology_models.py` own the strict Pydantic contracts; `catalog.py` handles loading and cross-file integrity, `rules.py` single-link compatibility, `hardware.py` scoped evidence/qualification, `recommendations.py` connection selection, `topology.py` complete breakouts, `projects.py` project/BOM/CSV operations, `cabling.py` installation rows/labels, `cabling_exports.py` PDF/XLSX generation, and `api.py` HTTP routes. `main.py` remains the Uvicorn entry point. Browser helpers and UI logic live in `static/core.js`, `static/app.js`, `static/topology.js` and `static/cabling.js`.
 
 ## Live reload and failure handling
 
@@ -117,8 +125,12 @@ Detailed errors remain in server logs. Public errors and metadata do not expose 
 | `POST /api/project` | All connections and breakouts, physical conflicts, summary and consolidated inventory/BOM. |
 | `POST /api/project/import-csv` | Parse `{name, csv, revision}` into a project draft; reject invalid rows atomically. |
 | `GET /api/project/template.csv` | Header template for point-to-point imports. |
-| `POST /api/project/connections.csv` | Export a project request's point-to-point connections; breakouts require JSON. |
+| `POST /api/project/connections.csv` | Export point-to-point connections; breakouts or cabling metadata require JSON. |
 | `POST /api/project/bom.csv` | Revalidate a project request and download its BOM, including provisional status. |
+| `POST /api/project/cabling` | Revalidate a project and return installation rows, end labels, missing details and progress. |
+| `POST /api/project/cabling.pdf` | A4 landscape installation plan PDF. |
+| `POST /api/project/labels.pdf` | A4 cut-out end labels PDF, including shared breakout heads. |
+| `POST /api/project/cabling.xlsx` | Installation plan and end labels in separate XLSX worksheets. |
 | `GET /api/compatible` | Legacy route: active `compatible`/`conditional` host-port candidates only. |
 
 `/api/evaluate` requires `device_id` and `port_group_id`; optional parameters are `fabric`, `mode_id` and `revision`. Identifiers and values are bounded. A stale revision returns `409`, invalid input `422`, and an absent device/group `404`.
@@ -180,6 +192,7 @@ For single connections, `endpoint_id` and `mode_id` may be omitted to evaluate d
 | HTTP request body, project POST routes | 1 MiB |
 | Breakout branches / project connections / project breakouts | 16 / 200 / 64 |
 | Project physical endpoint assignments / inventory PN entries | 512 / 512 |
+| Concurrent PDF/XLSX exports per worker | 2; excess requests return `503` with `Retry-After` |
 | Uvicorn concurrency / backlog / keep-alive | 100 / 128 / 5 seconds |
 | Compose CPU / memory / PIDs | 1 CPU / 256 MiB / 128 |
 
@@ -202,9 +215,9 @@ npm ci --ignore-scripts
 npm test
 ```
 
-Backend tests exercise the actual repository inputs, failed startup/reload/recovery, strict schemas, hardware regressions, both-end validation and a real HTTP server. Breakout/project regressions cover complete coverage, global FEC conflicts, optical mapping, physical port conflicts, inventory allocation, CSV round trips and stale revisions. Fully passing optical examples are explicitly synthetic test fixtures, not catalog claims. Frontend tests use jsdom to run the shipped scripts, including out-of-order responses, catalog refresh, draft preservation, JSON/CSV import, export/share and startup retry.
+Backend tests exercise the actual repository inputs, failed startup/reload/recovery, strict schemas, hardware regressions, both-end validation and a real HTTP server. Breakout/project regressions cover complete coverage, global FEC conflicts, optical mapping, physical port conflicts, inventory allocation, CSV round trips and stale revisions. Cabling tests cover shared heads, stable IDs, installation confirmation invalidation, literal XLSX text, embedded PDF fonts and pagination. Fully passing optical examples are explicitly synthetic test fixtures, not catalog claims. Frontend tests use jsdom to run the shipped scripts, including out-of-order responses, catalog refresh, draft preservation, JSON/CSV import, export/share, installation edits, binary downloads and startup retry.
 
-`.github/workflows/compatibility-validator.yml` runs both suites and builds/starts the production Compose service with its resource limits. `tests/smoke.py` then checks nonempty catalog data, rejected products, both-end validation, recommendations, a complete breakout and a project BOM through HTTP:
+`.github/workflows/compatibility-validator.yml` runs both suites and builds/starts the production Compose service with its resource limits. `tests/smoke.py` then checks nonempty catalog data, rejected products, both-end validation, recommendations, a complete breakout, a project BOM, the cabling plan and all three PDF/XLSX downloads through HTTP:
 
 ```bash
 python tests/smoke.py http://127.0.0.1:8080

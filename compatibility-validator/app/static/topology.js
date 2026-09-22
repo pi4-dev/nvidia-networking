@@ -66,6 +66,7 @@
       $('validateBreakout').disabled = !catalog; $('addBreakoutToProject').disabled = true;
       if (breakout && rewriteDocument) { pendingBreakoutJSON = false; $('breakoutDocument').value = JSON.stringify(breakout, null, 2); }
     } else {
+      window.ValidatorCabling?.invalidate();
       projectReport = null; $('projectReport').replaceChildren(); $('projectStatus').textContent = 'Project changed. Validate again.';
       $('validateProject').disabled = !catalog; $('downloadBom').disabled = true;
       if (rewriteDocument) { pendingProjectJSON = false; $('projectDocument').value = JSON.stringify(project, null, 2); }
@@ -214,6 +215,7 @@
     if (value.connections.length > 200 || value.breakouts.length > 64 || value.owned_parts.length > 512) throw new Error('Project exceeds the supported entry/inventory limits.');
     if (!value.connections.every(c => c && typeof c === 'object' && c.a && c.b) || !value.owned_parts.every(p => p && typeof p === 'object')) throw new Error('Every connection needs both endpoint selections; inventory entries must be objects.');
     value.breakouts.forEach(assertBreakoutShape);
+    window.ValidatorCabling?.shape(value);
   }
   function assertBreakoutShape(value) {
     if (!value || !value.head || typeof value.head !== 'object' || !Array.isArray(value.branches) || value.branches.length > 16 ||
@@ -244,6 +246,7 @@
     invalidate('project'); renderProject();
   }
   function renderProject() {
+    window.ValidatorCabling?.render(project);
     $('projectName').value = project.name || 'Untitled project';
     if (!inventoryError) $('projectInventory').value = project.owned_parts.map(p => `${p.part_number},${p.quantity}`).join('\n');
     const entries = [...project.connections.map(e => ({ ...e, type: 'connection' })), ...project.breakouts.map(e => ({ ...e, type: 'breakout' }))];
@@ -385,7 +388,7 @@
   });
   $('projectRows').addEventListener('click', event => {
     const d = event.target.dataset;
-    if (d.removeEntry !== undefined) { const key = d.type === 'breakout' ? 'breakouts' : 'connections'; project[key] = project[key].filter(e => e.id !== d.removeEntry); invalidate('project'); renderProject(); }
+    if (d.removeEntry !== undefined) { const key = d.type === 'breakout' ? 'breakouts' : 'connections'; project[key] = project[key].filter(e => e.id !== d.removeEntry); window.ValidatorCabling?.prune(project); invalidate('project'); renderProject(); }
   });
   $('applyProjectJSON').addEventListener('click', () => { try { applyProject(JSON.parse($('projectDocument').value), true); } catch (error) { $('projectStatus').textContent = error.message; } });
   $('projectDocument').addEventListener('input', () => { pendingProjectJSON = true; invalidate('project', false); $('projectStatus').textContent = 'JSON edits pending. Apply them before validating or exporting.'; });
@@ -418,6 +421,10 @@
   $('downloadProjectCSV').addEventListener('click', () => { try { exportCSV('/api/project/connections.csv', 'project-connections.csv', projectRequest()); } catch (error) { $('projectStatus').textContent = error.message; } });
   $('downloadBom').addEventListener('click', () => { if (projectReport) exportCSV('/api/project/bom.csv', 'project-bom.csv', projectRequest()); });
   window.addEventListener('pagehide', () => Object.values(gates).forEach(g => g.cancel()));
+  window.ValidatorCabling?.init({ getProject: projectRequest, key: projectKey, change: update => {
+    if (pendingProjectJSON) throw new Error('Apply the pending project JSON edits before changing installation details.');
+    update(project); invalidate('project');
+  } });
   window.ValidatorTopology = {
     setCatalog,
     hasReport: view => !!(view === 'breakout' ? breakoutReport : projectReport),

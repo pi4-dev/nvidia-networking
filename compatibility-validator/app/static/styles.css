@@ -50,3 +50,10 @@ textarea { width: 100%; box-sizing: border-box; padding: .75rem; background: #11
 #projectView .actionbar { margin: 14px 0; }
 #projectInventory { margin-bottom: 12px; }
 summary:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.cabling-planner { margin-top: 28px; border-top: 1px solid var(--line2); padding-top: 16px; }
+.cabling-planner td { white-space: normal; overflow-wrap: anywhere; }
+.cabling-planner input[type="text"] { min-width: 160px; }
+.cabling-planner .endpoint-text { white-space: pre-line; }
+.label-preview { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; margin-top: 12px; }
+.label-preview article { border: 1px dashed var(--line2); padding: 16px; overflow-wrap: anywhere; }
+.label-preview strong { display: block; margin-bottom: 10px; }
