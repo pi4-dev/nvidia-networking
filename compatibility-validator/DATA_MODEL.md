@@ -81,7 +81,59 @@ Each `fiber_assemblies` entry defines unique `part_number`, `model`, `length_m`,
 
 `fiber_type` is OS2, SM-unspecified, OM3, OM4 or OM5. `SM-unspecified` preserves a documented single-mode cable without inventing an OS2 designation. Shipped MFP7E10 lengths through 30 m use documented OM3, longer lengths OM4; MFP7E30 remains SM-unspecified. Both families have documented female MPO-12/APC ends and Type B polarity. These cable facts do not establish the mating module gender or full lane mapping, so the user's pinout confirmation is still required.
 
-The assistant uses exact SKU lengths at least as long as the requested minimum, then validates actual length against both endpoints. Unresolved fiber PNs remain explicit incomplete specifications. Components and inventory counts describe one link, not a full breakout tree or a project-wide BOM.
+The assistant uses exact SKU lengths at least as long as the requested minimum, then validates actual length against both endpoints. Unresolved fiber PNs remain explicit incomplete specifications. Assistant quantities describe one link; project validation separately consolidates every declared connection and complete breakout.
+
+## Complete breakout requests
+
+`app/topology_models.py` defines strict, bounded request contracts without changing the canonical/profile schemas. `POST /api/breakout` accepts the following fields. See [the cable example](examples/breakout-2x400.json) for a complete request using real catalog selections.
+
+| Field | Meaning |
+| --- | --- |
+| `topology` | `cable` (default) or `optical`. |
+| `head` | Installed host/product selection with one required explicit `mode_id`. |
+| `branches` | 1–16 branch declarations; incomplete fanouts may be submitted to obtain coverage gaps. |
+| `fabric`, `length_m` | Protocol and actual complete assembly/path length. Unknown length remains unresolved. |
+| `mapping_verified` | User confirmation of the physical branch-to-head mapping; defaults to `false`. |
+| `optical_fanout` | Complete passive harness declaration for optical topology; forbidden for a cable assembly. |
+| `revision` | Optional catalog revision; a supplied stale revision returns `409`. |
+
+Every installed selection extends the existing `Selection` with `instance_id` and `port_number`. The instance identifies one physical device. `port_number` is a **1-based cage ordinal within `port_group_id`**, bounded to 1–1024 and checked against the effective hardware profile's documented count. It does not represent a vendor CLI label. Instance IDs and entry IDs use 1–64 letters, digits, dot, underscore, colon or hyphen, beginning with a letter or digit. Exact profiles and observed runtime use the same contracts as single-link validation.
+
+Each branch contains a unique `id`, installed `selection`, physical `termination` number (1–16), and `head_links` logical link numbers. Cable topology requires the same assembly/product/PN at the head and every termination. The complete request checks documented branch count, exact coverage, no duplicate physical cages or link assignments, capacity, common operating rate and a FEC intersection across the entire assembly. Missing or unused terminations remain `unknown`; duplicate or impossible assignments fail. The head mode is fixed for all branches, so independently valid branches cannot silently select contradictory head configurations.
+
+Optical branches additionally contain `head_optical_port`, `head_optical_lanes`, `branch_optical_lanes`, and optional `interop_evidence`. Optical lane indices identify Tx/Rx **pairs**; the two lists describe corresponding pairs in order. They are distinct from logical link indices and raw MPO pin positions. All documented head connectors/lanes and each remote module's lanes must be covered exactly once. Multi-connector remote modules without complete coverage remain unresolved. The validator checks lane count/rate, wavelength, fiber medium, connector/polish, full path reach, aggregate bandwidth and common FEC. Different or undocumented optical standards require a dated, scoped `Evidence` record for per-lane interoperability; a matching wavelength alone is insufficient.
+
+`optical_fanout` contains `part_number` (optional until known), `branch_count` (2–16), `head_ports` (1–16), `fiber: FiberCable`, and optional `evidence: Evidence`. Evidence must cover the complete harness's PN, length, connectors and lane map. Existing catalog transceiver, cable or point-to-point fiber PNs cannot be repurposed as a separate fanout harness. Project entries using the same external harness PN must agree on length, connectors and physical mapping. `fiber.pinout_verified` confirms gender/polarity/Tx-Rx wiring separately from the logical mapping confirmation.
+
+Harness and interoperability evidence is supplied with the project and is not written into the catalog. Manufacturer evidence can pass its scoped technical check; lab evidence remains conditional. Neither evidence type qualifies unrelated board/firmware/OS combinations. Exported breakout reports retain every branch's result, checks, qualification and mapping, plus whole-assembly checks and `common_fec`.
+
+## Connection projects and BOM
+
+`POST /api/project` accepts `format: "nvidia-connection-project-v1"`, `name`, `connections`, `breakouts`, `owned_parts`, and optional `revision`. A connection extends `ConnectionRequest` with a unique `id` and installed A/B selections. A breakout extends `BreakoutRequest` with a unique `id`. IDs are unique across both collections. Projects require at least one entry and permit at most 200 connections, 64 breakouts, 512 physical endpoint assignments, and 512 unique owned PNs. The body limit is 1 MiB; standalone breakout requests allow 256 KiB.
+
+Validation checks the complete project against one catalog snapshot. A stale nested entry also returns `409`. Unresolved catalog selections remain an `unknown` result for their entry while other entries are still evaluated. Repeated cages, conflicting device identities or incompatible runtime assertions for the same instance fail globally. Single-link scope warnings become required unknowns in a project; represent shared heads as complete breakout entries.
+
+The response contains `results`, `summary`, `checks`, `gaps`, `port_allocations`, the input `project`, and `bom`. The BOM counts physical cable/harness assemblies once per declared connection/breakout and optical modules once per occupied cage/product/PN. Conflicting selections remain visible instead of being silently discarded. Rows group by exact PN and expose `required`, `owned`, `reused`, `to_buy`, `verified_ordering`, source URLs and entry references. Inventory is allocated once globally; unused quantities appear in `unused_inventory`. `provisional` remains true whenever ordering evidence is incomplete or the project result is not `compatible`.
+
+JSON is the complete interchange format, including breakouts, physical mapping, runtime, evidence and inventory. The browser restores drafts locally, discards saved results on import, and clears physical confirmations for changed or absent revisions. It rejects obsolete responses after a draft edit. Unapplied JSON edits remain in the editor during catalog refresh and must be applied before validation/export.
+
+## Project CSV
+
+`GET /api/project/template.csv` provides the column header; [connections.csv](examples/connections.csv) supplies a real point-to-point example. `POST /api/project/import-csv` takes `{name, csv, revision}` and returns a project draft. It accepts comma, semicolon or tab separators, optionally a UTF-8 BOM, at most 200 rows, and at most 750,000 characters inside the JSON body limit. Invalid headers, duplicate columns, wrong row widths, invalid values and ambiguous device/PN lookups reject the entire import with row details.
+
+| Columns | Meaning |
+| --- | --- |
+| `id`, `fabric` | Unique connection ID and protocol; required. |
+| `a_instance`, `b_instance` | Physical device identities; required. |
+| `a_device`, `b_device` | Exact catalog ID or unique exact model; required. |
+| `a_port`, `b_port` | Positive physical cage ordinals; required. |
+| `a_group`, `b_group` | Physical group ID; optional only when the device has one group. |
+| `a_product`, `b_product`, `a_pn`, `b_pn` | Product and ordering PN; a unique known PN may resolve an omitted product ID. |
+| `a_mode`, `b_mode`, `a_end`, `b_end`, `a_profile`, `b_profile` | Optional operating mode, cable end and exact hardware profile. |
+| `a_` / `b_` + `sku`, `opn`, `adapter_variant`, `psid`, `firmware`, `os_name`, `os_version` | Optional observed runtime values. |
+| `length_m`, `fiber_pn`, `fiber_type`, `connector_a`, `connector_b`, `pinout_verified` | Actual path/cable length and optical assembly data; confirmation accepts `true`/`false` or `1`/`0`. |
+
+`POST /api/project/connections.csv` exports point-to-point selections from a project request. Projects containing breakouts must use JSON to preserve topology. `POST /api/project/bom.csv` revalidates the complete project and exports quantities, entry references, project result and provisional status. CSV fields that could execute spreadsheet formulas are escaped. Keep JSON as the authoritative format when exact free-text round trips or full project context are needed.
 
 ## Updating data
 

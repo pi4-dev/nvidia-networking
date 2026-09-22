@@ -44,8 +44,24 @@ def main(base):
     assert proposed["candidates"][0]["components"][0]["part_number"] == "980-9I601-00N003"
     assert any(c["technology"] == "optical" and c["ordering_complete"] for c in proposed["candidates"])
     assert all(c["validation"]["status"] == "unknown" for c in proposed["candidates"])
+    split_product = "Copper|MCP7Y00-Nxxx|finned head"
+    head = {"instance_id": "switch-01", "port_number": 1, "device_id": "profile:MQM9700-NS2F", "port_group_id": "ndr",
+            "mode_id": "2x400", "product_id": split_product, "part_number": "MCP7Y00-N003"}
+    branches = [{"id": f"branch-{i}", "termination": i, "head_links": [i], "selection": {
+        "instance_id": f"cx8-{i}", "port_number": 1, "device_id": "supernic:ConnectX-8 SuperNIC", "port_group_id": "catalog-1",
+        "hardware_profile_id": "900-9X81E-00EX-ST0", "mode_id": "1x400-ndr", "product_id": split_product,
+        "part_number": "MCP7Y00-N003"}} for i in (1, 2)]
+    fanout = {"head": head, "branches": branches, "fabric": "IB", "length_m": 3,
+              "mapping_verified": False, "revision": catalog["meta"]["revision"]}
+    split = request("/api/breakout", fanout)
+    assert split["assigned_branches"] == split["expected_branches"] == 2
+    assert split["status"] == "unknown"
+    project = request("/api/project", {"name": "Smoke project", "breakouts": [{**fanout, "id": "fanout-01"}],
+        "owned_parts": [{"part_number": "MCP7Y00-N003", "quantity": 1}], "revision": catalog["meta"]["revision"]})
+    assert project["bom"]["rows"][0]["required"] == 1 and project["bom"]["to_buy"] == 0
+    assert project["summary"]["physical_cages"] == 3
     print(f"Smoke passed: {len(catalog['devices'])} devices, {len(catalog['products'])} products, "
-          f"{proposed['total_candidates']} proposals, revision {result['revision']}")
+          f"{proposed['total_candidates']} proposals, complete breakout and project BOM, revision {result['revision']}")
 
 
 if __name__ == "__main__":

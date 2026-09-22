@@ -6,7 +6,8 @@
   <title>NVIDIA Networking Compatibility Validator</title>
   <link rel="stylesheet" href="/static/styles.css">
   <script src="/static/core.js" defer></script>
-  <script src="/static/app.js" defer></script>
+  <script src="/static/topology.js" defer></script>
+<script src="/static/app.js" defer></script>
 </head>
 <body>
 <header><div class="header-inner">
@@ -16,7 +17,7 @@
 <main><div class="stack">
   <div id="serviceMessage" class="message hidden" role="status"></div>
   <div class="actionbar">
-    <div class="tabs" role="tablist" aria-label="Validation scope"><button id="portTab" role="tab" aria-selected="true" aria-controls="portView">Port fit</button><button id="linkTab" role="tab" aria-selected="false" aria-controls="linkView">Connection A ↔ B</button><button id="wizardTab" role="tab" aria-selected="false" aria-controls="wizardView">Connection assistant</button></div>
+    <div class="tabs" role="tablist" aria-label="Validation scope"><button id="portTab" role="tab" aria-selected="true" aria-controls="portView">Port fit</button><button id="linkTab" role="tab" aria-selected="false" aria-controls="linkView">Connection A ↔ B</button><button id="wizardTab" role="tab" aria-selected="false" aria-controls="wizardView">Connection assistant</button><button id="breakoutTab" role="tab" aria-selected="false" aria-controls="breakoutView">Breakout 1 → N</button><button id="projectTab" role="tab" aria-selected="false" aria-controls="projectView">Project / BOM</button></div>
     <div class="actions"><button id="retry">Refresh catalog</button><button id="share">Copy configuration link</button><button id="export" disabled>Export JSON</button></div>
   </div>
   <div id="actionMessage" class="small" role="status"></div>
@@ -80,6 +81,7 @@
         <label class="check-label"><input id="pinout" type="checkbox"> I verified connector gender, polarity and lane mapping against the cable drawing.</label>
       </fieldset>
       <div class="actionbar"><button id="validateLink" class="primary">Validate connection</button><span id="linkStatus" role="status">Select the connection and run validation.</span></div>
+      <details class="project-add"><summary>Add this connection to a project</summary><p class="small">Give each physical device a unique instance ID. Port numbers are 1-based ordinals within the chosen physical group.</p><div class="grid4"><div><label for="projectConnectionId">Connection ID (optional)</label><input id="projectConnectionId" maxlength="64" placeholder="Automatic unique ID"></div><div><label for="projectAInstance">Device A instance</label><input id="projectAInstance" maxlength="64" value="switch-01"></div><div><label for="projectAPort">A physical cage ordinal</label><input id="projectAPort" type="number" min="1" max="1024" value="1"></div><div><label for="projectBInstance">Device B instance</label><input id="projectBInstance" maxlength="64" value="server-01"></div><div><label for="projectBPort">B physical cage ordinal</label><input id="projectBPort" type="number" min="1" max="1024" value="1"></div></div><button id="addConnectionToProject" disabled>Add validated selection to project</button><span id="addProjectMessage" role="status"></span></details>
       <div id="linkQualification" class="message"></div><div id="linkGaps"></div>
       <div id="linkChecks" class="checks" aria-live="polite"></div>
     </div></section>
@@ -108,6 +110,34 @@
       <label class="check-label"><input id="includeUnknown" type="checkbox" checked> Include proposals with missing evidence</label>
       <div class="actionbar"><button id="recommend" class="primary">Find connection options</button><span id="wizardStatus" role="status">Set requirements and search the catalog.</span></div>
       <div id="wizardResults" aria-live="polite"></div>
+    </div></section>
+  </div>
+
+  <div id="breakoutView" class="stack hidden" role="tabpanel" aria-labelledby="breakoutTab">
+    <section class="panel"><div class="panel-head"><h2>Validate the complete breakout</h2><button id="breakoutExample">Load 2 × 400G cable example</button></div><div class="panel-body">
+      <p class="small">Assign every physical branch once. Select one explicit mode for the shared head and each remote port. Logical head links and optical Tx/Rx lane pairs are separate mappings.</p>
+      <div id="breakoutNotice" class="message hidden" role="status"></div>
+      <div class="grid4"><div><label for="breakoutType">Topology</label><select id="breakoutType"><option value="cable">DAC / LACC / AOC assembly</option><option value="optical">Optical modules + fanout harness</option></select></div><div><label for="breakoutFabric">Fabric</label><select id="breakoutFabric"><option>IB</option><option>ETH</option><option>NVL</option></select></div><div><label for="breakoutLength">Actual full cable path (m)</label><input id="breakoutLength" type="number" min="0.1" max="1000000" step="0.1"></div><div><label for="breakoutEntryId">Project entry ID (optional)</label><input id="breakoutEntryId" maxlength="64" placeholder="Automatic unique ID"></div></div>
+      <div id="breakoutBuilder"></div><button id="addBreakoutBranch">Add branch</button>
+      <div id="opticalFanoutForm" class="hidden"></div>
+      <label class="check-label"><input id="breakoutMapping" type="checkbox">I verified all physical termination labels and logical host-link mappings against the drawing and configured split.</label>
+      <div class="actionbar"><button id="validateBreakout" class="primary">Validate all branches</button><button id="addBreakoutToProject" disabled>Add breakout to project</button><button id="downloadBreakout">Export definition JSON</button><span id="breakoutStatus" role="status"></span></div>
+      <div id="breakoutResult" aria-live="polite"></div>
+      <details><summary>Full breakout definition / import JSON</summary><label for="breakoutDocument">Breakout JSON</label><textarea id="breakoutDocument" rows="14" maxlength="262144" spellcheck="false"></textarea><button id="applyBreakoutJSON">Load definition</button></details>
+    </div></section>
+  </div>
+  <div id="projectView" class="stack hidden" role="tabpanel" aria-labelledby="projectTab">
+    <section class="panel"><div class="panel-head"><h2>Connection project and bill of materials</h2><button id="newProject">New project</button></div><div class="panel-body">
+      <p class="small">Add selections from Connection A ↔ B or Breakout, or import a project. The same device instance always represents one physical device. Shared heads belong in one complete breakout entry.</p>
+      <div id="projectNotice" class="message hidden" role="status"></div>
+      <label for="projectName">Project name</label><input id="projectName" maxlength="128" value="Untitled project">
+      <div class="actionbar"><div><label for="projectImport">Import JSON project or CSV connections (replaces current draft)</label><input id="projectImport" type="file" accept=".json,.csv,text/csv,application/json"></div><button id="downloadProjectTemplate">Download CSV template</button><button id="downloadProjectJSON">Export project JSON</button><button id="downloadProjectCSV">Export connections CSV</button></div>
+      <div id="projectRows" class="tablewrap"></div>
+      <label for="projectInventory">Project inventory — one PN,quantity per line</label><textarea id="projectInventory" rows="4" maxlength="80000" placeholder="MCP7Y00-N003,2"></textarea>
+      <p class="small">Inventory is consumed once across the project. The BOM counts one breakout assembly and one shared optical head once. Failed or unresolved selections remain in a provisional BOM.</p>
+      <div class="actionbar"><button id="validateProject" class="primary">Validate project</button><button id="downloadBom" disabled>Export BOM CSV</button><span id="projectStatus" role="status"></span></div>
+      <div id="projectReport" aria-live="polite"></div>
+      <details><summary>Edit complete project JSON</summary><label for="projectDocument">Project JSON</label><textarea id="projectDocument" rows="16" maxlength="1048576" spellcheck="false"></textarea><button id="applyProjectJSON">Apply JSON edits</button></details>
     </div></section>
   </div>
 </div></main>

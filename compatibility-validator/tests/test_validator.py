@@ -331,7 +331,7 @@ class APITests(unittest.TestCase):
         result = json.loads(body)
         self.assertEqual(code, 200)
         self.assertEqual(result['revision'], revision)
-        self.assertEqual(result['application_version'], '0.03-dev')
+        self.assertEqual(result['application_version'], '0.04-dev')
         self.assertEqual(result['candidates'][0]['components'][0]['part_number'], '980-9I601-00N003')
         host = dict(device_id='supernic:ConnectX-8 SuperNIC', port_group_id='catalog-1',
                     hardware_profile_id='900-9X81E-00EX-ST0', revision=revision)
@@ -353,6 +353,43 @@ class APITests(unittest.TestCase):
                 self.assertEqual(self.request(route, b'{}')[0], 422)
         host['hardware_profile_id'] = '900-9X81Q-00CN-ST0'
         self.assertEqual(self.request('/api/hardware/inspect', json.dumps(host).encode())[0], 404)
+
+    def test_complete_breakout_and_project_http(self):
+        from test_topology import cable_breakout, project_of
+        b = cable_breakout(); b.revision = api.catalog.get()['revision']
+        code, _, body = self.request('/api/breakout', b.model_dump_json().encode())
+        self.assertEqual(code, 200)
+        self.assertEqual(json.loads(body)['assigned_branches'], 2)
+        p = project_of(b); p.revision = b.revision
+        code, _, body = self.request('/api/project', p.model_dump_json().encode())
+        report = json.loads(body)
+        self.assertEqual(code, 200)
+        self.assertEqual(report['bom']['rows'][0]['required'], 1)
+        self.assertEqual(report['application_version'], '0.04-dev')
+        code, headers, body = self.request('/api/project/bom.csv', p.model_dump_json().encode())
+        self.assertEqual(code, 200)
+        self.assertIn('text/csv', headers.get('content-type', headers.get('Content-Type', '')))
+        self.assertIn(b'MCP7Y00-N003', body)
+        self.assertEqual(self.request('/api/project/connections.csv', p.model_dump_json().encode())[0], 422)
+
+    def test_project_csv_import_export_and_stale_entry_http(self):
+        from test_topology import point_connection, project_of
+        from app.projects import connection_csv
+        p = project_of(connections=[point_connection()]); p.revision = api.catalog.get()['revision']
+        code, _, body = self.request('/api/project/import-csv', json.dumps({'csv': connection_csv(p), 'revision': p.revision}).encode())
+        self.assertEqual(code, 200)
+        self.assertEqual(json.loads(body)['project']['connections'][0]['a']['instance_id'], 'switch-point')
+        self.assertEqual(self.request('/api/project/template.csv')[0], 200)
+        self.assertEqual(self.request('/api/project/connections.csv', p.model_dump_json().encode())[0], 200)
+        p.connections[0].revision = '000000000000'
+        self.assertEqual(self.request('/api/project', p.model_dump_json().encode())[0], 409)
+
+    def test_topology_request_limits_are_separate_from_single_link_limits(self):
+        self.assertEqual(self.request('/api/breakout', b'x' * (256 * 1024 + 1))[0], 413)
+        self.assertEqual(self.request('/api/project', b'x' * (1024 * 1024 + 1))[0], 413)
+        self.assertEqual(self.request('/api/connection', b'x' * 17000)[0], 413)
+        for route in ['/api/breakout', '/api/project', '/api/project/import-csv']:
+            with self.subTest(route=route): self.assertEqual(self.request(route, b'{}')[0], 422)
 
 
 if __name__=='__main__':

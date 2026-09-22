@@ -7,6 +7,7 @@ const core = require('../app/static/core.js');
 const html = fs.readFileSync(path.join(__dirname, '../app/static/index.html'), 'utf8');
 const script = fs.readFileSync(path.join(__dirname, '../app/static/app.js'), 'utf8');
 const coreScript = fs.readFileSync(path.join(__dirname, '../app/static/core.js'), 'utf8');
+const topologyScript = fs.readFileSync(path.join(__dirname, '../app/static/topology.js'), 'utf8');
 const r1 = '111111111111', r2 = '222222222222';
 const tick = () => new Promise(resolve => setImmediate(resolve));
 async function settle() { for (let i = 0; i < 8; i++) await tick(); }
@@ -25,7 +26,7 @@ function harness(handler, options={}) {
   w.URL.createObjectURL=blob=>{exported=blob;return 'blob:test';};w.URL.revokeObjectURL=()=>{};
   w.HTMLAnchorElement.prototype.click=function(){};
   Object.defineProperty(w.navigator,'clipboard',{value:{writeText:async value=>{copied=value;}}});
-  w.eval(coreScript);w.eval(script);
+  w.eval(coreScript);w.eval(topologyScript);w.eval(script);
   return {dom,w,get copied(){return copied;},get exported(){return exported;},close(){dom.window.close();}};
 }
 function apiHandler(revision=()=>r1) { return async(url)=>{
@@ -34,7 +35,7 @@ function apiHandler(revision=()=>r1) { return async(url)=>{
   const q=new URL(url,'http://localhost').searchParams;
   return response({revision:revision(),device_id:q.get('device_id'),port_group_id:q.get('port_group_id'),products:[evaluated(q.get('device_id'))]});
 };}
-function change(h,id,value){const e=h.w.document.getElementById(id);e.value=value;e.dispatchEvent(new h.w.Event('change'));}
+function change(h,id,value){const e=h.w.document.getElementById(id);e.value=value;e.dispatchEvent(new h.w.Event('change',{bubbles:true}));}
 function click(h,id){h.w.document.getElementById(id).click();}
 
 test('late response for device A cannot overwrite device B, even if fetch ignores abort',async()=>{
@@ -134,7 +135,7 @@ test('catalog text and source URLs cannot inject script markup',()=>{
   assert.equal(core.statusClass('" onclick="alert(1)'), 'warn');
 });
 
-function input(h,id,value){const e=h.w.document.getElementById(id);e.value=value;e.dispatchEvent(new h.w.Event('input'));}
+function input(h,id,value){const e=h.w.document.getElementById(id);e.value=value;e.dispatchEvent(new h.w.Event('input',{bubbles:true}));}
 function hardwareBundle(){const b=bundle();b.hardware_profiles=[{id:'board-A',device_id:'A',label:'Exact board A',identity:{},ports:[{port_group_id:'g',module_speed_gbps:800,modes:[{id:'exact-2x400',links:2,speed_gbps:400,fabrics:['IB']}]}]}];return b;}
 function inspection(){return {revision:r1,profile:{label:'Exact board A',notes:[]},facts:[{field:'opn',value:'board-A',evidence:{kind:'manufacturer',verified_on:'2026-09-21',scope:'Only this board <img onerror="bad()">',source_url:'https://example.com/manual'}}],checks:[],gaps:[{code:'firmware',message:'Firmware qualification missing',action:'Read installed firmware and add a scoped report.'}]};}
 function proposal(){
@@ -226,5 +227,141 @@ test('assistant constraints and inventory restore from a shared URL',async()=>{
     assert.equal(h.w.document.getElementById('includeUnknown').checked,false);
     click(h,'share');await settle();const q=new URL(h.copied).searchParams;
     assert.equal(q.get('ownedParts'),'PN-A,2');assert.equal(q.get('wizardSpeed'),'200');
+  }finally{h.close();}
+});
+
+function breakoutDraft(){
+  const host=(instance,device,mode)=>({instance_id:instance,device_id:device,port_group_id:'g',port_number:1,mode_id:mode,hardware_profile_id:null,runtime:{},product_id:'fan',part_number:'PN-fan',endpoint_id:device==='A'?'A':'B'});
+  return {topology:'cable',head:host('head-01','A','2x400'),branches:[1,2].map(i=>({id:'branch-'+i,termination:i,head_links:[i],head_optical_port:1,head_optical_lanes:[],branch_optical_lanes:[],interop_evidence:null,selection:host('remote-'+i,'B','1x400')})),fabric:'IB',length_m:3,mapping_verified:false,optical_fanout:null,revision:r1};
+}
+function breakoutResponse(request=breakoutDraft(),revision=r1){return {revision,scope:'complete-breakout',status:'unknown',assigned_branches:2,expected_branches:2,common_fec:[],checks:[{code:'breakout.mapping',state:'unknown',message:'Verify the complete mapping',required:true}],gaps:[],selection:request,branches:request.branches.map(b=>({...b,validation:{status:'unknown',checks:[],gaps:[]}}))};}
+function projectDraft(){return {format:'nvidia-connection-project-v1',name:'Test project',revision:r1,connections:[],breakouts:[{...breakoutDraft(),id:'fanout-1'}],owned_parts:[]};}
+function projectResponse(request=projectDraft(),revision=r1){return {revision,scope:'connection-project',name:request.name,status:'unknown',summary:{connections:request.connections.length,breakouts:request.breakouts.length,device_instances:3,physical_cages:3},checks:[],gaps:[],results:[...request.connections.map(c=>({id:c.id,type:'connection',status:'unknown',validation:{checks:[],gaps:[]}})),...request.breakouts.map(b=>({id:b.id,type:'breakout',status:'unknown',validation:{checks:[],gaps:[]}}))],bom:{rows:[{part_number:'PN-fan',model:'Fanout cable',roles:['cable'],required:1,owned:1,reused:1,to_buy:0,verified_ordering:true,references:['fanout-1'],source_urls:[]}],total_components:1,reused:1,to_buy:0,ordering_complete:true,provisional:true,unused_inventory:[]},project:request,notes:['Whole project inventory.']};}
+function topologyBundle(revision=r1){const b=bundle(revision);b.devices[1].port_groups[0].modes=[{id:'1x400',links:1,speed_gbps:400}];const p=product('fan');p.endpoints=[{id:'A',role:'head',count:1,interface_type:'OSFP-finned',modes:[{id:'2x400',links:2,speed_gbps:400}]},{id:'B',role:'branch',count:2,interface_type:'OSFP-flattop',modes:[{id:'1x400',links:1,speed_gbps:400}]}];b.products.push(p);return b;}
+function loadBreakout(h){input(h,'breakoutDocument',JSON.stringify(breakoutDraft()));click(h,'applyBreakoutJSON');}
+function loadProject(h,value=projectDraft()){input(h,'projectDocument',JSON.stringify(value));click(h,'applyProjectJSON');}
+
+test('complete breakout submits explicit modes and every physical branch, then adds one project entry',async()=>{
+  let posted;
+  const h=harness(async(url,opts)=>{
+    if(url==='/api/catalog')return response(topologyBundle());
+    if(url==='/api/breakout'){posted=JSON.parse(opts.body);return response(breakoutResponse(posted));}
+    return apiHandler()(url);
+  });
+  try{
+    await settle();click(h,'breakoutTab');loadBreakout(h);h.w.document.getElementById('breakoutMapping').click();
+    click(h,'validateBreakout');await settle();
+    assert.equal(posted.head.mode_id,'2x400');assert.equal(posted.branches.length,2);assert.equal(posted.mapping_verified,true);
+    assert.equal(posted.branches[1].selection.instance_id,'remote-2');assert.deepEqual(posted.branches[1].head_links,[2]);
+    assert.match(h.w.document.getElementById('breakoutStatus').textContent,/2 \/ 2/);
+    click(h,'addBreakoutToProject');click(h,'projectTab');click(h,'downloadProjectJSON');
+    const exported=JSON.parse(await h.exported.text());assert.equal(exported.breakouts.length,1);assert.equal(exported.connections.length,0);
+    assert.equal(exported.breakouts[0].branches.length,2);
+  }finally{h.close();}
+});
+
+test('editing a branch clears mapping confirmation and rejects an old breakout response',async()=>{
+  let resolve;
+  const h=harness(async url=>url==='/api/catalog'?response(topologyBundle()):url==='/api/breakout'?new Promise(done=>{resolve=done;}):apiHandler()(url));
+  try{
+    await settle();click(h,'breakoutTab');loadBreakout(h);h.w.document.getElementById('breakoutMapping').click();click(h,'validateBreakout');await settle();
+    input(h,'top-b0-port_number','2');assert.equal(h.w.document.getElementById('breakoutMapping').checked,false);
+    resolve(response(breakoutResponse()));await settle();assert.equal(h.w.document.getElementById('breakoutResult').textContent,'');
+    assert.equal(h.w.document.getElementById('addBreakoutToProject').disabled,true);assert.equal(h.w.document.getElementById('export').disabled,true);
+  }finally{h.close();}
+});
+
+test('project input, aggregate BOM display and full report export preserve the document',async()=>{
+  let posted;
+  const h=harness(async(url,opts)=>{
+    if(url==='/api/project'){posted=JSON.parse(opts.body);return response(projectResponse(posted));}
+    return apiHandler()(url);
+  });
+  try{
+    await settle();click(h,'projectTab');loadProject(h);input(h,'projectInventory','PN-fan,1');click(h,'validateProject');await settle();
+    assert.deepEqual(posted.owned_parts,[{part_number:'PN-fan',quantity:1}]);assert.equal(posted.breakouts[0].branches.length,2);
+    assert.match(h.w.document.getElementById('projectReport').textContent,/1 physical components · 1 reused · 0 to buy/);
+    click(h,'export');const report=JSON.parse(await h.exported.text());assert.equal(report.scope,'connection-project');assert.equal(report.project.breakouts.length,1);
+    assert.equal(report.result.revision,r1);assert.equal(h.w.document.getElementById('share').disabled,true);
+  }finally{h.close();}
+});
+
+test('project edits and unapplied JSON invalidate pending validations and cannot export stale BOM',async()=>{
+  let resolve;
+  const h=harness(async url=>url==='/api/project'?new Promise(done=>{resolve=done;}):apiHandler()(url));
+  try{
+    await settle();click(h,'projectTab');loadProject(h);click(h,'validateProject');await settle();
+    input(h,'projectDocument','{ invalid edits');resolve(response(projectResponse()));await settle();
+    assert.equal(h.w.document.getElementById('projectReport').textContent,'');assert.equal(h.w.document.getElementById('downloadBom').disabled,true);
+    click(h,'downloadProjectJSON');assert.match(h.w.document.getElementById('projectStatus').textContent,/pending project JSON/);
+    assert.equal(h.exported,undefined);
+  }finally{h.close();}
+});
+
+test('old project revisions clear nested mapping and pinout confirmations before revalidation',async()=>{
+  const h=harness(apiHandler());
+  try{
+    await settle();const p=projectDraft();p.revision=r2;p.breakouts[0].mapping_verified=true;
+    loadProject(h,p);click(h,'downloadProjectJSON');const exported=JSON.parse(await h.exported.text());
+    assert.equal(exported.revision,r1);assert.equal(exported.breakouts[0].mapping_verified,false);
+    assert.match(h.w.document.getElementById('projectNotice').textContent,/confirmations were cleared/);
+  }finally{h.close();}
+});
+
+test('malformed JSON imports preserve the preceding valid project',async()=>{
+  const h=harness(apiHandler());
+  try{
+    await settle();loadProject(h);input(h,'projectDocument',JSON.stringify({...projectDraft(),connections:[null]}));click(h,'applyProjectJSON');
+    assert.match(h.w.document.getElementById('projectStatus').textContent,/endpoint selections/);
+    const saved=JSON.parse(h.w.localStorage.getItem('nvidia-project-v1'));assert.equal(saved.breakouts.length,1);assert.equal(saved.connections.length,0);
+  }finally{h.close();}
+});
+
+test('catalog refresh preserves unapplied topology JSON edits and invalid inventory text',async()=>{
+  const h=harness(apiHandler());
+  try{
+    await settle();loadProject(h);loadBreakout(h);
+    input(h,'projectInventory','PN-fan,invalid');
+    input(h,'projectDocument','{ project work in progress');input(h,'breakoutDocument','{ breakout work in progress');
+    h.w.ValidatorTopology.setCatalog(topologyBundle(r2));
+    assert.equal(h.w.document.getElementById('projectDocument').value,'{ project work in progress');
+    assert.equal(h.w.document.getElementById('breakoutDocument').value,'{ breakout work in progress');
+    assert.equal(h.w.document.getElementById('projectInventory').value,'PN-fan,invalid');
+    click(h,'downloadProjectJSON');assert.match(h.w.document.getElementById('projectStatus').textContent,/pending project JSON/);
+    click(h,'downloadBreakout');assert.match(h.w.document.getElementById('breakoutStatus').textContent,/edited JSON/);
+    assert.equal(h.exported,undefined);
+  }finally{h.close();}
+});
+
+test('breakout import without a catalog revision requires fresh mapping confirmation',async()=>{
+  const h=harness(apiHandler());
+  try{
+    await settle();const b=breakoutDraft();delete b.revision;b.mapping_verified=true;
+    input(h,'breakoutDocument',JSON.stringify(b));click(h,'applyBreakoutJSON');click(h,'downloadBreakout');
+    const exported=JSON.parse(await h.exported.text());assert.equal(exported.mapping_verified,false);assert.equal(exported.revision,r1);
+  }finally{h.close();}
+});
+
+test('a late CSV import cannot overwrite a project edited while importing',async()=>{
+  let resolveImport;
+  const h=harness(async url=>url==='/api/project/import-csv'?new Promise(done=>{resolveImport=done;}):apiHandler()(url));
+  try{
+    await settle();loadProject(h);
+    const element=h.w.document.getElementById('projectImport');
+    Object.defineProperty(element,'files',{value:[{name:'links.csv',size:100,text:async()=> 'id,fabric\nlink-1,IB'}],configurable:true});
+    element.dispatchEvent(new h.w.Event('change'));await settle();
+    input(h,'projectName','Edited while importing');resolveImport(response({revision:r1,project:{...projectDraft(),name:'Stale CSV'}}));await settle();
+    assert.equal(h.w.document.getElementById('projectName').value,'Edited while importing');
+  }finally{h.close();}
+});
+
+test('physical identifiers and port ordinals are included when adding an A-to-B result to the project',async()=>{
+  const h=harness(async(url,options)=>url==='/api/connection'?response({...proposal().candidates[0].validation,revision:r1}):apiHandler()(url));
+  try{
+    await settle();click(h,'linkTab');click(h,'validateLink');await settle();
+    input(h,'projectAInstance','leaf-01');input(h,'projectAPort','4');input(h,'projectBInstance','dgx-02');input(h,'projectBPort','2');
+    click(h,'addConnectionToProject');click(h,'downloadProjectJSON');const p=JSON.parse(await h.exported.text());
+    assert.equal(p.connections[0].a.instance_id,'leaf-01');assert.equal(p.connections[0].a.port_number,4);
+    assert.equal(p.connections[0].b.instance_id,'dgx-02');assert.equal(p.connections[0].b.port_number,2);
   }finally{h.close();}
 });

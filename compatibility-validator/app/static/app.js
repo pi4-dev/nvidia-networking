@@ -77,7 +77,10 @@
   function clearRuntime(host) { Object.keys(runtimeFields).forEach(f => { $(host + f).value = ''; }); }
   function productFor(id) { return state.products.find(p => p.id === id); }
   function portKey() { return JSON.stringify([state.meta?.revision, hostSelection('port'), $('fabricFilter').value]); }
-  function updateExport() { $('export').disabled = state.view === 'wizard' ? !state.wizardResult : state.view === 'link' ? !state.linkResult : !state.hardwareReport && !state.rows.some(i => i.id === state.selected); }
+  function updateExport() {
+    $('export').disabled = ['breakout', 'project'].includes(state.view) ? !window.ValidatorTopology?.hasReport(state.view) : state.view === 'wizard' ? !state.wizardResult : state.view === 'link' ? !state.linkResult : !state.hardwareReport && !state.rows.some(i => i.id === state.selected);
+    $('addConnectionToProject').disabled = !state.linkResult;
+  }
   function showChecks(id, checks) {
     $(id).innerHTML = `<table><thead><tr><th>Check</th><th>Evidence and remaining requirements</th><th>Source</th></tr></thead><tbody>${checks.map(c => `<tr><td>${badge(c.state)}<code>${esc(c.code)}</code></td><td>${esc(c.message)}${c.state === 'unknown' ? `<div class="small">${c.required ? 'Required information missing' : 'Condition to verify'}</div>` : ''}</td><td>${c.source_url ? sourceLink(c.source_url, 'Source ↗') : '—'}</td></tr>`).join('')}</tbody></table>`;
   }
@@ -287,11 +290,13 @@
     }
   }
   function setView(view) {
-    state.view = ['link', 'wizard'].includes(view) ? view : 'port';
-    for (const name of ['port', 'link', 'wizard']) {
+    state.view = ['link', 'wizard', 'breakout', 'project'].includes(view) ? view : 'port';
+    for (const name of ['port', 'link', 'wizard', 'breakout', 'project']) {
       $(name + 'View').classList.toggle('hidden', state.view !== name);
       $(name + 'Tab').setAttribute('aria-selected', String(state.view === name));
     }
+    $('share').disabled = ['breakout', 'project'].includes(state.view);
+    $('share').title = $('share').disabled ? 'Export the complete definition/project JSON to share these configurations.' : '';
     updateExport();
   }
   async function loadCatalog(initial = false) {
@@ -303,6 +308,7 @@
       const wanted = initial || !state.meta ? restoreConfig() : readConfig();
       state.meta = bundle.meta; state.devices = bundle.devices; state.products = bundle.products; state.online = true; $('validateLink').disabled = false;
       state.hardware = bundle.hardware_profiles || []; state.fibers = bundle.fiber_assemblies || [];
+      window.ValidatorTopology?.setCatalog(bundle);
       refreshFilters(wanted); fillPortDevices(wanted); fillLink(wanted); fillWizard(wanted);
       choices('fiberPn', state.fibers.map(f => [f.part_number, `${f.part_number} · ${f.length_m}m · ${f.fiber_type}`]), wanted.fiberPn, 'Custom fiber — ordering PN unspecified');
       for (const side of ['A', 'B']) {
@@ -328,6 +334,7 @@
     finally { pollTimer = setTimeout(pollMeta, 5000); }
   }
   function exportedReport() {
+    if (['breakout', 'project'].includes(state.view)) return window.ValidatorTopology.exportReport(state.view);
     const item = state.rows.find(p => p.id === state.selected);
     return { format: 'nvidia-compatibility-report-v1', exported_at: new Date().toISOString(),
       catalog: state.meta, api_online: state.online, configuration: readConfig(),
@@ -444,6 +451,19 @@
   $('inspectHardware').addEventListener('click', inspectHardware);
   $('recommend').addEventListener('click', runWizard);
   $('wizardTab').addEventListener('click', () => { setView('wizard'); save(); });
+  for (const name of ['breakout', 'project']) $(name + 'Tab').addEventListener('click', () => { setView(name); save(); });
+  window.addEventListener('topology-results-changed', updateExport);
+  $('addConnectionToProject').addEventListener('click', () => {
+    if (!state.linkResult) return;
+    try {
+      const request = state.linkResult.selection || connectionRequest();
+      const id = window.ValidatorTopology.addConnection(request, { id: $('projectConnectionId').value.trim(),
+        a: { instance_id: $('projectAInstance').value.trim(), port_number: Number($('projectAPort').value) },
+        b: { instance_id: $('projectBInstance').value.trim(), port_number: Number($('projectBPort').value) } });
+      $('addProjectMessage').textContent = `Added ${id}. Open Project / BOM to check shared ports and inventory.`;
+      $('projectConnectionId').value = '';
+    } catch (error) { $('addProjectMessage').textContent = error.message; }
+  });
   for (const host of hosts) {
     const invalidate = host === 'port' ? () => refreshPort() : host.startsWith('w') ? invalidateWizard : () => { $('pinout').checked = false; invalidateLink(); };
     $(host + 'Profile').addEventListener('change', () => { const wanted = readConfig(); clearRuntime(host); fillHardware(host, wanted); invalidate(); });

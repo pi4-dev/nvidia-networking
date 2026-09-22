@@ -1,6 +1,7 @@
 """Read-only HTTP API with revision-consistent validation and bounded requests."""
 
 import logging
+import csv
 import threading
 from collections import OrderedDict
 from datetime import datetime, timezone
@@ -10,13 +11,17 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from .catalog import CatalogUnavailable, LiveCatalog
-from .config import COMPAT_CACHE_MAX_ENTRIES, DATA_PATH, MAX_REQUEST_BYTES, PROFILE_PATH, STATIC_DIR
+from .config import (COMPAT_CACHE_MAX_ENTRIES, DATA_PATH, MAX_REQUEST_BYTES, PROFILE_PATH,
+                     STATIC_DIR, MAX_PROJECT_BYTES, MAX_BREAKOUT_BYTES)
 from .models import ConnectionRequest, Fabric, HardwareInspection, PortEvaluation, RecommendationRequest
 from .rules import decide, evaluate, validate_connection
 from .hardware import effective_host, inspect_hardware, identity_checks, qualify
 from .recommendations import recommend
+from .topology_models import BreakoutRequest, ProjectRequest, ProjectCSV
+from .topology import validate_breakout
+from .projects import StaleProject, validate_project, import_project_csv, bom_csv, connection_csv, CSV_FIELDS
 
-VERSION = "0.03-dev"
+VERSION = "0.04-dev"
 logger = logging.getLogger("uvicorn.error")
 app = FastAPI(title="NVIDIA Networking Compatibility Validator", version=VERSION)
 catalog = LiveCatalog(DATA_PATH, PROFILE_PATH)
@@ -34,12 +39,13 @@ class BodyLimitMiddleware:
             await self.app(scope, receive, send)
             return
         body = bytearray()
+        limit = MAX_PROJECT_BYTES if scope["path"] in {"/api/project", "/api/project/import-csv", "/api/project/bom.csv", "/api/project/connections.csv"} else MAX_BREAKOUT_BYTES if scope["path"] == "/api/breakout" else MAX_REQUEST_BYTES
         while True:
             message = await receive()
             if message["type"] == "http.disconnect":
                 return
             chunk = message.get("body", b"")
-            if len(body) + len(chunk) > MAX_REQUEST_BYTES:
+            if len(body) + len(chunk) > limit:
                 await JSONResponse({"detail": "Request body too large"}, status_code=413)(scope, receive, send)
                 return
             body.extend(chunk)
@@ -242,3 +248,66 @@ def recommendations(request: RecommendationRequest):
     except KeyError as exc:
         raise HTTPException(404, exc.args[0]) from None
     return {**result, "application_version": VERSION, "evaluated_at": datetime.now(timezone.utc).isoformat()}
+
+
+@app.post("/api/breakout")
+def breakout(request: BreakoutRequest):
+    snapshot = snapshot_for_revision(request.revision)
+    try:
+        result = validate_breakout(snapshot, request)
+    except KeyError as exc:
+        raise HTTPException(404, exc.args[0]) from None
+    return {**result, "application_version": VERSION, "evaluated_at": datetime.now(timezone.utc).isoformat()}
+
+
+def project_result(request):
+    snapshot = snapshot_for_revision(request.revision)
+    try:
+        result = validate_project(snapshot, request)
+    except StaleProject as exc:
+        raise HTTPException(409, str(exc)) from None
+    return {**result, "application_version": VERSION, "evaluated_at": datetime.now(timezone.utc).isoformat()}
+
+
+@app.post("/api/project")
+def project(request: ProjectRequest):
+    return project_result(request)
+
+
+@app.post("/api/project/import-csv")
+def project_csv_import(request: ProjectCSV):
+    snapshot = snapshot_for_revision(request.revision)
+    try:
+        imported = import_project_csv(snapshot, request)
+    except (ValueError, csv.Error) as exc:
+        # Pydantic's rich exception text may contain raw input; report its public
+        # summary separately instead of leaking unbounded CSV content.
+        from pydantic import ValidationError
+        detail = "CSV project fails validation: " + exc.errors()[0]["msg"] if isinstance(exc, ValidationError) else str(exc)
+        raise HTTPException(422, detail) from None
+    return {"revision": snapshot["revision"], "project": imported.model_dump()}
+
+
+def csv_response(content, filename):
+    return Response(content="\ufeff" + content, media_type="text/csv; charset=utf-8",
+                    headers={"Content-Disposition": f'attachment; filename="{filename}"'})
+
+
+@app.post("/api/project/bom.csv")
+def project_bom_export(request: ProjectRequest):
+    return csv_response(bom_csv(project_result(request)), "project-bom.csv")
+
+
+@app.post("/api/project/connections.csv")
+def project_connections_export(request: ProjectRequest):
+    snapshot_for_revision(request.revision)
+    try:
+        content = connection_csv(request)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from None
+    return csv_response(content, "project-connections.csv")
+
+
+@app.get("/api/project/template.csv")
+def project_csv_template():
+    return csv_response(",".join(CSV_FIELDS) + "\r\n", "project-template.csv")

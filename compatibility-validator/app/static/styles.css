@@ -35,3 +35,18 @@ textarea { width: 100%; box-sizing: border-box; padding: .75rem; background: #11
 #hardwareReport td { overflow-wrap: anywhere; white-space: normal; max-width: 450px; }
 .tabs { flex-wrap: wrap; }
 .grid3 > *, .grid4 > *, select, input { min-width: 0; }
+
+.topology-host { margin: 14px 0; }
+.topology-host details { margin-top: 12px; }
+.branch-card { margin: 16px 0; padding: 14px; border: 1px solid var(--line2); border-radius: 10px; }
+.branch-card .topology-host { border: 0; padding: 8px 0; }
+.project-add { margin-top: 20px; padding: 12px; border: 1px solid var(--line); border-radius: 8px; }
+.project-add button { margin-top: 12px; }
+#breakoutResult td, #projectRows td, #projectReport td { white-space: normal; overflow-wrap: anywhere; }
+#projectReport .checks, #breakoutResult .checks { max-height: 480px; overflow: auto; }
+#breakoutDocument, #projectDocument { font-family: ui-monospace, monospace; font-size: 12px; }
+#projectReport h3 { margin-top: 24px; }
+#breakoutView details, #projectView details { margin-top: 12px; }
+#projectView .actionbar { margin: 14px 0; }
+#projectInventory { margin-bottom: 12px; }
+summary:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
