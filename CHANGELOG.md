@@ -11,7 +11,10 @@ releases. Historical dates below come from their referenced commits. The `v0.01`
 
 ## [Unreleased]
 
-No changes since the latest milestone.
+### Changed
+
+- Pinned the `0.05-dev` milestone and comparison links to its implementation
+  commit, so future changes on `main` remain distinguishable.
 
 ## [0.05-dev] - 2026-09-22
 
@@ -54,6 +57,8 @@ No changes since the latest milestone.
 
 Previous state: branch [`v0.04`](https://github.com/pi4-dev/nvidia-networking/tree/v0.04),
 commit [`231c96f`](https://github.com/pi4-dev/nvidia-networking/commit/231c96fe07230279edfe8817da89528c754ee4e5).
+
+Reference: commit [`4b78e98`](https://github.com/pi4-dev/nvidia-networking/commit/4b78e9855fccaa96c4312c726d019d540b457154).
 
 ## [0.04-dev] - 2026-09-22
 
@@ -168,8 +173,8 @@ commit [`6071fa9`](https://github.com/pi4-dev/nvidia-networking/commit/6071fa9f0
   errors explicitly; never record planned features as completed or tests as passed
   unless they actually ran successfully.
 
-[Unreleased]: https://github.com/pi4-dev/nvidia-networking/blob/main/CHANGELOG.md#unreleased
-[0.05-dev]: https://github.com/pi4-dev/nvidia-networking/compare/674fad8f5d87413f81a02bfd342a0c2d14a67041...main
+[Unreleased]: https://github.com/pi4-dev/nvidia-networking/compare/4b78e9855fccaa96c4312c726d019d540b457154...main
+[0.05-dev]: https://github.com/pi4-dev/nvidia-networking/compare/674fad8f5d87413f81a02bfd342a0c2d14a67041...4b78e9855fccaa96c4312c726d019d540b457154
 [0.04-dev]: https://github.com/pi4-dev/nvidia-networking/compare/a2a41c6210a3267068daae0b387a31fa0c49cee2...674fad8f5d87413f81a02bfd342a0c2d14a67041
 [0.03-dev]: https://github.com/pi4-dev/nvidia-networking/compare/d52782bd3ba8d282d1e999ba16b4f2073f501b67...a2a41c6210a3267068daae0b387a31fa0c49cee2
 [0.02-dev]: https://github.com/pi4-dev/nvidia-networking/compare/6071fa9f05b7ea5e116094f518fd4b6c15992867...d52782bd3ba8d282d1e999ba16b4f2073f501b67
