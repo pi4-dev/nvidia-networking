@@ -1,6 +1,6 @@
 # NVIDIA Network Equipment
 
-_Snapshot **2026-09-17**, schema **v8**, Europe/Warsaw._
+_Snapshot **2026-09-23**, schema **v8**, Europe/Warsaw._
 
 `IB` = InfiniBand, `ETH` = Ethernet, `NVL` = NVLink/NVL. OSFP finned/flat-top variants are separate where NVIDIA publishes distinct OPNs.
 
@@ -132,7 +132,7 @@ _Snapshot **2026-09-17**, schema **v8**, Europe/Warsaw._
 | Model | Collected fields | Accepted pluggables | Source |
 |---|---|---|---|
 | Q3450-LD | family="Quantum-X InfiniBand Photonics"; speed="800Gb/s XDR"; throughput="115.2 Tb/s"; availability=null; compatibility=["Quantum-X800","200G SerDes","co-packaged optics"] | — | [NVIDIA](https://www.nvidia.com/en-us/networking/products/silicon-photonics/) |
-| Spectrum-X Ethernet Photonics Switches | family="Spectrum-X Ethernet Photonics"; speed="200G SerDes CPO architecture"; throughput="up to 409.6 Tb/s"; availability="2H 2026"; compatibility=["Spectrum-X Ethernet","co-packaged optics"] | — | [NVIDIA](https://www.nvidia.com/en-us/networking/products/silicon-photonics/) |
+| Spectrum-X Ethernet Photonics Switches | family="Spectrum-X Ethernet Photonics"; speed="200G SerDes CPO architecture"; throughput="up to 409.6 Tb/s"; availability="full production"; compatibility=["Spectrum-X Ethernet","co-packaged optics"] | — | [NVIDIA](https://www.nvidia.com/en-us/networking/products/silicon-photonics/) |
 
 ## DPU
 
