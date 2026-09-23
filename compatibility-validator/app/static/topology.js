@@ -67,6 +67,7 @@
       if (breakout && rewriteDocument) { pendingBreakoutJSON = false; $('breakoutDocument').value = JSON.stringify(breakout, null, 2); }
     } else {
       window.ValidatorCabling?.invalidate();
+      window.ValidatorProjectMap?.invalidate();
       projectReport = null; $('projectReport').replaceChildren(); $('projectStatus').textContent = 'Project changed. Validate again.';
       $('validateProject').disabled = !catalog; $('downloadBom').disabled = true;
       if (rewriteDocument) { pendingProjectJSON = false; $('projectDocument').value = JSON.stringify(project, null, 2); }
@@ -247,6 +248,7 @@
   }
   function renderProject() {
     window.ValidatorCabling?.render(project);
+    window.ValidatorProjectMap?.renderDraft(project);
     $('projectName').value = project.name || 'Untitled project';
     if (!inventoryError) $('projectInventory').value = project.owned_parts.map(p => `${p.part_number},${p.quantity}`).join('\n');
     const entries = [...project.connections.map(e => ({ ...e, type: 'connection' })), ...project.breakouts.map(e => ({ ...e, type: 'breakout' }))];
@@ -425,6 +427,7 @@
     if (pendingProjectJSON) throw new Error('Apply the pending project JSON edits before changing installation details.');
     update(project); invalidate('project');
   } });
+  window.ValidatorProjectMap?.init({ getProject: projectRequest, key: projectKey });
   window.ValidatorTopology = {
     setCatalog,
     hasReport: view => !!(view === 'breakout' ? breakoutReport : projectReport),

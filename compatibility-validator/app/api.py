@@ -22,8 +22,9 @@ from .topology import validate_breakout
 from .projects import StaleProject, validate_project, import_project_csv, bom_csv, connection_csv, CSV_FIELDS
 from .cabling import build_cabling
 from .cabling_exports import cabling_pdf, cabling_xlsx
+from .project_map import build_project_map
 
-VERSION = "0.05-dev"
+VERSION = "0.06-dev"
 logger = logging.getLogger("uvicorn.error")
 app = FastAPI(title="NVIDIA Networking Compatibility Validator", version=VERSION)
 catalog = LiveCatalog(DATA_PATH, PROFILE_PATH)
@@ -31,7 +32,7 @@ _cache = OrderedDict()
 _cache_lock = threading.RLock()
 _cache_revision = None
 _document_slots = threading.BoundedSemaphore(2)
-PROJECT_ROUTES = {"/api/project", "/api/project/import-csv", "/api/project/bom.csv", "/api/project/connections.csv",
+PROJECT_ROUTES = {"/api/project", "/api/project/map", "/api/project/import-csv", "/api/project/bom.csv", "/api/project/connections.csv",
                   "/api/project/cabling", "/api/project/cabling.pdf", "/api/project/labels.pdf", "/api/project/cabling.xlsx"}
 
 
@@ -277,6 +278,17 @@ def project_result(request):
 @app.post("/api/project")
 def project(request: ProjectRequest):
     return project_result(request)
+
+
+@app.post("/api/project/map")
+def project_map(request: ProjectRequest):
+    snapshot = snapshot_for_revision(request.revision)
+    try:
+        validation = validate_project(snapshot, request)
+    except StaleProject as exc:
+        raise HTTPException(409, str(exc)) from None
+    return {**build_project_map(snapshot, request, validation), 'application_version': VERSION,
+            'evaluated_at': datetime.now(timezone.utc).isoformat()}
 
 
 def cabling_result(request):

@@ -7,14 +7,48 @@ in issues or planning documents.
 `Unreleased` tracks changes after the latest recorded milestone, including changes
 already on `main`. Dated `-dev` entries identify development milestones, not stable
 releases. Historical dates below come from their referenced commits. The `v0.01`,
-`v0.02`, `v0.03` and `v0.04` branches preserve earlier repository states.
+`v0.02`, `v0.03`, `v0.04` and `v0.05` branches preserve earlier repository states.
 
 ## [Unreleased]
 
+No changes since the latest milestone.
+
+## [0.06-dev] - 2026-09-23
+
+### Added
+
+- Interactive project connection map with device nodes, cable/harness assemblies,
+  one shared breakout head and separate physical branch terminations. Selecting
+  a cable or line exposes ordering PNs, modes, installation data and validation.
+- Physical cage inventory with native port markings, occupied/free ordinals,
+  exact-board capacity and logical interfaces within an explicitly selected mode.
+  Duplicate and out-of-range assignments remain visible; unresolved or conflicting
+  device/profile identities never imply free capacity.
+- Device/fabric/result/text filters, zoom, scrolling, keyboard selection and a
+  connection button list. Large maps page 40 assemblies and cage grids page 64
+  ordinals, while occupancy counters retain whole-project scope.
+- Revision-consistent `POST /api/project/map`, sharing project input limits and
+  validation. Draft edits and catalog changes cancel pending map responses and
+  clear old details. The map adds no persisted project fields or dependencies.
+
 ### Changed
 
+- Project allocation conflicts are highlighted separately from individual
+  connection compatibility. Unmapped logical interfaces never count as spare
+  physical cages; free capacity describes this project, not live discovery.
+- Regression coverage increased to 110 backend and 40 frontend tests. The HTTP
+  smoke test also checks map topology, exact cage counts and logical head links;
+  existing cabling PDF/XLSX exports remain covered.
+- Preserved the current repository state, including the September 23 catalog
+  refresh, in `v0.05` before beginning map development on `main` (`0.06-dev`).
+- Recorded the earlier September 23 inventory/report refresh (commits `2423116`,
+  `194bc04` and `8035ee9`): Spectrum-X Ethernet Photonics availability was updated
+  in the catalog and generated reference; no validator rule change was included.
 - Pinned the `0.05-dev` milestone and comparison links to its implementation
   commit, so future changes on `main` remain distinguishable.
+
+Previous state: branch [`v0.05`](https://github.com/pi4-dev/nvidia-networking/tree/v0.05),
+commit [`8035ee9`](https://github.com/pi4-dev/nvidia-networking/commit/8035ee9ecb537f1738af2a95ac469a5dfece50ff).
 
 ## [0.05-dev] - 2026-09-22
 
@@ -173,7 +207,8 @@ commit [`6071fa9`](https://github.com/pi4-dev/nvidia-networking/commit/6071fa9f0
   errors explicitly; never record planned features as completed or tests as passed
   unless they actually ran successfully.
 
-[Unreleased]: https://github.com/pi4-dev/nvidia-networking/compare/4b78e9855fccaa96c4312c726d019d540b457154...main
+[Unreleased]: https://github.com/pi4-dev/nvidia-networking/blob/main/CHANGELOG.md#unreleased
+[0.06-dev]: https://github.com/pi4-dev/nvidia-networking/compare/4b78e9855fccaa96c4312c726d019d540b457154...main
 [0.05-dev]: https://github.com/pi4-dev/nvidia-networking/compare/674fad8f5d87413f81a02bfd342a0c2d14a67041...4b78e9855fccaa96c4312c726d019d540b457154
 [0.04-dev]: https://github.com/pi4-dev/nvidia-networking/compare/a2a41c6210a3267068daae0b387a31fa0c49cee2...674fad8f5d87413f81a02bfd342a0c2d14a67041
 [0.03-dev]: https://github.com/pi4-dev/nvidia-networking/compare/d52782bd3ba8d282d1e999ba16b4f2073f501b67...a2a41c6210a3267068daae0b387a31fa0c49cee2

@@ -331,7 +331,7 @@ class APITests(unittest.TestCase):
         result = json.loads(body)
         self.assertEqual(code, 200)
         self.assertEqual(result['revision'], revision)
-        self.assertEqual(result['application_version'], '0.05-dev')
+        self.assertEqual(result['application_version'], '0.06-dev')
         self.assertEqual(result['candidates'][0]['components'][0]['part_number'], '980-9I601-00N003')
         host = dict(device_id='supernic:ConnectX-8 SuperNIC', port_group_id='catalog-1',
                     hardware_profile_id='900-9X81E-00EX-ST0', revision=revision)
@@ -365,7 +365,7 @@ class APITests(unittest.TestCase):
         report = json.loads(body)
         self.assertEqual(code, 200)
         self.assertEqual(report['bom']['rows'][0]['required'], 1)
-        self.assertEqual(report['application_version'], '0.05-dev')
+        self.assertEqual(report['application_version'], '0.06-dev')
         code, headers, body = self.request('/api/project/bom.csv', p.model_dump_json().encode())
         self.assertEqual(code, 200)
         self.assertIn('text/csv', headers.get('content-type', headers.get('Content-Type', '')))
@@ -419,11 +419,25 @@ class APITests(unittest.TestCase):
         from test_topology import project_of, point_connection
         project = project_of(connections=[point_connection()]).model_dump()
         project['revision'] = '000000000000'
-        for suffix in ['cabling', 'cabling.pdf', 'labels.pdf', 'cabling.xlsx']:
+        for suffix in ['cabling', 'cabling.pdf', 'labels.pdf', 'cabling.xlsx', 'map']:
             path = '/api/project/' + suffix
             self.assertEqual(self.request(path, json.dumps(project).encode())[0], 409)
             self.assertEqual(self.request(path, b'x' * (1024 * 1024 + 1))[0], 413)
             self.assertEqual(self.request(path, b'{}')[0], 422)
+
+    def test_project_map_http_uses_one_revision_and_rejects_stale_nested_entries(self):
+        from test_topology import project_of, cable_breakout
+        p = project_of(cable_breakout()); p.revision = api.catalog.get()['revision']
+        p.breakouts[0].revision = p.revision
+        code, _, body = self.request('/api/project/map', p.model_dump_json().encode())
+        data = json.loads(body)
+        self.assertEqual(code, 200)
+        self.assertEqual(data['revision'], p.revision)
+        self.assertEqual(data['application_version'], '0.06-dev')
+        self.assertEqual(data['summary']['occupied_cages'], 3)
+        self.assertEqual(data['summary']['terminations'], 3)
+        p.breakouts[0].revision = '000000000000'
+        self.assertEqual(self.request('/api/project/map', p.model_dump_json().encode())[0], 409)
 
 
 if __name__=='__main__':

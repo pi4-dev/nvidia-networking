@@ -117,6 +117,17 @@ The response contains `results`, `summary`, `checks`, `gaps`, `port_allocations`
 
 JSON is the complete interchange format, including breakouts, physical mapping, runtime, evidence, inventory and cabling metadata. The browser restores drafts locally, discards saved results on import, and clears physical mapping confirmations for changed or absent revisions. It rejects obsolete responses after a draft edit. Unapplied JSON edits remain in the editor during catalog refresh and must be applied before validation/export.
 
+## Interactive project map
+
+`POST /api/project/map` accepts the same `ProjectRequest` and validates it against one catalog snapshot. Top-level and nested stale revisions return `409`, invalid input `422`, and bodies over 1 MiB `413`. The response contains `devices`, `assemblies`, `segments`, project ownership `checks`, `summary`, `status`, `revision`, `application_version` and `evaluated_at`. It adds no persisted project fields and does not modify the catalog or project.
+
+- Each physical device instance is one node. Its `groups` expose documented cage `count`, occupied ordinals, `free_count`, compressed inclusive `free_ranges`, and occupied `ports`. Groups outside the selected exact board profile do not acquire generic capacity. Unknown device/group/profile data and conflicting model/profile declarations produce unknown capacity. Occupancy reflects the whole project even when the UI filters the graph.
+- Each connection or whole breakout is one `assembly` with cable ID, cable/harness PN, fabric, length, full validation checks and cabling rows. Optical module PNs remain attached to their individual physical terminations. One `segment` represents each endpoint assignment: two for a connection, one shared head plus every branch for a breakout. Segments include cage ordinal, native marking and explicit selected-mode facts.
+- A physical `port` is occupied once even if multiple declarations conflict. Duplicate use is `conflict`; ordinals beyond the documented count are `out-of-range` and do not reduce the remaining valid free count. Related devices, segments and assemblies carry `ownership_conflict` so the map can highlight project allocation failures independently of an individual link result.
+- Logical `interfaces` enumerate only a resolved explicit mode. Breakout heads retain branch references for each logical head link, including duplicate or unmapped states. Multi-link point-to-point or remote selections without an explicit per-interface mapping remain `unmapped`. Automatic/unresolved modes and conflicting cage ownership do not invent logical assignments. Unmapped logical interfaces are not free physical cages.
+
+Free capacity describes declarations in this project; the API does not inspect running equipment. The browser displays 40 matching assemblies per page and up to 64 documented cage ordinals per grid page, with explicit navigation and global counters. Unknown-count groups show declared occupied cages only. Search, device/fabric/result filters and zoom affect the view, not the project. SVG nodes and lines support keyboard activation, and a button list provides another way to select connections. Draft changes and catalog refresh cancel pending requests and clear the old map.
+
 ## Cabling plans and installation declarations
 
 `cabling` is optional, so existing v1 projects remain valid. It defaults to empty `locations`, `port_labels` and `cables` arrays. See [cabling-project.json](examples/cabling-project.json) for a complete example without pre-asserted installation states.

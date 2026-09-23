@@ -8,6 +8,7 @@ const html = fs.readFileSync(path.join(__dirname, '../app/static/index.html'), '
 const script = fs.readFileSync(path.join(__dirname, '../app/static/app.js'), 'utf8');
 const coreScript = fs.readFileSync(path.join(__dirname, '../app/static/core.js'), 'utf8');
 const topologyScript = fs.readFileSync(path.join(__dirname, '../app/static/topology.js'), 'utf8');
+const mapScript = fs.readFileSync(path.join(__dirname, '../app/static/project-map.js'), 'utf8');
 const cablingScript = fs.readFileSync(path.join(__dirname, '../app/static/cabling.js'), 'utf8');
 const r1 = '111111111111', r2 = '222222222222';
 const tick = () => new Promise(resolve => setImmediate(resolve));
@@ -27,7 +28,7 @@ function harness(handler, options={}) {
   w.URL.createObjectURL=blob=>{exported=blob;return 'blob:test';};w.URL.revokeObjectURL=()=>{};
   w.HTMLAnchorElement.prototype.click=function(){};
   Object.defineProperty(w.navigator,'clipboard',{value:{writeText:async value=>{copied=value;}}});
-  w.eval(coreScript);w.eval(cablingScript);w.eval(topologyScript);w.eval(script);
+  w.eval(coreScript);w.eval(cablingScript);w.eval(mapScript);w.eval(topologyScript);w.eval(script);
   return {dom,w,get copied(){return copied;},get exported(){return exported;},close(){dom.window.close();}};
 }
 function apiHandler(revision=()=>r1) { return async(url)=>{
@@ -450,5 +451,117 @@ test('unapplied project JSON blocks cabling generation and removing an entry pru
     const saved=JSON.parse(h.w.localStorage.getItem('nvidia-project-v1'));loadProject(h,saved);
     h.w.document.querySelector('[data-remove-entry="fanout-1"]').click();click(h,'downloadProjectJSON');
     const exported=JSON.parse(await h.exported.text());assert.deepEqual(exported.cabling,{locations:[],port_labels:[],cables:[]});
+  }finally{h.close();}
+});
+
+function mapResponse(project=projectDraft()) {
+  const c=cablingResponse(project), entry=project.breakouts[0];
+  const hosts=[entry.head,...entry.branches.map(b=>b.selection)];
+  const segments=hosts.map((h,i)=>({id:'segment-'+i,entry_id:entry.id,instance_id:h.instance_id,port_group_id:h.port_group_id,port_number:h.port_number,port_label:i?'NIC '+i:'1/1',role:i?'branch':'head',branch_id:i?'branch-'+i:null,termination:i||null,head_links:i?[i]:[],selected_mode:h.mode_id,mode:{id:h.mode_id,links:i?1:2,speed_gbps:400},part_number:'PN-fan',status:'unknown',ownership_conflict:false}));
+  const devices=hosts.map((h,i)=>({id:h.instance_id,device_id:h.device_id,model:i?'Adapter':'Switch',hardware_profile_id:null,rack:'Rack A',rack_u:12,identity_conflict:false,occupied:1,free_count:i?0:31,groups:[{id:h.port_group_id,label:'Physical cages',connector_family:'OSFP',count:i?1:32,occupied:1,free_count:i?0:31,free_ranges:i?[]:[[2,32]],ports:[{number:1,label:i?'NIC '+i:'1/1',state:'occupied',segments:['segment-'+i],interfaces:Array.from({length:i?1:2},(_,n)=>({number:n+1,speed_gbps:400,state:'declared',references:['branch-'+(i||n+1)]}))}]}]}));
+  return {revision:r1,status:'unknown',summary:{devices:3,assemblies:1,occupied_cages:3,terminations:3,conflicting_cages:0},devices,segments,assemblies:[{id:entry.id,type:'breakout',cable_id:'C-'+entry.id,part_number:'PN-fan',length_m:3,fabric:'IB',status:'unknown',checks:[{state:'unknown',code:'breakout.common_fec',message:'FEC evidence missing'}],rows:c.rows.map(r=>({...r,source_label:'H',destination_label:r.branch_id,head_optical_lanes:[],branch_optical_lanes:[]})),ownership_conflict:false}],checks:[]};
+}
+function mapHandler(transform=value=>value){return async(url,opts)=>url==='/api/project/map'?response(transform(mapResponse(JSON.parse(opts.body)))):apiHandler()(url);}
+function selectMap(h,selector){const element=h.w.document.querySelector(selector);assert.ok(element,selector);element.dispatchEvent(new h.w.MouseEvent('click',{bubbles:true}));}
+
+test('map draws one breakout hub and three physical terminations with clickable PN, modes and validation',async()=>{
+  const h=harness(mapHandler());
+  try{
+    await settle();loadProject(h);click(h,'buildProjectMap');await settle();
+    assert.equal(h.w.document.querySelectorAll('.map-device').length,3);
+    assert.equal(h.w.document.querySelectorAll('.map-assembly').length,1);
+    assert.equal(h.w.document.querySelectorAll('.map-segment').length,3);
+    assert.equal(h.w.document.querySelectorAll('.map-head').length,1);
+    selectMap(h,'.map-assembly');const detail=h.w.document.getElementById('mapDetails').textContent;
+    assert.match(detail,/PN-fan/);assert.match(detail,/2 × 400G/);assert.match(detail,/FEC evidence missing/);
+    assert.match(detail,/One shared head cage/);assert.match(detail,/unknown/);
+    const paths=[...h.w.document.querySelectorAll('.map-line')].map(p=>p.getAttribute('d'));assert.equal(new Set(paths).size,3);
+  }finally{h.close();}
+});
+
+test('device inventory separates free physical cages from the two logical interfaces in its occupied head',async()=>{
+  const h=harness(mapHandler());
+  try{
+    await settle();loadProject(h);click(h,'buildProjectMap');await settle();selectMap(h,'.map-device[data-device="0"]');
+    assert.equal(h.w.document.querySelectorAll('.cage-occupied').length,1);assert.equal(h.w.document.querySelectorAll('.cage-free').length,31);
+    selectMap(h,'[data-port="1"]');let detail=h.w.document.getElementById('mapPortDetail').textContent;
+    assert.match(detail,/Interface 1 · 400G/);assert.match(detail,/Interface 2 · 400G/);assert.match(detail,/branch-2/);
+    selectMap(h,'[data-port="2"]');detail=h.w.document.getElementById('mapPortDetail').textContent;
+    assert.match(detail,/free in this project/);assert.doesNotMatch(detail,/Interface 1/);
+  }finally{h.close();}
+});
+
+test('unknown capacity shows only occupied ports and unresolved logical interfaces',async()=>{
+  const h=harness(mapHandler(v=>{const d=v.devices[0],g=d.groups[0];d.free_count=null;g.count=null;g.free_count=null;g.free_ranges=[];g.ports[0].interfaces=[];return v;}));
+  try{
+    await settle();loadProject(h);click(h,'buildProjectMap');await settle();selectMap(h,'.map-device[data-device="0"]');
+    assert.equal(h.w.document.querySelectorAll('.map-cage').length,1);assert.equal(h.w.document.querySelectorAll('.cage-free').length,0);
+    assert.match(h.w.document.getElementById('mapDetails').textContent,/Capacity unknown/);
+    selectMap(h,'[data-port="1"]');assert.match(h.w.document.getElementById('mapPortDetail').textContent,/Logical interfaces unresolved/);
+  }finally{h.close();}
+});
+
+test('project ownership conflicts remain visible even when an individual assembly validates',async()=>{
+  const h=harness(mapHandler(v=>{v.status='incompatible';v.assemblies[0].status='compatible';v.assemblies[0].ownership_conflict=true;v.devices[0].ownership_conflict=true;v.devices[0].groups[0].ports[0].state='conflict';v.segments[0].ownership_conflict=true;return v;}));
+  try{
+    await settle();loadProject(h);click(h,'buildProjectMap');await settle();
+    assert.ok(h.w.document.querySelector('.map-assembly.state-incompatible'));
+    assert.ok(h.w.document.querySelector('.map-head.state-incompatible'));
+    selectMap(h,'.map-assembly');assert.match(h.w.document.getElementById('mapDetails').textContent,/Port allocation conflict/);
+    selectMap(h,'.map-device[data-device="0"]');assert.equal(h.w.document.querySelectorAll('.cage-conflict').length,1);
+  }finally{h.close();}
+});
+
+test('map filters and zoom preserve whole-project capacity and support keyboard activation',async()=>{
+  const h=harness(mapHandler());
+  try{
+    await settle();loadProject(h);click(h,'buildProjectMap');await settle();
+    change(h,'mapDeviceFilter','head-01');assert.equal(h.w.document.querySelectorAll('.map-assembly').length,1);
+    assert.match(h.w.document.getElementById('mapPageStatus').textContent,/counts cover the entire project/);
+    input(h,'mapSearch','absent-pn');assert.match(h.w.document.getElementById('mapCanvas').textContent,/No connections/);
+    click(h,'mapReset');change(h,'mapFabric','ETH');assert.equal(h.w.document.querySelectorAll('.map-assembly').length,0);
+    click(h,'mapReset');input(h,'mapZoom','150');assert.equal(h.w.document.querySelector('#mapCanvas svg').getAttribute('width'),'1740');
+    h.w.document.querySelector('.map-assembly').dispatchEvent(new h.w.KeyboardEvent('keydown',{key:'Enter',bubbles:true}));
+    assert.equal(h.w.document.activeElement.id,'mapDetails');assert.match(h.w.document.getElementById('mapDetails').textContent,/PN-fan/);
+  }finally{h.close();}
+});
+
+test('edited drafts and catalog refresh discard obsolete map responses and rendered details',async()=>{
+  let finish;
+  const h=harness(async(url,opts)=>url==='/api/project/map'?new Promise(done=>{finish=()=>done(response(mapResponse(JSON.parse(opts.body))));}):apiHandler()(url));
+  try{
+    await settle();loadProject(h);click(h,'buildProjectMap');await settle();input(h,'projectDocument','{ pending');finish();await settle();
+    assert.equal(h.w.document.querySelector('#mapCanvas svg'),null);click(h,'buildProjectMap');assert.match(h.w.document.getElementById('mapStatus').textContent,/pending project JSON/);
+    loadProject(h);click(h,'buildProjectMap');await settle();finish();await settle();assert.ok(h.w.document.querySelector('#mapCanvas svg'));
+    h.w.ValidatorTopology.setCatalog(topologyBundle(r2));assert.equal(h.w.document.querySelector('#mapCanvas svg'),null);
+    assert.equal(h.w.document.getElementById('mapDetails').textContent,'');
+  }finally{h.close();}
+});
+
+test('map rejects another catalog revision and escapes labels in both SVG and details',async()=>{
+  let old=true;
+  const h=harness(mapHandler(v=>{v.revision=old?r2:r1;v.assemblies[0].part_number='<img src=x onerror="alert(1)">';v.devices[0].model='<script>alert(1)</script>';return v;}));
+  try{
+    await settle();loadProject(h);click(h,'buildProjectMap');await settle();assert.equal(h.w.document.querySelector('#mapCanvas svg'),null);
+    assert.match(h.w.document.getElementById('mapStatus').textContent,/Catalog changed/);
+    old=false;click(h,'buildProjectMap');await settle();selectMap(h,'.map-assembly');
+    assert.equal(h.w.document.querySelector('#mapCanvas script, #mapCanvas img, #mapDetails img'),null);
+    assert.match(h.w.document.getElementById('mapDetails').textContent,/<img src=x/);
+  }finally{h.close();}
+});
+
+test('large maps page connections explicitly and large device inventories page cage buttons',async()=>{
+  const h=harness(mapHandler(v=>{
+    const a=v.assemblies[0],segments=v.segments;
+    v.assemblies=Array.from({length:41},(_,i)=>({...a,id:'link-'+i,cable_id:'Cable-'+i}));
+    v.segments=v.assemblies.flatMap(a=>segments.map((s,i)=>({...s,id:a.id+'-'+i,entry_id:a.id})));
+    v.summary.assemblies=41;const g=v.devices[0].groups[0];g.count=200;g.free_count=199;g.free_ranges=[[2,200]];v.devices[0].free_count=199;return v;
+  }));
+  try{
+    await settle();loadProject(h);click(h,'buildProjectMap');await settle();assert.equal(h.w.document.querySelectorAll('.map-assembly').length,40);
+    assert.match(h.w.document.getElementById('mapPageStatus').textContent,/1–40 of 41/);click(h,'mapNext');assert.equal(h.w.document.querySelectorAll('.map-assembly').length,1);
+    assert.match(h.w.document.getElementById('mapPageStatus').textContent,/41–41 of 41/);
+    selectMap(h,'.map-device[data-device="0"]');assert.equal(h.w.document.querySelectorAll('.map-cage').length,64);
+    selectMap(h,'[data-port-page="0"][data-offset="1"]');assert.equal(h.w.document.querySelector('.map-cage').dataset.port,'65');
   }finally{h.close();}
 });

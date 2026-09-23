@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="/static/styles.css">
   <script src="/static/core.js" defer></script>
   <script src="/static/cabling.js" defer></script>
+  <script src="/static/project-map.js" defer></script>
   <script src="/static/topology.js" defer></script>
 <script src="/static/app.js" defer></script>
 </head>
@@ -138,6 +139,19 @@
       <p class="small">Inventory is consumed once across the project. The BOM counts one breakout assembly and one shared optical head once. Failed or unresolved selections remain in a provisional BOM.</p>
       <div class="actionbar"><button id="validateProject" class="primary">Validate project</button><button id="downloadBom" disabled>Export BOM CSV</button><span id="projectStatus" role="status"></span></div>
       <div id="projectReport" aria-live="polite"></div>
+      <section class="project-map" aria-labelledby="mapHeading">
+        <h3 id="mapHeading">Interactive connection and port map</h3>
+        <p class="small">Inspect cables, complete breakouts and physical cages. Free ports mean unallocated in this project; they are not discovered on live devices.</p>
+        <div class="actionbar"><button id="buildProjectMap" class="primary" disabled>Build connection map</button><button id="mapReset">Reset view</button></div>
+        <p id="mapStatus" role="status"></p>
+        <div class="grid4"><div><label for="mapDeviceFilter">Device</label><select id="mapDeviceFilter"><option value="">All devices</option></select></div><div><label for="mapSearch">Find device, rack, cable or PN</label><input id="mapSearch" type="search" maxlength="128"></div><div><label for="mapFabric">Fabric</label><select id="mapFabric"><option value="">All fabrics</option><option>IB</option><option>ETH</option><option>NVL</option></select></div><div><label for="mapOutcome">Compatibility</label><select id="mapOutcome"><option value="">All results</option><option>compatible</option><option>conditional</option><option>unknown</option><option>incompatible</option></select></div></div>
+        <div class="map-legend"><span class="state-compatible">Compatible</span><span class="state-conditional">Conditional</span><span class="state-unknown">Unknown</span><span class="state-incompatible">Incompatible</span><span>Thick line: shared head · BR: branch termination</span></div>
+        <div class="actionbar"><div class="map-zoom"><label for="mapZoom">Zoom</label><input id="mapZoom" type="range" min="40" max="160" value="100" step="10"><output id="mapZoomValue" for="mapZoom">100%</output></div><button id="mapPrevious" disabled>Previous connections</button><button id="mapNext" disabled>Next connections</button></div>
+        <p id="mapPageStatus" class="small" role="status"></p>
+        <div class="map-workspace"><div id="mapCanvas" class="map-canvas" tabindex="0" aria-label="Scrollable connection map"></div><aside id="mapDetails" class="map-details" tabindex="-1" aria-label="Selected device or connection details"></aside></div>
+        <details><summary>Connections on this map page</summary><div id="mapConnections" class="map-connection-list"></div></details>
+        <div id="mapChecks"></div>
+      </section>
       <section class="cabling-planner" aria-labelledby="cablingHeading">
         <h3 id="cablingHeading">Cabling plan and end labels</h3>
         <p class="small">Set rack locations and the actual port markings before installation. One breakout cable has one ID, a shared head label and separate branch labels.</p>

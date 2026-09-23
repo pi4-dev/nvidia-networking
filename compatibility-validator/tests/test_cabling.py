@@ -18,7 +18,7 @@ from test_topology import SNAPSHOT, cable_breakout, optical_fixture, point_conne
 
 def report(project, snapshot=SNAPSHOT):
     return {**build_cabling(snapshot, project, validate_project(snapshot, project)),
-            'application_version': '0.05-dev', 'evaluated_at': '2026-09-22T12:00:00+00:00'}
+            'application_version': '0.06-dev', 'evaluated_at': '2026-09-22T12:00:00+00:00'}
 
 
 def installed_project():

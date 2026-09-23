@@ -66,6 +66,12 @@ def main(base):
     plan = request("/api/project/cabling", project_request)
     assert plan["summary"]["cables"] == 1 and plan["summary"]["legs"] == 2 and plan["summary"]["labels"] == 3
     assert plan["status"] == "unknown" and plan["provisional"]
+    topology = request('/api/project/map', project_request)
+    assert topology['revision'] == plan['revision'] and topology['status'] == 'unknown'
+    assert topology['summary']['occupied_cages'] == topology['summary']['terminations'] == 3
+    head_group = next(g for d in topology['devices'] if d['id'] == 'switch-01' for g in d['groups'] if g['id'] == 'ndr')
+    assert head_group['count'] == 32 and head_group['free_count'] == 31
+    assert len(head_group['ports'][0]['interfaces']) == 2
     for filename in ("cabling.pdf", "labels.pdf", "cabling.xlsx"):
         req = urllib.request.Request(base + "/api/project/" + filename, data=json.dumps(project_request).encode(),
                                      headers={"Content-Type": "application/json"})
@@ -80,7 +86,7 @@ def main(base):
                 with ZipFile(io.BytesIO(contents)) as archive:
                     assert "xl/worksheets/sheet2.xml" in archive.namelist()
     print(f"Smoke passed: {len(catalog['devices'])} devices, {len(catalog['products'])} products, "
-          f"{proposed['total_candidates']} proposals, complete breakout, project BOM, cabling PDF/XLSX and labels, revision {result['revision']}")
+          f"{proposed['total_candidates']} proposals, complete breakout, project BOM/map, cabling PDF/XLSX and labels, revision {result['revision']}")
 
 
 if __name__ == "__main__":
