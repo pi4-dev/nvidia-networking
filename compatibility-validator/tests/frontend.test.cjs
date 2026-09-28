@@ -31,9 +31,13 @@ function harness(handler, options={}) {
   w.eval(coreScript);w.eval(cablingScript);w.eval(mapScript);w.eval(topologyScript);w.eval(script);
   return {dom,w,get copied(){return copied;},get exported(){return exported;},close(){dom.window.close();}};
 }
-function apiHandler(revision=()=>r1) { return async(url)=>{
+function apiHandler(revision=()=>r1) { return async(url,options)=>{
   if(url==='/api/catalog')return response(bundle(revision()));
   if(url==='/api/meta')return response(bundle(revision()).meta);
+  if(url==='/api/evaluate'){
+    const body=JSON.parse(options.body);
+    return response({revision:revision(),device_id:body.device_id,port_group_id:body.port_group_id,products:[evaluated('A'),evaluated('B')]});
+  }
   const q=new URL(url,'http://localhost').searchParams;
   return response({revision:revision(),device_id:q.get('device_id'),port_group_id:q.get('port_group_id'),products:[evaluated(q.get('device_id'))]});
 };}
@@ -98,13 +102,174 @@ test('a result from another catalog revision is never displayed',async()=>{
 
 test('changing a connection invalidates an in-flight POST result',async()=>{
   let resolveLink;const real=apiHandler();
-  const h=harness(async url=>url==='/api/connection'?new Promise(resolve=>{resolveLink=resolve;}):real(url));
+  const h=harness(async(url,options)=>url==='/api/connection'?new Promise(resolve=>{resolveLink=resolve;}):real(url,options));
   try{
-    await settle();click(h,'linkTab');click(h,'validateLink');await settle();
+    await settle();click(h,'linkTab');await settle();click(h,'validateLink');await settle();
     assert.equal(typeof resolveLink,'function');change(h,'bDevice','B');
     resolveLink(response({revision:r1,status:'compatible',orientation:{a:'A',b:'B'},checks:[]}));await settle();
     assert.doesNotMatch(h.w.document.getElementById('linkStatus').textContent,/compatible/);
     assert.equal(h.w.document.getElementById('export').disabled,true);
+  }finally{h.close();}
+});
+
+function values(h,id){return Array.from(h.w.document.getElementById(id).options,o=>o.value).filter(Boolean);}
+function linkEvaluation(body,products,revision=r1){return {revision,device_id:body.device_id,port_group_id:body.port_group_id,products};}
+function fit(id,status='conditional',lifecycle='active'){
+  const p=evaluated(id);p.status=lifecycle;p.validation.status=status;p.validation.alternatives[0].status=status;
+  if(status==='incompatible')p.validation.checks=[{code:'mechanical',state:'fail',message:'Wrong connector for this port',required:true}];
+  return p;
+}
+
+test('connection lists filter each host, mark unknowns and expose rejected parts only for diagnostics',async()=>{
+  const catalog=bundle(),calls=[];
+  catalog.products.push(product('U'),{...product('R'),status:'no_longer_for_sale'});
+  catalog.products[0].endpoints.push({...catalog.products[0].endpoints[0],id:'wrong-end'});
+  const h=harness(async(url,opts)=>{
+    if(url==='/api/catalog')return response(catalog);
+    if(url==='/api/evaluate'){
+      const body=JSON.parse(opts.body);calls.push(body);
+      const rows=['A','B'].map(id=>fit(id,id===body.device_id?'conditional':'incompatible'));
+      rows[0].validation.alternatives.push({endpoint_id:'wrong-end',status:'incompatible'});
+      return response(linkEvaluation(body,[...rows,fit('U','unknown'),fit('R','conditional','no_longer_for_sale')]));
+    }
+    return apiHandler()(url,opts);
+  },{saved:{aDevice:'A',bDevice:'B'}});
+  try{
+    await settle();assert.equal(calls.length,0);click(h,'linkTab');await settle();
+    assert.deepEqual(values(h,'aProduct'),['A','U']);assert.deepEqual(values(h,'bProduct'),['B','U']);
+    assert.deepEqual(values(h,'aEnd'),['A']);
+    change(h,'aProduct','U');assert.match(h.w.document.getElementById('aProductStatus').textContent,/unknown.*unconfirmed/);
+    assert.equal(h.w.document.getElementById('bProduct').value,'U');change(h,'bProduct','B');
+    change(h,'aProduct','A');assert.equal(h.w.document.getElementById('bProduct').value,'B');
+    click(h,'showLinkRejected');assert.deepEqual(values(h,'aProduct'),['A','B','U','R']);
+    assert.deepEqual(values(h,'aEnd'),['A','wrong-end']);
+    change(h,'aProduct','B');assert.match(h.w.document.getElementById('aProductStatus').textContent,/incompatible.*Wrong connector/);
+    click(h,'share');await settle();assert.equal(new URL(h.copied).searchParams.get('showLinkRejected'),'1');
+    click(h,'showLinkRejected');assert.equal(h.w.document.getElementById('aProduct').value,'');
+    assert.match(h.w.document.getElementById('aProductStatus').textContent,/Previous product is rejected/);
+    assert.equal(h.w.document.getElementById('validateLink').disabled,true);assert.equal(calls.length,2);
+  }finally{h.close();}
+});
+
+test('connection device, port, mode, exact board, runtime and fabric changes re-evaluate the affected hosts',async()=>{
+  const catalog=hardwareBundle(),calls=[];
+  catalog.devices[1].port_groups.push({...catalog.devices[1].port_groups[0],id:'g2',modes:[{id:'1x400',links:1,speed_gbps:400}]});
+  const h=harness(async(url,opts)=>{
+    if(url==='/api/catalog')return response(catalog);
+    if(url==='/api/evaluate'){
+      const body=JSON.parse(opts.body);calls.push(body);return response(linkEvaluation(body,[evaluated(body.device_id)]));
+    }
+    return apiHandler()(url,opts);
+  });
+  try{
+    await settle();click(h,'linkTab');await settle();change(h,'aEnd','A');change(h,'aPn','PN-A');click(h,'pinout');
+    change(h,'aDevice','B');assert.equal(h.w.document.getElementById('aProduct').disabled,true);await settle();
+    for(const id of ['aProduct','aEnd','aPn'])assert.equal(h.w.document.getElementById(id).value,'');
+    assert.equal(h.w.document.getElementById('pinout').checked,false);assert.equal(calls.at(-1).device_id,'B');
+    change(h,'aGroup','g2');await settle();assert.equal(calls.at(-1).port_group_id,'g2');
+    change(h,'aMode','1x400');await settle();assert.equal(calls.at(-1).mode_id,'1x400');
+    change(h,'aDevice','A');await settle();change(h,'aProfile','board-A');await settle();
+    change(h,'aMode','exact-2x400');await settle();input(h,'aFirmware','2.10');await settle();
+    assert.equal(calls.at(-1).hardware_profile_id,'board-A');assert.equal(calls.at(-1).mode_id,'exact-2x400');
+    assert.equal(calls.at(-1).runtime.firmware,'2.10');assert.equal(calls.at(-1).revision,r1);
+    const count=calls.length;change(h,'linkFabric','ETH');await settle();assert.equal(calls.length,count+2);
+    assert.equal(calls.at(-1).fabric,'ETH');assert.equal(calls.at(-2).fabric,'ETH');
+  }finally{h.close();}
+});
+
+test('late connection product responses cannot restore another device or another catalog revision',async()=>{
+  const pending=[];let revision=r1;
+  const h=harness(async(url,opts)=>{
+    if(url==='/api/evaluate')return new Promise(resolve=>pending.push({body:JSON.parse(opts.body),resolve}));
+    return apiHandler(()=>revision)(url,opts);
+  },{saved:{aDevice:'A',bDevice:'B'}});
+  try{
+    await settle();click(h,'linkTab');await settle();change(h,'aDevice','B');await settle();
+    assert.equal(pending[0].body.device_id,'A');assert.equal(pending[2].body.device_id,'B');
+    pending[2].resolve(response(linkEvaluation(pending[2].body,[evaluated('B')])));
+    pending[1].resolve(response(linkEvaluation(pending[1].body,[evaluated('B')])));await settle();
+    pending[0].resolve(response(linkEvaluation(pending[0].body,[evaluated('A')])));await settle();
+    assert.deepEqual(values(h,'aProduct'),['B']);
+    change(h,'aMode','2x400');await settle();revision=r2;click(h,'retry');await settle();
+    pending[4].resolve(response(linkEvaluation(pending[4].body,[evaluated('B')],r2)));
+    pending[5].resolve(response(linkEvaluation(pending[5].body,[evaluated('B')],r2)));await settle();
+    pending[3].resolve(response(linkEvaluation(pending[3].body,[evaluated('A')],r1)));await settle();
+    assert.deepEqual(values(h,'aProduct'),['B']);assert.equal(h.w.document.getElementById('validateLink').disabled,false);
+  }finally{h.close();}
+});
+
+test('empty, failed and wrong-revision connection filtering never falls back to the catalog',async()=>{
+  let kind='failure';
+  const h=harness(async(url,opts)=>{
+    if(url==='/api/evaluate'){
+      const body=JSON.parse(opts.body);
+      if(kind==='failure')return response({detail:'Evaluation unavailable'},503);
+      return response(linkEvaluation(body,kind==='empty'?[]:[evaluated('A')],kind==='revision'?r2:r1));
+    }
+    return apiHandler()(url,opts);
+  });
+  try{
+    await settle();click(h,'linkTab');await settle();
+    for(const [next,message] of [['failure',/Evaluation unavailable/],['revision',/Catalog or port changed/],['empty',/0 of 0 products/]]){
+      kind=next;click(h,'retry');await settle();
+      assert.deepEqual(values(h,'aProduct'),[]);assert.equal(h.w.document.getElementById('aProduct').disabled,true);
+      assert.equal(h.w.document.getElementById('validateLink').disabled,true);
+      assert.match(h.w.document.getElementById('aProductStatus').textContent,message);
+    }
+    kind='ready';click(h,'retry');await settle();assert.deepEqual(values(h,'aProduct'),['A']);
+    assert.equal(h.w.document.getElementById('aProduct').disabled,false);
+    change(h,'aProduct','A');change(h,'bProduct','A');
+    assert.equal(h.w.document.getElementById('validateLink').disabled,false);
+  }finally{h.close();}
+});
+
+test('a device without a port profile cannot use connection products or start evaluation',async()=>{
+  const catalog=bundle(),calls=[];catalog.devices[1].port_groups=[];
+  const h=harness(async(url,opts)=>{
+    if(url==='/api/catalog')return response(catalog);
+    if(url==='/api/evaluate')calls.push(JSON.parse(opts.body));
+    return apiHandler()(url,opts);
+  },{saved:{view:'link',aDevice:'A',bDevice:'B'}});
+  try{
+    await settle();assert.equal(calls.length,1);assert.deepEqual(values(h,'bProduct'),[]);
+    assert.match(h.w.document.getElementById('bProductStatus').textContent,/No port profile/);
+    assert.equal(h.w.document.getElementById('validateLink').disabled,true);
+  }finally{h.close();}
+});
+
+test('valid shared product, termination and PN selections survive asynchronous filtering and refresh',async()=>{
+  const h=harness(apiHandler(),{url:'http://localhost/?view=link&aDevice=A&aProduct=B&aEnd=A&aPn=PN-B&bDevice=B&bProduct=B&bEnd=A&bPn=PN-B&pinout=1&revision='+r1});
+  try{
+    await settle();click(h,'retry');await settle();
+    for(const side of ['a','b'])for(const [field,value] of [['Product','B'],['End','A'],['Pn','PN-B']])assert.equal(h.w.document.getElementById(side+field).value,value);
+    assert.equal(h.w.document.getElementById('pinout').checked,true);
+    click(h,'share');await settle();const q=new URL(h.copied).searchParams;assert.equal(q.get('aPn'),'PN-B');assert.equal(q.get('bEnd'),'A');
+  }finally{h.close();}
+});
+
+test('a rejected restored termination is cleared without losing a valid product or PN',async()=>{
+  const catalog=bundle();catalog.products[0].endpoints.push({...catalog.products[0].endpoints[0],id:'wrong-end'});
+  const h=harness(async(url,opts)=>url==='/api/catalog'?response(catalog):apiHandler()(url,opts),{saved:{view:'link',aProduct:'A',aEnd:'wrong-end',aPn:'PN-A',pinout:'1',revision:r1}});
+  try{
+    await settle();assert.equal(h.w.document.getElementById('aProduct').value,'A');assert.equal(h.w.document.getElementById('aPn').value,'PN-A');
+    assert.equal(h.w.document.getElementById('aEnd').value,'');assert.equal(h.w.document.getElementById('pinout').checked,false);
+    assert.match(h.w.document.getElementById('aProductStatus').textContent,/Previous termination or PN was cleared/);
+  }finally{h.close();}
+});
+
+test('editing an opened proposal while products are filtering prevents automatic connection validation',async()=>{
+  const pending=[];let connections=0;
+  const h=harness(async(url,opts)=>{
+    if(url==='/api/recommendations')return response(proposal());
+    if(url==='/api/evaluate')return new Promise(resolve=>pending.push(()=>resolve(response(linkEvaluation(JSON.parse(opts.body),[evaluated('A')])))));
+    if(url==='/api/connection'){connections++;return response({...proposal().candidates[0].validation,revision:r1});}
+    return apiHandler()(url,opts);
+  });
+  try{
+    await settle();click(h,'wizardTab');click(h,'recommend');await settle();h.w.document.querySelector('[data-proposal]').click();await settle();
+    assert.equal(connections,0);assert.equal(pending.length,2);input(h,'linkLength','10');pending.forEach(resolve=>resolve());await settle();
+    assert.equal(connections,0);assert.equal(h.w.document.getElementById('linkLength').value,'10');
+    assert.equal(h.w.document.getElementById('aPn').value,'PN-A');assert.equal(h.w.document.getElementById('validateLink').disabled,false);
   }finally{h.close();}
 });
 
@@ -185,7 +350,7 @@ test('assistant compares parts and opens the exact proposed connection',async()=
   const h=harness(async(url,options)=>{
     if(url==='/api/recommendations'){requested=JSON.parse(options.body);return response(proposal());}
     if(url==='/api/connection'){connection=JSON.parse(options.body);return response({...proposal().candidates[0].validation,revision:r1});}
-    return apiHandler()(url);
+    return apiHandler()(url,options);
   });
   try{
     await settle();click(h,'wizardTab');input(h,'ownedParts','PN-A,1');input(h,'reusePn','PN-A');click(h,'recommend');await settle();
@@ -358,9 +523,9 @@ test('a late CSV import cannot overwrite a project edited while importing',async
 });
 
 test('physical identifiers and port ordinals are included when adding an A-to-B result to the project',async()=>{
-  const h=harness(async(url,options)=>url==='/api/connection'?response({...proposal().candidates[0].validation,revision:r1}):apiHandler()(url));
+  const h=harness(async(url,options)=>url==='/api/connection'?response({...proposal().candidates[0].validation,revision:r1}):apiHandler()(url,options));
   try{
-    await settle();click(h,'linkTab');click(h,'validateLink');await settle();
+    await settle();click(h,'linkTab');await settle();click(h,'validateLink');await settle();
     input(h,'projectAInstance','leaf-01');input(h,'projectAPort','4');input(h,'projectBInstance','dgx-02');input(h,'projectBPort','2');
     click(h,'addConnectionToProject');click(h,'downloadProjectJSON');const p=JSON.parse(await h.exported.text());
     assert.equal(p.connections[0].a.instance_id,'leaf-01');assert.equal(p.connections[0].a.port_number,4);

@@ -5,6 +5,8 @@
   const $ = id => document.getElementById(id);
   const state = { meta: null, devices: [], products: [], hardware: [], fibers: [], rows: [], selected: null, linkResult: null, wizardResult: null, view: 'port', online: false };
   const portGate = new RequestGate(), catalogGate = new RequestGate(), linkGate = new RequestGate(), hardwareGate = new RequestGate(), wizardGate = new RequestGate();
+  const linkProductGates = { a: new RequestGate(), b: new RequestGate() };
+  const linkProducts = { a: { ready: false, wanted: {} }, b: { ready: false, wanted: {} } };
   const plainFields = ['search', 'outcomeFilter', 'lifecycleFilter', 'fabricFilter', 'categoryFilter', 'typeFilter', 'mediumFilter', 'speedFilter', 'reachFilter', 'linkFabric', 'linkLength', 'fiberType', 'connectorA', 'connectorB'];
   const hosts = ['port', 'a', 'b', 'wa', 'wb'];
   const runtimeFields = { Sku: 'sku', Opn: 'opn', Variant: 'adapter_variant', Psid: 'psid', Firmware: 'firmware', Os: 'os_name', OsVersion: 'os_version' };
@@ -37,10 +39,15 @@
   function readConfig() {
     const config = { revision: state.meta?.revision, view: state.view, kind: $('kind').value, device: $('device').value, group: $('group').value, mode: $('mode').value, product: state.selected || '', partNumber: $('partNumber').value, pinout: $('pinout').checked ? '1' : '0' };
     plainFields.forEach(id => { config[id] = $(id).value; });
-    for (const side of ['a', 'b']) for (const field of ['Device', 'Group', 'Mode', 'Product', 'End', 'Pn']) config[side + field] = $(side + field).value;
+    for (const side of ['a', 'b']) for (const field of ['Device', 'Group', 'Mode', 'Product', 'End', 'Pn']) {
+      const id = side + field;
+      // Loading placeholders must not overwrite the saved product/PN/end intent.
+      config[id] = !linkProducts[side].ready && ['Product', 'End', 'Pn'].includes(field) ? linkProducts[side].wanted[id] : $(id).value;
+    }
     for (const side of ['wa', 'wb']) for (const field of ['Device', 'Group', 'Mode']) config[side + field] = $(side + field).value;
     hosts.forEach(h => { config[h + 'Profile'] = $(h + 'Profile').value; });
     config.fiberPn = $('fiberPn').value; config.includeUnknown = $('includeUnknown').checked ? '1' : '0';
+    config.showLinkRejected = $('showLinkRejected').checked ? '1' : '0';
     return config;
   }
   function restoreConfig() {
@@ -231,17 +238,81 @@
   }
   function fillLinkProduct(side, wanted = {}) {
     const item = productFor($(side + 'Product').value);
-    choices(side + 'End', (item?.endpoints || []).map(e => [e.id, `${e.id}: ${e.interface_type} (${e.role}${e.count > 1 ? `, ${e.count} ends` : ''})`]), wanted[side + 'End'], 'Choose best documented end');
+    const fit = linkProducts[side].rows?.find(p => p.id === item?.id)?.validation;
+    const ends = (item?.endpoints || []).filter(e => $('showLinkRejected').checked || fit?.alternatives.some(v => v.endpoint_id === e.id && v.status !== 'incompatible'));
+    choices(side + 'End', ends.map(e => [e.id, `${e.id}: ${e.interface_type} (${e.role}${e.count > 1 ? `, ${e.count} ends` : ''})`]), wanted[side + 'End'], 'Choose best documented end');
     choices(side + 'Pn', (item?.skus || []).map(s => [s.part_number, `${s.part_number}${s.length_m != null ? ` · ${s.length_m}m` : ' · length unspecified'}`]), wanted[side + 'Pn'], 'Choose PN');
+    $(side + 'End').disabled = $(side + 'Pn').disabled = !item;
     updateFiberVisibility();
+    if (linkProducts[side].ready) linkProductMessage(side);
+  }
+  function linkProductKey(side) { return JSON.stringify([state.meta?.revision, hostSelection(side), $('linkFabric').value]); }
+  function linkReady() {
+    return !!state.meta && ['a', 'b'].every(side => linkProducts[side].ready && linkProducts[side].key === linkProductKey(side) && $(side + 'Product').value);
+  }
+  function clearLinkProducts(side, wanted, message) {
+    linkProductGates[side].cancel();
+    linkProducts[side] = { ready: false, wanted: { ...wanted }, rows: [], key: null, pending: false };
+    for (const field of ['Product', 'End', 'Pn']) { choices(side + field, [], null, field === 'Product' ? 'Checking selected port…' : 'Choose a product first'); $(side + field).disabled = true; }
+    $(side + 'ProductStatus').textContent = message;
+    updateFiberVisibility();
+  }
+  function visibleLinkProducts(side) {
+    return linkProducts[side].rows.filter(p => $('showLinkRejected').checked || p.status === 'active' && p.validation.status !== 'incompatible');
+  }
+  function linkProductMessage(side, notice = '') {
+    const record = linkProducts[side], item = record.rows.find(p => p.id === $(side + 'Product').value);
+    const status = item?.validation.status;
+    const reason = item?.validation.checks.find(c => c.state === 'fail')?.message;
+    $(side + 'ProductStatus').textContent = `${visibleLinkProducts(side).length} of ${record.rows.length} products shown. ${notice}${status ? 'Host-port fit: ' + status + (status === 'unknown' ? ' — compatibility unconfirmed.' : '.') : ''}${reason ? ' ' + reason : ''}`;
+  }
+  function renderLinkProducts(side, wanted = linkProducts[side].wanted) {
+    const record = linkProducts[side], rows = visibleLinkProducts(side), preferred = wanted[side + 'Product'];
+    // Only a new selection may default to the first candidate; rejected choices stay empty.
+    const selected = preferred == null ? rows[0]?.id || '' : rows.some(p => p.id === preferred) ? preferred : '';
+    choices(side + 'Product', rows.map(p => [p.id, `${p.model}${p.variant ? ' · ' + p.variant : ''} [${p.validation.status}${p.status !== 'active' ? '; ' + p.status : ''}]`]), selected, rows.length ? 'Choose module or cable' : 'No matching products for this port');
+    $(side + 'Product').disabled = !rows.length;
+    record.ready = true;
+    fillLinkProduct(side, wanted);
+    const changed = ['Product', 'End', 'Pn'].some(field => wanted[side + field] && wanted[side + field] !== $(side + field).value);
+    if (changed) $('pinout').checked = false;
+    linkProductMessage(side, preferred && !selected ? 'Previous product is rejected or unavailable; choose another product. ' : changed ? 'Previous termination or PN was cleared; review this selection. ' : '');
+  }
+  function refreshLinkProducts(side, wanted = readConfig()) {
+    clearLinkProducts(side, wanted, 'Checking products against the selected port…');
+    invalidateLink();
+    const host = hostSelection(side), key = linkProductKey(side), gate = linkProductGates[side], ticket = gate.start(key), record = linkProducts[side];
+    if (!host.device_id || !host.port_group_id) { $(side + 'ProductStatus').textContent = 'No port profile is available for this device.'; return Promise.resolve(false); }
+    record.key = key; record.pending = true;
+    record.promise = (async () => {
+      try {
+        const result = await jsonRequest('/api/evaluate', ticket, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...host, fabric: $('linkFabric').value, revision: state.meta.revision }) });
+        if (!gate.current(ticket, linkProductKey(side))) return false;
+        if (!revisionMatches(result, { revision: state.meta.revision, device: host.device_id, group: host.port_group_id })) throw new Error('Catalog or port changed. Refresh and retry product filtering.');
+        record.rows = result.products;
+        renderLinkProducts(side); save();
+        return true;
+      } catch (error) {
+        if (ticket.sequence === gate.sequence) $(side + 'ProductStatus').textContent = `Product filtering unavailable: ${error.message}. Refresh the catalog to retry.`;
+        return false;
+      } finally {
+        if (ticket.sequence === gate.sequence) { record.pending = false; $('validateLink').disabled = !linkReady(); }
+      }
+    })();
+    return record.promise;
+  }
+  function ensureLinkProducts() {
+    return Promise.all(['a', 'b'].map(side => {
+      const record = linkProducts[side];
+      return record.key === linkProductKey(side) && (record.ready || record.pending) ? record.promise || Promise.resolve(true) : refreshLinkProducts(side);
+    }));
   }
   function fillLink(wanted) {
     for (const side of ['a', 'b']) {
       choices(side + 'Device', state.devices.map(d => [d.id, d.model]), wanted[side + 'Device'] || (side === 'a' ? 'profile:MQM9700-NS2F' : 'system:DGX B200'));
       fillLinkGroups(side, wanted);
       const defaultCable = state.products.find(p => p.model === 'MCA4J80-Nxxx-FTF');
-      choices(side + 'Product', state.products.map(p => [p.id, `${p.model}${p.variant ? ` · ${p.variant}` : ''} [${p.status}]`]), wanted[side + 'Product'] || defaultCable?.id);
-      fillLinkProduct(side, wanted);
+      clearLinkProducts(side, { ...wanted, [side + 'Product']: wanted[side + 'Product'] ?? defaultCable?.id ?? null }, 'Open Connection A ↔ B to check products against this port.');
     }
   }
   function updateFiberVisibility() {
@@ -252,7 +323,7 @@
     linkGate.cancel(); state.linkResult = null;
     $('linkChecks').replaceChildren(); $('linkStatus').textContent = 'Selection changed. Run validation.';
     $('linkQualification').replaceChildren(); $('linkGaps').replaceChildren();
-    $('validateLink').disabled = !state.meta; updateExport(); save();
+    $('validateLink').disabled = !linkReady(); updateExport(); save();
   }
   function connectionRequest() {
     const selection = side => ({ ...hostSelection(side),
@@ -267,6 +338,7 @@
       revision: state.meta?.revision };
   }
   async function runLink() {
+    if (!linkReady()) { $('linkStatus').textContent = 'Wait for port filtering and choose a module or cable at both ends.'; return; }
     const request = connectionRequest(), key = JSON.stringify(request), ticket = linkGate.start(key);
     state.linkResult = null; updateExport(); $('linkChecks').replaceChildren();
     $('validateLink').disabled = true; $('linkStatus').textContent = 'Validating both endpoints…';
@@ -285,7 +357,7 @@
       $('linkStatus').textContent = error.message;
       if (!error.status || error.status >= 500) offline(error);
     } finally {
-      if (ticket.sequence === linkGate.sequence) $('validateLink').disabled = false;
+      if (ticket.sequence === linkGate.sequence) $('validateLink').disabled = !linkReady();
       updateExport(); save();
     }
   }
@@ -298,15 +370,17 @@
     $('share').disabled = ['breakout', 'project'].includes(state.view);
     $('share').title = $('share').disabled ? 'Export the complete definition/project JSON to share these configurations.' : '';
     updateExport();
+    if (state.view === 'link' && state.meta) return ensureLinkProducts();
   }
   async function loadCatalog(initial = false) {
     const ticket = catalogGate.start('catalog');
+    for (const side of ['a', 'b']) { linkProductGates[side].cancel(); linkProducts[side].key = null; linkProducts[side].pending = false; }
     portGate.cancel(); invalidateLink(); invalidateWizard(); invalidateHardware();
     try {
       const bundle = await jsonRequest('/api/catalog', ticket);
       if (!catalogGate.current(ticket, 'catalog')) return;
       const wanted = initial || !state.meta ? restoreConfig() : readConfig();
-      state.meta = bundle.meta; state.devices = bundle.devices; state.products = bundle.products; state.online = true; $('validateLink').disabled = false;
+      state.meta = bundle.meta; state.devices = bundle.devices; state.products = bundle.products; state.online = true;
       state.hardware = bundle.hardware_profiles || []; state.fibers = bundle.fiber_assemblies || [];
       window.ValidatorTopology?.setCatalog(bundle);
       refreshFilters(wanted); fillPortDevices(wanted); fillLink(wanted); fillWizard(wanted);
@@ -318,6 +392,7 @@
       }
       plainFields.forEach(id => assign(id, wanted[id]));
       $('includeUnknown').checked = wanted.includeUnknown !== '0';
+      $('showLinkRejected').checked = wanted.showLinkRejected === '1';
       $('pinout').checked = wanted.pinout === '1' && (!wanted.revision || wanted.revision === bundle.meta.revision);
       setView(wanted.view); renderMeta(); updateFiberVisibility();
       if (wanted.product && !state.products.some(p => p.id === wanted.product)) $('actionMessage').textContent = 'The previously selected product is no longer present in this revision.';
@@ -433,7 +508,7 @@
       if (!error.status || error.status >= 500) offline(error);
     } finally { if (ticket.sequence === wizardGate.sequence) $('recommend').disabled = false; updateExport(); save(); }
   }
-  function openProposal(index) {
+  async function openProposal(index) {
     const request = state.wizardResult?.candidates[index]?.connection;
     if (!request) return;
     const wanted = readConfig();
@@ -446,7 +521,13 @@
     assign('fiberPn', request.fiber_part_number || '');
     if (request.fiber) { assign('fiberType', request.fiber.fiber_type); assign('connectorA', request.fiber.connector_a); assign('connectorB', request.fiber.connector_b); }
     $('pinout').checked = false;
-    setView('link'); invalidateLink(); runLink();
+    const pending = setView('link');
+    invalidateLink();
+    const ticket = linkGate.start('proposal');
+    await pending;
+    if (!linkGate.current(ticket, 'proposal')) return;
+    if (linkReady() && ['a', 'b'].every(side => ['Product', 'End', 'Pn'].every(field => $(side + field).value === wanted[side + field]))) runLink();
+    else $('linkStatus').textContent = 'The proposal could not be restored against the current port filters. Review both selections.';
   }
   $('inspectHardware').addEventListener('click', inspectHardware);
   $('recommend').addEventListener('click', runWizard);
@@ -465,7 +546,7 @@
     } catch (error) { $('addProjectMessage').textContent = error.message; }
   });
   for (const host of hosts) {
-    const invalidate = host === 'port' ? () => refreshPort() : host.startsWith('w') ? invalidateWizard : () => { $('pinout').checked = false; invalidateLink(); };
+    const invalidate = host === 'port' ? () => refreshPort() : host.startsWith('w') ? invalidateWizard : () => { $('pinout').checked = false; refreshLinkProducts(host); };
     $(host + 'Profile').addEventListener('change', () => { const wanted = readConfig(); clearRuntime(host); fillHardware(host, wanted); invalidate(); });
     Object.keys(runtimeFields).forEach(field => $(host + field).addEventListener('input', invalidate));
   }
@@ -488,15 +569,18 @@
   $('partNumber').addEventListener('change', () => { renderSKU(); save(); });
   $('whyRejected').addEventListener('click', () => { $('outcomeFilter').value = 'all'; $('lifecycleFilter').value = 'all'; renderProducts(); $('search').focus(); save(); });
   for (const side of ['a', 'b']) {
-    $(side + 'Device').addEventListener('change', () => { clearRuntime(side); $('pinout').checked = false; fillLinkGroups(side); invalidateLink(); });
-    $(side + 'Group').addEventListener('change', () => { $('pinout').checked = false; fillModes(side + 'Mode', hostGroup(side)); invalidateLink(); });
+    $(side + 'Device').addEventListener('change', () => { clearRuntime(side); $('pinout').checked = false; fillLinkGroups(side); refreshLinkProducts(side); });
+    $(side + 'Group').addEventListener('change', () => { $('pinout').checked = false; fillModes(side + 'Mode', hostGroup(side)); refreshLinkProducts(side); });
     $(side + 'Product').addEventListener('change', () => {
       $('pinout').checked = false;
       fillLinkProduct(side);
-      if (side === 'a' && productFor($('aProduct').value)?.category !== 'Transceiver') { $('bProduct').value = $('aProduct').value; fillLinkProduct('b'); }
+      if (side === 'a' && productFor($('aProduct').value)?.category !== 'Transceiver' && linkProducts.b.ready && linkProducts.b.key === linkProductKey('b') && visibleLinkProducts('b').some(p => p.id === $('aProduct').value)) {
+        $('bProduct').value = $('aProduct').value; fillLinkProduct('b');
+      }
       invalidateLink();
     });
-    for (const field of ['Mode', 'End']) $(side + field).addEventListener('change', () => { $('pinout').checked = false; invalidateLink(); });
+    $(side + 'Mode').addEventListener('change', () => { $('pinout').checked = false; refreshLinkProducts(side); });
+    $(side + 'End').addEventListener('change', () => { $('pinout').checked = false; invalidateLink(); });
     $(side + 'Pn').addEventListener('change', () => {
       $('pinout').checked = false;
       if (side === 'a' && $('aProduct').value === $('bProduct').value) assign('bPn', $('aPn').value);
@@ -505,7 +589,17 @@
       invalidateLink();
     });
   }
-  for (const id of ['linkFabric', 'linkLength', 'fiberType', 'connectorA', 'connectorB', 'pinout']) $(id).addEventListener(id === 'linkLength' ? 'input' : 'change', () => {
+  $('showLinkRejected').addEventListener('change', () => {
+    const wanted = readConfig();
+    for (const side of ['a', 'b']) if (linkProducts[side].ready) renderLinkProducts(side, wanted);
+    invalidateLink();
+  });
+  $('linkFabric').addEventListener('change', () => {
+    $('pinout').checked = false;
+    const wanted = readConfig();
+    for (const side of ['a', 'b']) refreshLinkProducts(side, wanted);
+  });
+  for (const id of ['linkLength', 'fiberType', 'connectorA', 'connectorB', 'pinout']) $(id).addEventListener(id === 'linkLength' ? 'input' : 'change', () => {
     if (['fiberType', 'connectorA', 'connectorB'].includes(id)) { $('pinout').checked = false; $('fiberPn').value = ''; }
     invalidateLink();
   });
@@ -526,6 +620,6 @@
     anchor.href = url; anchor.download = `compatibility-${state.meta.revision}.json`;
     anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
-  window.addEventListener('pagehide', () => { clearTimeout(pollTimer); portGate.cancel(); catalogGate.cancel(); linkGate.cancel(); hardwareGate.cancel(); wizardGate.cancel(); });
+  window.addEventListener('pagehide', () => { clearTimeout(pollTimer); portGate.cancel(); catalogGate.cancel(); linkGate.cancel(); hardwareGate.cancel(); wizardGate.cancel(); Object.values(linkProductGates).forEach(gate => gate.cancel()); });
   loadCatalog(true).finally(() => { pollTimer = setTimeout(pollMeta, 5000); });
 })();

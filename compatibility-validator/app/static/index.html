@@ -57,13 +57,15 @@
   <div id="linkView" class="stack hidden" role="tabpanel" aria-labelledby="linkTab">
     <section class="panel"><div class="panel-head"><h2>Validate one connection between two ports</h2></div><div class="panel-body">
       <p class="small">Choose both optical modules and the fiber, or the two ends of the same DAC/LACC/AOC assembly. Each breakout leg is validated separately.</p>
+      <label class="check-label"><input id="showLinkRejected" type="checkbox"> Show rejected / retired products for diagnostics</label>
+      <p class="small">Product lists use the selected device, port, exact board, mode and fabric. Unknown means compatibility is unconfirmed. Validate the complete A ↔ B connection after choosing both ends.</p>
       <div class="link-sides">
         <fieldset><legend>Device A</legend>
           <label for="aDevice">Device / system</label><select id="aDevice"></select>
           <label for="aGroup">Port group</label><select id="aGroup"></select>
           <label for="aMode">Operating mode</label><select id="aMode"></select>
           <div id="aHardware" class="hardware-context"></div>
-          <label for="aProduct">Module or cable</label><select id="aProduct"></select>
+          <label for="aProduct">Module or cable</label><select id="aProduct" aria-describedby="aProductStatus"></select><p id="aProductStatus" class="small" role="status"></p>
           <label for="aEnd">Cable termination at device A</label><select id="aEnd"></select>
           <label for="aPn">Ordering part number</label><select id="aPn"></select>
         </fieldset>
@@ -72,7 +74,7 @@
           <label for="bGroup">Port group</label><select id="bGroup"></select>
           <label for="bMode">Operating mode</label><select id="bMode"></select>
           <div id="bHardware" class="hardware-context"></div>
-          <label for="bProduct">Module or cable</label><select id="bProduct"></select>
+          <label for="bProduct">Module or cable</label><select id="bProduct" aria-describedby="bProductStatus"></select><p id="bProductStatus" class="small" role="status"></p>
           <label for="bEnd">Cable termination at device B</label><select id="bEnd"></select>
           <label for="bPn">Ordering part number</label><select id="bPn"></select>
         </fieldset>

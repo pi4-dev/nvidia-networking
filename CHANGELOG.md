@@ -15,10 +15,22 @@ releases. Historical dates below come from their referenced commits. The `v0.01`
 
 - Pinned the `0.06-dev` milestone and comparison links to its implementation
   commit, keeping subsequent development separate.
+- Regression coverage now includes 48 frontend tests and 110 backend tests.
+  Connection dropdown filtering was also checked against the live API with the
+  bundled MQM9700, DGX B200 and SN5600 port profiles.
 
 ### Fixed
 
 - Fixed container startup for the non-root runtime user by assigning copied application and bundled data files to UID/GID `10001:10001` during the image build. This prevents `PermissionError` while importing `/app/app/__init__.py` when restrictive source-file permissions are present in the Docker build context.
+- Connection A ↔ B module/cable and termination lists now use the existing
+  host-port evaluator separately for A and B, including exact hardware, observed
+  identity, mode and fabric. Known incompatible and retired products are hidden
+  by default, with an explicit diagnostic toggle. Unknown compatibility remains
+  labeled and requires complete connection validation.
+- Port-selection changes refresh the candidates, clear rejected selections and
+  prevent stale responses or API failures from exposing the full catalog.
+  Valid saved/shared selections and assistant proposals retain their PN and
+  termination; automatic cable copying to B respects B's filtered list.
 
 ## [0.06-dev] - 2026-09-23
 

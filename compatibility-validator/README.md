@@ -35,6 +35,17 @@ Default data paths resolve from the application directory. `NVIDIA_DATA_PATH` an
 
 **Connection A ↔ B:** select both devices and their ports, then either two optical modules plus fiber or the two ends of one cable assembly. Choose ordering PNs, fabric and actual length. The result covers one link or one breakout leg. For fiber, select a catalog ordering PN or a custom OS2/SM-unspecified/OM3/OM4/OM5 assembly, connectors including polish, and explicitly confirm that gender, polarity and lane mapping match the cable drawing.
 
+Each **Module or cable** list is evaluated separately against its selected device,
+port, exact board, observed hardware/software, mode and fabric. Active products
+without a failed host-port check are shown by default, with their evaluation
+status; `unknown` remains explicitly unconfirmed. Rejected and retired products
+are available through **Show rejected / retired products for diagnostics**.
+Cable terminations use the same port filter. Changing the host selection refreshes
+the list and clears rejected product, termination or PN selections. A failed or
+pending evaluation disables connection validation instead of showing an unfiltered
+catalog. Host-port fit still requires complete A ↔ B validation after both ends
+are chosen.
+
 **Exact hardware:** choose a documented board OPN or stay with the generic device. Expand “Observed hardware and software” to enter SKU, OPN, variant, PSID, firmware, OS and OS version. “Inspect exact hardware” shows parameter values, manufacturer/lab source, verification date and scope, followed by missing facts and actions. Exact profiles can narrow the available physical port group and add only documented modes. Generic catalog facts without dated evidence remain labeled as such. Inspection reports can be exported without selecting a product.
 
 **Connection assistant:** choose devices/ports A and B, fabric, bandwidth **per link**, minimum length, optional technology/fiber grade, and an optional exact PN that must be reused. Enter owned inventory as one `PN,quantity` per line. The assistant compares active cable assemblies with module A + fiber + module B, including ordering numbers, actual SKU length, orientation, port modes, FEC gaps, qualification and quantities to reuse/buy. A required PN counts as one owned item unless its inventory quantity is explicitly entered. Two identical module PNs require two physical modules. “Open connection” transfers the full proposal to manual validation; optical pinout confirmation always starts unchecked.
