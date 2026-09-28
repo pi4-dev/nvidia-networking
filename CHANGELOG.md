@@ -16,6 +16,10 @@ releases. Historical dates below come from their referenced commits. The `v0.01`
 - Pinned the `0.06-dev` milestone and comparison links to its implementation
   commit, keeping subsequent development separate.
 
+### Fixed
+
+- Fixed container startup for the non-root runtime user by assigning copied application and bundled data files to UID/GID `10001:10001` during the image build. This prevents `PermissionError` while importing `/app/app/__init__.py` when restrictive source-file permissions are present in the Docker build context.
+
 ## [0.06-dev] - 2026-09-23
 
 ### Added

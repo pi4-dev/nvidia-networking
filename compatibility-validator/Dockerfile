@@ -18,9 +18,9 @@ COPY compatibility-validator/requirements.txt /app/requirements.txt
 RUN python -m pip install --no-cache-dir --require-hashes --only-binary=:all: --index-url https://pypi.org/simple -r /app/requirements.txt \
     && python -m pip check
 
-COPY compatibility-validator/app /app/app
-COPY compatibility-validator/data/device-profiles.json /profiles/device-profiles.json
-COPY data/nvidia-interconnects.json /data/nvidia-interconnects.json
+COPY --chown=10001:10001 compatibility-validator/app /app/app
+COPY --chown=10001:10001 compatibility-validator/data/device-profiles.json /profiles/device-profiles.json
+COPY --chown=10001:10001 data/nvidia-interconnects.json /data/nvidia-interconnects.json
 
 USER 10001:10001
 
