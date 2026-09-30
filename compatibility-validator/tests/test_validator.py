@@ -60,7 +60,48 @@ class CatalogTests(unittest.TestCase):
         self.assertIsNone(RAW['port_interface_compatibility']['dpu']['BlueField-4 STX Storage Processor']['pluggable'])
         snapshot = self.catalog.get()
         self.assertEqual(len(snapshot['devices']), 33)
-        self.assertEqual(len(snapshot['interconnects']), 76)
+
+        linkx = RAW['linkx']
+        detailed = linkx['transceivers'] + linkx['aoc'] + linkx['copper']
+        detailed_models = {row[1] for row in detailed}
+        legacy_model_idx = linkx['product_fields'].index('model')
+        legacy_only = [
+            row for row in linkx['no_longer_for_sale']
+            if row[legacy_model_idx] not in detailed_models
+        ]
+        self.assertEqual(len(snapshot['interconnects']), len(detailed) + len(legacy_only))
+
+    def test_catalog_summary_matches_source_rows(self):
+        linkx = RAW['linkx']
+        summary = RAW['summary']
+        transceiver_status_idx = linkx['transceiver_fields'].index('status')
+        detailed_status_idx = linkx['detailed_interconnect_fields'].index('status')
+
+        self.assertEqual(summary['linkx_total'], len(linkx['active']) + len(linkx['no_longer_for_sale']))
+        self.assertEqual(summary['linkx_active'], len(linkx['active']))
+        self.assertEqual(summary['linkx_no_longer_for_sale'], len(linkx['no_longer_for_sale']))
+        self.assertEqual(summary['transceiver_records'], len(linkx['transceivers']))
+        self.assertEqual(
+            summary['active_transceiver_variants'],
+            sum(row[transceiver_status_idx] == 'active' for row in linkx['transceivers']),
+        )
+        self.assertEqual(
+            summary['active_aoc_variants'],
+            sum(row[detailed_status_idx] == 'active' for row in linkx['aoc']),
+        )
+        self.assertEqual(
+            summary['active_copper_variants'],
+            sum(row[detailed_status_idx] == 'active' for row in linkx['copper']),
+        )
+        self.assertEqual(summary['ethernet_switches'], len(RAW['ethernet']['items']))
+        self.assertEqual(summary['infiniband_products'], len(RAW['infiniband']['items']))
+        self.assertEqual(summary['silicon_photonics_products'], len(RAW['silicon_photonics']['items']))
+        self.assertEqual(summary['dpu_products'], len(RAW['dpu']['items']))
+        self.assertEqual(summary['supernic_products'], len(RAW['supernic']['items']))
+        self.assertEqual(
+            summary['port_interface_compatibility_records'],
+            sum(len(bucket) for bucket in RAW['port_interface_compatibility'].values()),
+        )
 
     def test_startup_failure_never_returns_empty_snapshot(self):
         self.data.write_text('{')
