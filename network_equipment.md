@@ -1,6 +1,6 @@
 # NVIDIA Network Equipment
 
-_Snapshot **2026-09-23**, schema **v8**, Europe/Warsaw._
+_Snapshot **2026-09-30**, schema **v8**, Europe/Warsaw._
 
 `IB` = InfiniBand, `ETH` = Ethernet, `NVL` = NVLink/NVL. OSFP finned/flat-top variants are separate where NVIDIA publishes distinct OPNs.
 
@@ -69,6 +69,9 @@ _Snapshot **2026-09-23**, schema **v8**, Europe/Warsaw._
 | MMS4X90-NR | — | active | — | 800G | OSFP-finned | SM | 2× 400Gb/s Duplex LC | {"max_m":10000} | IB,ETH | [NVIDIA](https://networking-docs.nvidia.com/mms4x90nr800g) |
 | MMS1W50-HM | — | active | MMS1W50-HM | 200G | QSFP56 | SM | 1× 200Gb/s Duplex LC/UPC | {"max_m":2000} | IB | [NVIDIA](https://networking-docs.nvidia.com/mms1w50hmspec) |
 | MMA2P00-AS | — | active | MMA2P00-AS | 25G | SFP28 | MM | 1× 25Gb/s Duplex LC/UPC | {"OM3_m":70,"OM4_m":100,"max_m":100} | ETH | [NVIDIA](https://networking-docs.nvidia.com/mma2p00asspec) |
+
+| MMS4A50 | IHS | active | 980-9IAS0-00XM00 | 1600G | OSFP-finned | SM | 2× 800Gb/s Dual LC Duplex | {"max_m":2000} | IB,ETH | [NVIDIA](https://networking-docs.nvidia.com/mms4a501600gosfp) |
+| MMS4A50 | RHS | active | 980-9IAS1-00XM00 | 1600G | OSFP-flattop | SM | 2× 800Gb/s Dual LC Duplex | {"max_m":2000} | IB,ETH | [NVIDIA](https://networking-docs.nvidia.com/mms4a501600gosfp) |
 
 ## AOC
 
