@@ -23,6 +23,14 @@ RAW = json.loads(DATA_PATH.read_text())
 PROFILES = json.loads(PROFILE_PATH.read_text())
 SNAPSHOT = LiveCatalog(DATA_PATH, PROFILE_PATH).get()
 
+CANONICAL_DEVICE_IDS = {
+    f"{section}:{row[RAW[section]['fields'].index('model')]}"
+    for section in ('ethernet', 'infiniband', 'supernic', 'dpu')
+    for row in RAW[section]['items']
+}
+EXPECTED_DEVICE_IDS = CANONICAL_DEVICE_IDS | {profile['id'] for profile in PROFILES['profiles']}
+EXPECTED_DEVICE_COUNT = len(EXPECTED_DEVICE_IDS)
+
 
 def device(name):
     return copy.deepcopy(next(d for d in SNAPSHOT['devices'] if d['model'] == name))
@@ -59,7 +67,7 @@ class CatalogTests(unittest.TestCase):
     def test_actual_json_and_nullable_pluggable(self):
         self.assertIsNone(RAW['port_interface_compatibility']['dpu']['BlueField-4 STX Storage Processor']['pluggable'])
         snapshot = self.catalog.get()
-        self.assertEqual(len(snapshot['devices']), 33)
+        self.assertEqual(len(snapshot['devices']), EXPECTED_DEVICE_COUNT)
 
         linkx = RAW['linkx']
         detailed = linkx['transceivers'] + linkx['aoc'] + linkx['copper']
@@ -338,7 +346,7 @@ class APITests(unittest.TestCase):
 
     def test_real_http_health_devices_and_bundle(self):
         code,_,body=self.request('/healthz');self.assertEqual(code,200);self.assertEqual(json.loads(body),{'status':'ok'})
-        code,headers,body=self.request('/api/devices');self.assertEqual(code,200);self.assertEqual(len(json.loads(body)),33)
+        code,headers,body=self.request('/api/devices');self.assertEqual(code,200);self.assertEqual(len(json.loads(body)),EXPECTED_DEVICE_COUNT)
         self.assertIn('x-catalog-revision', {k.lower():v for k,v in headers.items()})
         code,_,body=self.request('/api/catalog');bundle=json.loads(body)
         self.assertEqual(code,200);self.assertEqual(bundle['meta']['catalog']['state'],'ready')
