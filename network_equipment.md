@@ -1,6 +1,6 @@
 # NVIDIA Network Equipment
 
-_Snapshot **2026-09-30**, schema **v8**, Europe/Warsaw._
+_Snapshot **2026-10-01**, schema **v8**, Europe/Warsaw._
 
 `IB` = InfiniBand, `ETH` = Ethernet, `NVL` = NVLink/NVL. OSFP finned/flat-top variants are separate where NVIDIA publishes distinct OPNs.
 
@@ -114,6 +114,8 @@ _Snapshot **2026-09-30**, schema **v8**, Europe/Warsaw._
 | SN4700 | family="Spectrum-3 SN4000"; speed="400GbE"; connectors="32x QSFP-DD 400GbE"; port_counts={"400G":32,"200G":64,"100G":128,"50G":128,"40G":64,"25G":128}; throughput="12.8 Tb/s; 8.4 Bpps"; height="1U"; cooling=null | QSFP-DD, QSFP56, QSFP28 | [NVIDIA](https://www.nvidia.com/en-us/networking/ethernet-switching/) |
 | SN3420 | family="Spectrum-2 SN3000"; speed="100GbE"; connectors="12x QSFP28 100GbE + 48x SFP28 25GbE"; port_counts={"100G":12,"40G":12,"25G":96}; throughput="2.4 Tb/s; 3.57 Bpps"; height="1U"; cooling=null | QSFP28, SFP28 | [NVIDIA](https://www.nvidia.com/en-us/networking/ethernet-switching/) |
 | SN2201 | family="Spectrum SN2000"; speed="100GbE"; connectors="48x RJ45 + 4x QSFP28 100GbE"; port_counts={"100G":4,"50G":8,"40G":4,"25G":16,"1G":48}; throughput="448 Gb/s; 667 Mpps"; height="1U"; cooling=null | QSFP28 | [NVIDIA](https://www.nvidia.com/en-us/networking/ethernet-switching/) |
+| SN4600 | family="Spectrum-3 SN4000"; speed="100GbE"; connectors="64x QSFP28 100GbE"; status="MP"; part_numbers=["920-9N302-00F7-0C2","920-9N302-00R7-0C0"] | QSFP28 | [NVIDIA](https://networking-docs.nvidia.com/sn4000hw/ordering-information) |
+| SN4700D | family="Spectrum-3 SN4000"; speed="400GbE"; connectors="32x QSFP-DD 400GbE"; status="active"; part_numbers=["920-9N301-00RB-NC0"]; legacy_opn="MSN4700-WSARC"; cooling="DC power" | QSFP-DD, QSFP56, QSFP28 | [NVIDIA](https://networking-docs.nvidia.com/sn4000hw/ordering-information) |
 
 ## InfiniBand switching / appliances
 
@@ -152,3 +154,27 @@ _Snapshot **2026-09-30**, schema **v8**, Europe/Warsaw._
 | ConnectX-9 SuperNIC | speed="up to 1.6 Tb/s per GPU"; compatibility=["Spectrum-X Ethernet","AI fabrics"] | OSFP (RHS cage), QSFP112 | [NVIDIA](https://networking-docs.nvidia.com/connectx9hw/specifications) |
 | ConnectX-8 SuperNIC | speed="up to 800 Gb/s total network bandwidth"; compatibility=["PCIe Gen6","Spectrum-X Ethernet","AI compute fabrics"] | OSFP (RHS cage), QSFP112 | [NVIDIA](https://networking-docs.nvidia.com/connectx8hw/specifications) |
 | BlueField-3 SuperNIC | speed="up to 400 Gb/s"; compatibility=["Spectrum-X Ethernet","secure cloud multi-tenancy","deterministic isolated performance"] | QSFP112, QSFP56, QSFP28 | [NVIDIA](https://docs.nvidia.com/networking/display/nvidia-bluefield-3-networking-platform-user-guide.pdf) |
+
+## Network adapters
+
+| Model | Family | Status | Part numbers | Speed | Accepted pluggables | Source |
+|---|---|---|---|---|---|---|
+| C9180 | ConnectX-9 | MP | 900-9X91E-00EB-ST0 | 800GbE / XDR 800Gb/s | OSFP | [NVIDIA](https://networking-docs.nvidia.com/connectx9hw) |
+| C9240 | ConnectX-9 | MP | 900-9X91Q-00CN-ST0 | 2x400GbE / 400Gb/s IB | QSFP112 | [NVIDIA](https://networking-docs.nvidia.com/connectx9hw) |
+| C8180 | ConnectX-8 | MP | 900-9X81E-00EX-ST0 | XDR 800Gb/s / 2x400GbE | OSFP | [NVIDIA](https://networking-docs.nvidia.com/connectx8hw) |
+| C8240 | ConnectX-8 | active | 900-9X81Q-00CN-ST0 | 400GbE / 400Gb/s IB | QSFP112 | [NVIDIA](https://networking-docs.nvidia.com/connectx8hw) |
+| C8220 | ConnectX-8 | prototype | 900-9X81Q-00CV-ST0 | up to 400Gb/s aggregate | QSFP112 | [NVIDIA](https://networking-docs.nvidia.com/connectx8hw) |
+| ConnectX-7 | ConnectX-7 | documented | — | up to 400Gb/s IB/Ethernet | OSFP / QSFP112 by SKU | [NVIDIA](https://networking-docs.nvidia.com/connectx7hw) |
+| ConnectX-6 | ConnectX-6 | documented | — | up to 200Gb/s IB/Ethernet | QSFP56 / QSFP28 by SKU | [NVIDIA](https://networking-docs.nvidia.com/adapters) |
+| ConnectX-6 Dx | ConnectX-6 Dx | documented | — | up to 200GbE | QSFP56 / QSFP28 / SFP56 by SKU | [NVIDIA](https://networking-docs.nvidia.com/adapters) |
+| ConnectX-6 Lx | ConnectX-6 Lx | documented | — | up to 50GbE | SFP56 / SFP28 by SKU | [NVIDIA](https://networking-docs.nvidia.com/adapters) |
+
+## UFM appliances
+
+| Model | Family | Status | Part numbers | Legacy OPN | Network interface | Source |
+|---|---|---|---|---|---|---|
+| UFM XDR Appliance | UFM Enterprise Gen 3.5 | documented | — | — | XDR InfiniBand | [NVIDIA](https://networking-docs.nvidia.com/software/management-software/ufm-appliances) |
+| MUA970D | UFM XDR-DC Gen 3.5 | active | 920-9B020-10RI-0D0 | MUA9702H-2SFS-DC | ConnectX-8 400Gb/s InfiniBand | [NVIDIA](https://networking-docs.nvidia.com/ufmenterprisexdrdchw/) |
+| MUA9652H-2SF | UFM Cyber-AI 4.0 | documented | 920-9B020-00FH-0D0 | MUA9652H-2SF | 2x ConnectX-6 HDR 200Gb/s InfiniBand | [NVIDIA](https://networking-docs.nvidia.com/ufm40cyberaiapphw) |
+| MUA960 | UFM Enterprise Gen 3.0 HDR | documented | 920-9B020-00FA-0D3 | MUA9602H-2SR | HDR InfiniBand | [NVIDIA](https://networking-docs.nvidia.com/ufmenterprisehdrhwum) |
+| MUA950 | UFM-SDN 2.5 | documented | 920-9B020-00FA-0D5, 920-9B020-09FA-0D0 | MUA9502H-2SF / MUA9502H-2SF-40K | InfiniBand | [NVIDIA](https://networking-docs.nvidia.com/ufmsdn25apphw) |
