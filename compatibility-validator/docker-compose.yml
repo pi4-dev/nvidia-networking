@@ -14,9 +14,6 @@ services:
       MAX_PROFILE_BYTES: "524288"
       COMPAT_CACHE_MAX_ENTRIES: "256"
       FORWARDED_ALLOW_IPS: "127.0.0.1"
-    volumes:
-      - ../data:/data:ro
-      - ./data:/profiles:ro
     read_only: true
     tmpfs:
       - /tmp:size=16m,mode=1777

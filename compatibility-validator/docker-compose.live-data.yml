@@ -1,0 +1,5 @@
+services:
+  compatibility-validator:
+    volumes:
+      - ../data:/data:ro
+      - ./data:/profiles:ro

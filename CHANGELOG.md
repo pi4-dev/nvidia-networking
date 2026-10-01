@@ -21,6 +21,8 @@ releases. Historical dates below come from their referenced commits. The `v0.01`
 
 ### Fixed
 
+- Fixed production startup on hosts whose repository files are not readable by container UID/GID `10001:10001`: the default Compose no longer overlays the image-owned `/data` and `/profiles` files with host bind mounts. Host-backed live reload remains available through the explicit `docker-compose.live-data.yml` override and requires matching host read/traverse permissions.
+
 - Fixed validator startup after the 2026-10-01 inventory expansion by adding strict schema validation for the new `network_adapters` and `ufm_appliances` catalog tables. Corrected the port-interface summary to 28 records and made device-count regression checks derive from canonical catalog/profile IDs instead of the stale fixed value 33. Coverage verifies the new row types, source URLs, part-number lists and summary counters while retaining top-level `extra="forbid"` protection.
 
 - Fixed the 2026-09-30 inventory refresh regression after adding the MMS4A50 IHS/RHS variants: catalog `summary` counters are now synchronized with canonical rows, and regression coverage derives interconnect totals while explicitly validating all summary counters.

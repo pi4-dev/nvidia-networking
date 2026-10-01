@@ -17,6 +17,17 @@ docker compose -f compatibility-validator/docker-compose.yml up -d --build
 
 Open <http://localhost:8080/>. Health is available at `/healthz`; catalog freshness and revision are in `/api/meta`.
 
+The default production Compose uses the catalog and profile files baked into the image. This keeps the non-root runtime independent of host UID/GID and ACLs. To opt into host-backed live catalog reload, add the dedicated override:
+
+```bash
+docker compose \
+  -f compatibility-validator/docker-compose.yml \
+  -f compatibility-validator/docker-compose.live-data.yml \
+  up -d --build
+```
+
+The live-data override bind-mounts the repository directories read-only. UID/GID `10001:10001` inside the container must be able to traverse those directories and read both JSON files on the host; otherwise startup returns `503` with `PermissionError`. Ensure the host permissions/ACLs grant that access before enabling the override.
+
 For local development with Python 3.12:
 
 ```bash
@@ -118,7 +129,7 @@ The canonical `../data/nvidia-interconnects.json` remains schema **8**. `data/de
 
 On each data request the loader checks inode, nanosecond timestamps and size for both files. It validates a candidate snapshot and confirms that neither input changed during loading before activating it. The revision hashes both inputs. The browser polls metadata every five seconds, preserves selections and filters on refresh, cancels obsolete requests, and checks revision and selection before displaying a response.
 
-Compose mounts **directories** read-only so that atomic file replacement is visible inside the container. Update both related inputs together; if one temporarily disagrees with the other, the candidate is rejected until a consistent pair is present.
+The default production Compose reads the image-bundled inputs and therefore changes only when the image is rebuilt. The optional `docker-compose.live-data.yml` override mounts both repository **directories** read-only so that atomic file replacement remains visible inside the container. When using that override, host permissions/ACLs must allow runtime UID/GID `10001:10001` to traverse the directories and read the JSON files. Update both related inputs together; if one temporarily disagrees with the other, the candidate is rejected until a consistent pair is present.
 
 A malformed, oversized or inconsistent update keeps the last valid snapshot and sets `/api/meta` → `catalog.state` to `degraded`, with last-success/last-failure timestamps and a generic error code. The GUI displays this state. If no valid snapshot has ever loaded, data endpoints and `/healthz` consistently return `503`; they never return an empty successful catalog. Correcting the input recovers without restarting. API/network failures show an offline notice and a retry action.
 
