@@ -21,6 +21,8 @@ releases. Historical dates below come from their referenced commits. The `v0.01`
 
 ### Fixed
 
+- Fixed validator startup after the 2026-10-01 inventory expansion by adding strict schema validation for the new `network_adapters` and `ufm_appliances` catalog tables. Regression coverage now verifies their row types, source URLs, part-number lists and summary counters while retaining top-level `extra="forbid"` protection.
+
 - Fixed the 2026-09-30 inventory refresh regression after adding the MMS4A50 IHS/RHS variants: catalog `summary` counters are now synchronized with canonical rows, and regression coverage derives interconnect totals while explicitly validating all summary counters.
 - Fixed container startup for the non-root runtime user by assigning copied application and bundled data files to UID/GID `10001:10001` during the image build. This prevents `PermissionError` while importing `/app/app/__init__.py` when restrictive source-file permissions are present in the Docker build context.
 - Connection A ↔ B module/cable and termination lists now use the existing

@@ -342,6 +342,42 @@ class EquipmentRow(StrictModel):
     availability: Text | None = None
 
 
+class NetworkAdapterRow(StrictModel):
+    category: Literal["Network adapter"]
+    model: Text
+    family: Text
+    status: Text
+    part_numbers: list[Text]
+    speed: Text
+    interface_type: Text
+    source_url: Text
+
+    _source = field_validator("source_url")(check_url)
+
+    @model_validator(mode="after")
+    def consistent(self):
+        unique(self.part_numbers, "network adapter part number")
+        return self
+
+
+class UFMApplianceRow(StrictModel):
+    category: Literal["UFM appliance"]
+    model: Text
+    family: Text
+    status: Text
+    part_numbers: list[Text]
+    legacy_opn: Text | None
+    network_interface: Text
+    source_url: Text
+
+    _source = field_validator("source_url")(check_url)
+
+    @model_validator(mode="after")
+    def consistent(self):
+        unique(self.part_numbers, "UFM appliance part number")
+        return self
+
+
 class ProductSummary(StrictModel):
     model: Text
     speed: Text
@@ -421,6 +457,8 @@ class CatalogDocument(StrictModel):
     silicon_photonics: dict[str, Any]
     dpu: dict[str, Any]
     supernic: dict[str, Any]
+    network_adapters: dict[str, Any]
+    ufm_appliances: dict[str, Any]
     summary: dict[Text, Annotated[int, Field(ge=0)]]
     notes: list[Text]
     port_interface_compatibility: dict[Literal["ethernet_switching", "infiniband_and_appliances", "dpu", "supernic"], dict[Text, InterfaceCompatibility]]
@@ -437,6 +475,9 @@ class CatalogDocument(StrictModel):
             check_url(url)
         for name in ("ethernet", "infiniband", "silicon_photonics", "dpu", "supernic"):
             rows = validate_table(getattr(self, name), EquipmentRow)
+            unique([r["model"] for r in rows], f"{name} model")
+        for name, row_type in (("network_adapters", NetworkAdapterRow), ("ufm_appliances", UFMApplianceRow)):
+            rows = validate_table(getattr(self, name), row_type)
             unique([r["model"] for r in rows], f"{name} model")
         expected = {"product_fields", "active", "no_longer_for_sale", "transceiver_fields", "transceivers", "transceiver_fabric_compatibility", "detailed_interconnect_fields", "aoc", "copper"}
         if set(self.linkx) != expected:

@@ -98,10 +98,25 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(summary['silicon_photonics_products'], len(RAW['silicon_photonics']['items']))
         self.assertEqual(summary['dpu_products'], len(RAW['dpu']['items']))
         self.assertEqual(summary['supernic_products'], len(RAW['supernic']['items']))
+        self.assertEqual(summary['network_adapter_records'], len(RAW['network_adapters']['items']))
+        self.assertEqual(summary['ufm_appliance_records'], len(RAW['ufm_appliances']['items']))
         self.assertEqual(
             summary['port_interface_compatibility_records'],
             sum(len(bucket) for bucket in RAW['port_interface_compatibility'].values()),
         )
+
+    def test_extended_inventory_sections_are_strictly_validated(self):
+        for section, field, value in [
+            ('network_adapters', 'part_numbers', {}),
+            ('network_adapters', 'source_url', 'not-a-url'),
+            ('ufm_appliances', 'part_numbers', {}),
+            ('ufm_appliances', 'source_url', 'not-a-url'),
+        ]:
+            raw = copy.deepcopy(RAW)
+            index = raw[section]['fields'].index(field)
+            raw[section]['items'][0][index] = value
+            with self.subTest(section=section, field=field), self.assertRaises((ValidationError, ValueError)):
+                CatalogDocument.model_validate(raw)
 
     def test_startup_failure_never_returns_empty_snapshot(self):
         self.data.write_text('{')
