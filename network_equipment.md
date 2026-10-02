@@ -1,6 +1,6 @@
 # NVIDIA Network Equipment
 
-_Snapshot **2026-10-01**, schema **v8**, Europe/Warsaw._
+_Snapshot **2026-10-02**, schema **v8**, Europe/Warsaw._
 
 `IB` = InfiniBand, `ETH` = Ethernet, `NVL` = NVLink/NVL. OSFP finned/flat-top variants are separate where NVIDIA publishes distinct OPNs.
 
@@ -178,3 +178,13 @@ _Snapshot **2026-10-01**, schema **v8**, Europe/Warsaw._
 | MUA9652H-2SF | UFM Cyber-AI 4.0 | documented | 920-9B020-00FH-0D0 | MUA9652H-2SF | 2x ConnectX-6 HDR 200Gb/s InfiniBand | [NVIDIA](https://networking-docs.nvidia.com/ufm40cyberaiapphw) |
 | MUA960 | UFM Enterprise Gen 3.0 HDR | documented | 920-9B020-00FA-0D3 | MUA9602H-2SR | HDR InfiniBand | [NVIDIA](https://networking-docs.nvidia.com/ufmenterprisehdrhwum) |
 | MUA950 | UFM-SDN 2.5 | documented | 920-9B020-00FA-0D5, 920-9B020-09FA-0D0 | MUA9502H-2SF / MUA9502H-2SF-40K | InfiniBand | [NVIDIA](https://networking-docs.nvidia.com/ufmsdn25apphw) |
+
+## Legacy network adapters
+
+These NVIDIA-documented adapters are retained for compatibility/reference and are **not active portfolio products**.
+
+| Model / OPN | Family | Status | Speed | Interface | Source |
+|---|---|---|---|---|---|
+| MCX516A-CCAT | ConnectX-5 | legacy | up to 100GbE per port / EDR InfiniBand | dual QSFP28 | [NVIDIA](https://networking-docs.nvidia.com/connectx5en) |
+| MCX455A-ECAT | ConnectX-4 | legacy | 100GbE / EDR InfiniBand class | QSFP28 | [NVIDIA](https://networking-docs.nvidia.com/connectx4) |
+| MCX4121A-ACAT | ConnectX-4 Lx | legacy | up to 25GbE per port | dual SFP28 | [NVIDIA](https://networking-docs.nvidia.com/connectx4lx) |
