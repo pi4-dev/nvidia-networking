@@ -1,6 +1,6 @@
 # NVIDIA Network Equipment
 
-_Snapshot **2026-10-02**, schema **v8**, Europe/Warsaw._
+_Snapshot **2026-10-05**, schema **v9**, Europe/Warsaw._
 
 `IB` = InfiniBand, `ETH` = Ethernet, `NVL` = NVLink/NVL. OSFP finned/flat-top variants are separate where NVIDIA publishes distinct OPNs.
 
@@ -131,6 +131,7 @@ _Snapshot **2026-10-02**, schema **v8**, Europe/Warsaw._
 | UFM Telemetry | family="UFM platform"; speed=null; connectors=null; port_counts=null; throughput=null; height=null; cooling=null; compatibility=["switch/adapters/cables telemetry","on-prem/cloud database"]; reach=null | — | [NVIDIA](https://www.nvidia.com/en-us/networking/infiniband-switching/) |
 | UFM Enterprise | family="UFM platform"; speed=null; connectors=null; port_counts=null; throughput=null; height=null; cooling=null; compatibility=["Slurm","IBM Spectrum LSF","REST API"]; reach=null | — | [NVIDIA](https://www.nvidia.com/en-us/networking/infiniband-switching/) |
 | UFM Cyber-AI | family="UFM platform"; speed=null; connectors=null; port_counts=null; throughput=null; height=null; cooling=null; compatibility=["UFM Telemetry","UFM Enterprise"]; reach=null | — | [NVIDIA](https://www.nvidia.com/en-us/networking/infiniband-switching/) |
+| Skyway-3 | family="InfiniBand-to-Ethernet Gateway"; status="active"; part_numbers=["920-9B02D-00RG-CF0","MGA400-XS2"]; networking="8x ConnectX-8 VPI"; connectors="8x IB + 8x Ethernet QSFP112" | QSFP112 | [NVIDIA](https://networking-docs.nvidia.com/skyway3) |
 
 ## Silicon Photonics
 
