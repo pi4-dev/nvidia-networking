@@ -419,6 +419,7 @@ class ProductRow(StrictModel):
 class InterfaceCompatibility(StrictModel):
     pluggable: bool | None = None
     accepted_pluggables: list[Text] = Field(default_factory=list)
+    supported_speeds: list[Text] = Field(default_factory=list)
     fixed_interfaces: list[Text] = Field(default_factory=list)
     source_url: Text | None = None
     scope_note: Text | None = None
@@ -446,7 +447,7 @@ def validate_table(section: dict[str, Any], row_type: type[StrictModel]) -> list
 
 
 class CatalogDocument(StrictModel):
-    schema_version: Literal[8]
+    schema_version: Literal[9]
     snapshot_date: Text
     generated_at: Text
     timezone: Text
