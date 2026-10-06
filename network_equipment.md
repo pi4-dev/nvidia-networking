@@ -1,6 +1,6 @@
 # NVIDIA Network Equipment
 
-_Snapshot **2026-10-05**, schema **v9**, Europe/Warsaw._
+_Snapshot **2026-10-06**, schema **v9**, Europe/Warsaw._
 
 `IB` = InfiniBand, `ETH` = Ethernet, `NVL` = NVLink/NVL. OSFP finned/flat-top variants are separate where NVIDIA publishes distinct OPNs.
 
@@ -179,6 +179,8 @@ _Snapshot **2026-10-05**, schema **v9**, Europe/Warsaw._
 | MUA9652H-2SF | UFM Cyber-AI 4.0 | documented | 920-9B020-00FH-0D0 | MUA9652H-2SF | 2x ConnectX-6 HDR 200Gb/s InfiniBand | [NVIDIA](https://networking-docs.nvidia.com/ufm40cyberaiapphw) |
 | MUA960 | UFM Enterprise Gen 3.0 HDR | documented | 920-9B020-00FA-0D3 | MUA9602H-2SR | HDR InfiniBand | [NVIDIA](https://networking-docs.nvidia.com/ufmenterprisehdrhwum) |
 | MUA950 | UFM-SDN 2.5 | documented | 920-9B020-00FA-0D5, 920-9B020-09FA-0D0 | MUA9502H-2SF / MUA9502H-2SF-40K | InfiniBand | [NVIDIA](https://networking-docs.nvidia.com/ufmsdn25apphw) |
+
+| MUA975 | UFM Cyber-AI Gen 4.5 | documented | 920-9B020-00RI-0D5 | MUA9752H-2SFS-AC | 2x ConnectX-8 single-port 400Gb/s InfiniBand | [NVIDIA](https://networking-docs.nvidia.com/ufm45cyberaiapphw) |
 
 ## Legacy network adapters
 
