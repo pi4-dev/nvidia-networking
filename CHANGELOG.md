@@ -15,11 +15,30 @@ releases. Historical dates below come from their referenced commits. The `v0.01`
 
 - Pinned the `0.06-dev` milestone and comparison links to its implementation
   commit, keeping subsequent development separate.
-- Regression coverage now includes 48 frontend tests and 110 backend tests.
+- Regression coverage now includes 48 frontend tests and 113 backend tests.
   Connection dropdown filtering was also checked against the live API with the
   bundled MQM9700, DGX B200 and SN5600 port profiles.
 
+### Added
+
+- Inventory schema v9 (commit `7b33a60`, 2026-10-05) adds required `status`,
+  `part_numbers` and `source_url` metadata to InfiniBand records,
+  `supported_speeds` to pluggable interface metadata, and the Skyway-3
+  InfiniBand-to-Ethernet gateway. The 2026-10-06 refresh (commit `9d0e3a1`)
+  added the UFM Cyber-AI Gen 4.5 appliance MUA975. Skyway-3 has no explicit
+  port profile yet, so its link compatibility remains `unknown`.
+
 ### Fixed
+
+- Fixed validator startup with the schema v9 inventory: switch/appliance rows
+  now accept the optional `status`, `part_numbers` and `source_url` fields,
+  validating source URLs and rejecting duplicate part numbers, while unknown
+  fields remain rejected. Previously the whole catalog was rejected, so the
+  service returned 503 and backend tests failed at import. Devices without
+  interface metadata now keep their row source URL. Corrected the
+  port-interface summary counter from 28 to 29 after the Skyway-3 addition.
+  Verified with 113 backend tests, 48 frontend tests and the HTTP smoke test
+  against a local server; the Docker smoke test was not run locally.
 
 - Fixed production startup on hosts whose repository files are not readable by container UID/GID `10001:10001`: the default Compose no longer overlays the image-owned `/data` and `/profiles` files with host bind mounts. Host-backed live reload remains available through the explicit `docker-compose.live-data.yml` override and requires matching host read/traverse permissions.
 

@@ -72,7 +72,7 @@ def build_devices(raw: dict, profiles: ProfileDocument) -> list[dict]:
             id_ = f"{section}:{item['model']}"
             devices[id_] = {**item, "id": id_, "kind": kind, "source": "catalog",
                             "port_groups": [], "interface_compatibility": entry,
-                            "source_url": entry.get("source_url")}
+                            "source_url": entry.get("source_url") or item.get("source_url")}
     for profile in profiles.profiles:
         value = profile.model_dump()
         original = devices.get(profile.id, {})

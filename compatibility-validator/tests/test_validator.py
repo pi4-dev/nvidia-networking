@@ -119,12 +119,23 @@ class CatalogTests(unittest.TestCase):
             ('network_adapters', 'source_url', 'not-a-url'),
             ('ufm_appliances', 'part_numbers', {}),
             ('ufm_appliances', 'source_url', 'not-a-url'),
+            ('infiniband', 'part_numbers', {}),
+            ('infiniband', 'part_numbers', ['920-9B02D-00RG-CF0', '920-9B02D-00RG-CF0']),
+            ('infiniband', 'source_url', 'not-a-url'),
         ]:
             raw = copy.deepcopy(RAW)
             index = raw[section]['fields'].index(field)
             raw[section]['items'][0][index] = value
             with self.subTest(section=section, field=field), self.assertRaises((ValidationError, ValueError)):
                 CatalogDocument.model_validate(raw)
+
+    def test_schema_v9_infiniband_metadata_is_loaded(self):
+        fields = RAW['infiniband']['fields']
+        for field in ('status', 'part_numbers', 'source_url'):
+            self.assertIn(field, fields)
+        skyway = next(d for d in SNAPSHOT['devices'] if d['id'] == 'infiniband:Skyway-3')
+        self.assertEqual(skyway['status'], 'active')
+        self.assertIn('920-9B02D-00RG-CF0', skyway['part_numbers'])
 
     def test_startup_failure_never_returns_empty_snapshot(self):
         self.data.write_text('{')
