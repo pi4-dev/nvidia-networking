@@ -340,6 +340,17 @@ class EquipmentRow(StrictModel):
     compatibility: list[Text] | None = None
     reach: dict[Text, Distance] | None = None
     availability: Text | None = None
+    # Schema v9 lifecycle/ordering metadata (currently on InfiniBand rows).
+    status: Text | None = None
+    part_numbers: list[Text] = Field(default_factory=list)
+    source_url: Text | None = None
+
+    _source = field_validator("source_url")(check_url)
+
+    @model_validator(mode="after")
+    def consistent(self):
+        unique(self.part_numbers, "equipment part number")
+        return self
 
 
 class NetworkAdapterRow(StrictModel):
