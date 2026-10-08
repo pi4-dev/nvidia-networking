@@ -1,6 +1,6 @@
 # NVIDIA Network Equipment
 
-_Snapshot **2026-10-06**, schema **v9**, Europe/Warsaw._
+_Snapshot **2026-10-08**, schema **v9**, Europe/Warsaw._
 
 `IB` = InfiniBand, `ETH` = Ethernet, `NVL` = NVLink/NVL. OSFP finned/flat-top variants are separate where NVIDIA publishes distinct OPNs.
 
@@ -87,7 +87,7 @@ _Snapshot **2026-10-06**, schema **v9**, Europe/Warsaw._
 |---|---|---|---|---:|---|---|---|---|---|
 | MCA4K00 | RHS-to-RHS | active | 980-9IAM1-00X001, 980-9IAM2-00X001, 980-9IAM4-00X001 | 1600G | OSFP-flattop -> OSFP-flattop; 1× 1600Gb/s OSFP to OSFP | Copper | {"max_m":1.1} | IB,ETH,NVL | [NVIDIA](https://networking-docs.nvidia.com/mca4k00hw) |
 | MCA4K50 | IHS-to-IHS | active | 980-9IAM5-00X001, 980-9IAM5-00X01A, 980-9IAM3-00X002, 980-9IAM3-00X02A, 980-9IAM3-00X003 | 1600G | OSFP-finned -> OSFP-finned; 1× 1600Gb/s OSFP to OSFP | Copper | {"max_m":3} | IB | [NVIDIA](https://networking-docs.nvidia.com/mca4k50osfp1600) |
-| MCA7K10 | IHS-to-2xRHS | active | — | 1600G | OSFP-finned -> 2xOSFP-flattop; 2× 2x800Gb/s OSFP to 2xOSFP | Copper | {"max_m":2} | IB,ETH | [NVIDIA](https://networking-docs.nvidia.com/9809iao500xxxxrhs2x800) |
+| MCA7K10 (OPNs: 980-9IAO5-00X001, 980-9IAO5-00X01A, 980-9IAO5-00X002) | IHS-to-2xRHS | active | — | 1600G | OSFP-finned -> 2xOSFP-flattop; 2× 2x800Gb/s OSFP to 2xOSFP | Copper | {"max_m":2} | IB,ETH | [NVIDIA](https://networking-docs.nvidia.com/9809iao500xxxxrhs2x800) |
 | MCA4J80-Nxxx | finned | active | 980-9I60Z-00N003, 980-9I601-00N004, 980-9I602-00N005 | 800G | OSFP-finned -> OSFP-finned; 2× 2x400Gb/s OSFP to OSFP | Copper | {"max_m":5} | IB | [NVIDIA](https://networking-docs.nvidia.com/mca4j80nxxx800pub) |
 | MCA4J80-Nxxx-FLT | flat-top | active | 980-9I600-00N003 | 800G | OSFP-flattop -> OSFP-flattop; 2× 2x400Gb/s OSFP to OSFP | Copper | {"max_m":3} | IB | [NVIDIA](https://networking-docs.nvidia.com/mca4j80nxxx800pub) |
 | MCA4J80-Nxxx-FTF | flat-to-finned | active | 980-9I601-00N003 | 800G | OSFP-flattop -> OSFP-finned; 2× 2x400Gb/s OSFP to OSFP | Copper | {"max_m":3} | IB | [NVIDIA](https://networking-docs.nvidia.com/mca4j80nxxx800pub) |
