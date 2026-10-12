@@ -21,6 +21,11 @@ releases. Historical dates below come from their referenced commits. The `v0.01`
 
 ### Added
 
+- 2026-10-12 inventory refresh (schema v9 unchanged): added the MMS4B10-XM IHS/TRO
+  OSFP-finned 1600G transceiver (OPN `980-9IAJ0-00XM01`, SMF, 500 m, Ethernet)
+  and the UFM Enterprise Gen 3.0 NDR appliance MUA960B (`920-9B020-00RA-0D0`).
+  Validator tests could not be run in this environment (dependencies
+  unavailable); summary counters were checked against the rows by script.
 - Inventory schema v9 (commit `7b33a60`, 2026-10-05) adds required `status`,
   `part_numbers` and `source_url` metadata to InfiniBand records,
   `supported_speeds` to pluggable interface metadata, and the Skyway-3

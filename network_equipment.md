@@ -1,6 +1,6 @@
 # NVIDIA Network Equipment
 
-_Snapshot **2026-10-08**, schema **v9**, Europe/Warsaw._
+_Snapshot **2026-10-12**, schema **v9**, Europe/Warsaw._
 
 `IB` = InfiniBand, `ETH` = Ethernet, `NVL` = NVLink/NVL. OSFP finned/flat-top variants are separate where NVIDIA publishes distinct OPNs.
 
@@ -40,6 +40,7 @@ _Snapshot **2026-10-08**, schema **v9**, Europe/Warsaw._
 | Model | Variant | Status | Part numbers | Speed | Form factor | Medium | Interfaces | Reach | Fabric | Source |
 |---|---|---|---|---:|---|---|---|---|---|---|
 | MMS4B10-XM | RHS/TRO | active | 980-9IAJ0-00XM00 | 1600G | OSFP-flattop | SM | 2× 800Gb/s MPO-12/APC | {"max_m":500} | ETH | [NVIDIA](https://networking-docs.nvidia.com/mms4b10xmtro1600g) |
+| MMS4B10-XM | IHS/TRO | active | 980-9IAJ0-00XM01 | 1600G | OSFP-finned | SM | 2× 800Gb/s MPO-12/APC | {"max_m":500} | ETH | [NVIDIA](https://networking-docs.nvidia.com/mms4b10xmtro1600g) |
 | MMS4C10 | RHS/FRO Gen2 (XDR) | active | 980-9IAU0-00XM00 | 1600G | OSFP-flattop | SM | 2× 800Gb/s MPO-12/APC | {"max_m":500} | IB | [NVIDIA](https://networking-docs.nvidia.com/9iau000xmosfptcvr1600) |
 | MMS4C10 | IHS/FRO Gen2 (XDR) | active | 980-9IAU0-00XM01 | 1600G | OSFP-finned | SM | 2× 800Gb/s MPO-12/APC | {"max_m":500} | IB | [NVIDIA](https://networking-docs.nvidia.com/9iau000xmosfptcvr1600) |
 | MMS4C11 | RHS/FRO Gen2 (Ethernet) | active | 980-9IAU1-00XM00 | 1600G | OSFP-flattop | SM | 2× 800Gb/s MPO-12/APC | {"max_m":500} | ETH | [NVIDIA](https://networking-docs.nvidia.com/9iau000xmosfptcvr1600) |
@@ -178,6 +179,7 @@ _Snapshot **2026-10-08**, schema **v9**, Europe/Warsaw._
 | MUA970D | UFM XDR-DC Gen 3.5 | active | 920-9B020-10RI-0D0 | MUA9702H-2SFS-DC | ConnectX-8 400Gb/s InfiniBand | [NVIDIA](https://networking-docs.nvidia.com/ufmenterprisexdrdchw/) |
 | MUA9652H-2SF | UFM Cyber-AI 4.0 | documented | 920-9B020-00FH-0D0 | MUA9652H-2SF | 2x ConnectX-6 HDR 200Gb/s InfiniBand | [NVIDIA](https://networking-docs.nvidia.com/ufm40cyberaiapphw) |
 | MUA960 | UFM Enterprise Gen 3.0 HDR | documented | 920-9B020-00FA-0D3 | MUA9602H-2SR | HDR InfiniBand | [NVIDIA](https://networking-docs.nvidia.com/ufmenterprisehdrhwum) |
+| MUA960B | UFM Enterprise Gen 3.0 NDR | documented | 920-9B020-00RA-0D0 | MUA9602H-2SRS | NDR InfiniBand | [NVIDIA](https://networking-docs.nvidia.com/ufmenterprisendrhwum) |
 | MUA950 | UFM-SDN 2.5 | documented | 920-9B020-00FA-0D5, 920-9B020-09FA-0D0 | MUA9502H-2SF / MUA9502H-2SF-40K | InfiniBand | [NVIDIA](https://networking-docs.nvidia.com/ufmsdn25apphw) |
 
 | MUA975 | UFM Cyber-AI Gen 4.5 | documented | 920-9B020-00RI-0D5 | MUA9752H-2SFS-AC | 2x ConnectX-8 single-port 400Gb/s InfiniBand | [NVIDIA](https://networking-docs.nvidia.com/ufm45cyberaiapphw) |
