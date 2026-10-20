@@ -11,7 +11,32 @@ releases. Historical dates below come from their referenced commits. The `v0.01`
 
 ## [Unreleased]
 
+
 ### Changed
+
+- Inventory schema v10: every inventory row (LinkX summaries, transceivers, AOC,
+  copper, switches, gateways, silicon photonics, DPUs, SuperNICs, adapters, UFM
+  appliances) now has `category`, `model`, `status`, `legacy_opn`, `part_numbers`,
+  `description` and a product `source_url`. Transceiver, AOC and copper rows carry
+  `fabric_compatibility` (IB/ETH/NVL) in the row, replacing the removed
+  `transceiver_fabric_compatibility` map and `transceiver_fields` list; this also
+  fixes eight XDR/Ethernet transceiver variants (MMS4C10, MMS4C11, MMS4A00, MMS4A50)
+  that were not found by the old lookup. Switches, gateways, DPUs, SuperNICs and
+  adapters list `module_interfaces` (cage type, count, speed, pluggable). All 72
+  LinkX summary rows (including 31 no-longer-for-sale) now include description,
+  URL and, where the ordering page lists them, OPNs and legacy OPNs. Switch OPNs
+  come from the SN2201, SN3420, SN4000 and SN5000 ordering pages (SN5600 is marked
+  `end_of_life` per its lifecycle column); BlueField-3 DPU/SuperNIC and
+  ConnectX-8/9 SuperNIC OPNs come from the hardware manuals. Limitations: SN6000,
+  Quantum-X800, QM9700, Skyway, MetroX-3, BlueField-4 and ConnectX-6/7 rows have no
+  published OPN in the sources and keep empty `part_numbers`; MMS4X90-NR is empty
+  because its ordering page lists another product's OPN; accessory fibers/QSA
+  adapters and many legacy products publish only model-style part numbers. Legacy
+  OPN is null where no legacy column exists. `module_interfaces` counts/speeds are
+  null where the manuals do not state them (for example QM9700 cage count, BlueField
+  port counts).
+- The validator requires schema 10 and validates the new columns strictly
+  (`legacy_opn` may be null, other general columns may not be missing).
 
 - Pinned the `0.06-dev` milestone and comparison links to its implementation
   commit, keeping subsequent development separate.
@@ -19,21 +44,18 @@ releases. Historical dates below come from their referenced commits. The `v0.01`
   Connection dropdown filtering was also checked against the live API with the
   bundled MQM9700, DGX B200 and SN5600 port profiles.
 
-### Added
-
-- 2026-10-12 inventory refresh (schema v9 unchanged): added the MMS4B10-XM IHS/TRO
-  OSFP-finned 1600G transceiver (OPN `980-9IAJ0-00XM01`, SMF, 500 m, Ethernet)
-  and the UFM Enterprise Gen 3.0 NDR appliance MUA960B (`920-9B020-00RA-0D0`).
-  Validator tests could not be run in this environment (dependencies
-  unavailable); summary counters were checked against the rows by script.
-- Inventory schema v9 (commit `7b33a60`, 2026-10-05) adds required `status`,
-  `part_numbers` and `source_url` metadata to InfiniBand records,
-  `supported_speeds` to pluggable interface metadata, and the Skyway-3
-  InfiniBand-to-Ethernet gateway. The 2026-10-06 refresh (commit `9d0e3a1`)
-  added the UFM Cyber-AI Gen 4.5 appliance MUA975. Skyway-3 has no explicit
-  port profile yet, so its link compatibility remains `unknown`.
-
 ### Fixed
+
+- Fixed validator startup on `main`: the `Copper|MCA7K10|IHS-to-2xRHS` SKU profile
+  listed no SKUs while the catalog (2026-10-12 refresh) lists three OPNs, so the
+  catalog was rejected. The profile now lists `980-9IAO5-00X001`, `-00X01A` and
+  `-00X002` with unknown lengths.
+- Validator README and DATA_MODEL now describe the current schema.
+- Validation: 103 backend unit tests (validator excluding the HTTP API class,
+  features, cabling, topology, project map) pass, including new tests for the
+  general columns, interface facts and schema-version rejection. `APITests` and the
+  frontend tests could not be run here (FastAPI/pytest/npm dependencies are
+  unavailable offline).
 
 - Fixed validator startup with the schema v9 inventory: switch/appliance rows
   now accept the optional `status`, `part_numbers` and `source_url` fields,
@@ -60,6 +82,20 @@ releases. Historical dates below come from their referenced commits. The `v0.01`
   prevent stale responses or API failures from exposing the full catalog.
   Valid saved/shared selections and assistant proposals retain their PN and
   termination; automatic cable copying to B respects B's filtered list.
+
+### Added
+
+- 2026-10-12 inventory refresh (schema v9 unchanged): added the MMS4B10-XM IHS/TRO
+  OSFP-finned 1600G transceiver (OPN `980-9IAJ0-00XM01`, SMF, 500 m, Ethernet)
+  and the UFM Enterprise Gen 3.0 NDR appliance MUA960B (`920-9B020-00RA-0D0`).
+  Validator tests could not be run in this environment (dependencies
+  unavailable); summary counters were checked against the rows by script.
+- Inventory schema v9 (commit `7b33a60`, 2026-10-05) adds required `status`,
+  `part_numbers` and `source_url` metadata to InfiniBand records,
+  `supported_speeds` to pluggable interface metadata, and the Skyway-3
+  InfiniBand-to-Ethernet gateway. The 2026-10-06 refresh (commit `9d0e3a1`)
+  added the UFM Cyber-AI Gen 4.5 appliance MUA975. Skyway-3 has no explicit
+  port profile yet, so its link compatibility remains `unknown`.
 
 ## [0.06-dev] - 2026-09-23
 

@@ -328,11 +328,39 @@ class ProfileDocument(StrictModel):
         return self
 
 
-class EquipmentRow(StrictModel):
+class ModuleInterface(StrictModel):
+    """A pluggable cage or fixed interface group; null count/speed means the source does not state it."""
+    interface_type: Text
+    count: Positive | None = None
+    speed: Text | None = None
+    pluggable: bool | None = None
+    role: Text | None = None
+    applies_to: Text | None = None
+
+
+class InventoryRow(StrictModel):
+    """General columns required on every inventory row (schema v10)."""
+    category: Text
     model: Text
+    status: Text
+    legacy_opn: Text | None
+    part_numbers: list[Text]
+    description: Text
+    source_url: Text
+
+    _source = field_validator("source_url")(check_url)
+
+    @model_validator(mode="after")
+    def unique_part_numbers(self):
+        unique(self.part_numbers, "part number")
+        return self
+
+
+class EquipmentRow(InventoryRow):
     family: Text | None = None
     speed: Text | None = None
     connectors: Text | None = None
+    module_interfaces: list[ModuleInterface]
     port_counts: dict[Text, Annotated[int, Field(ge=0)]] | None = None
     throughput: Text | None = None
     height: Text | None = None
@@ -340,68 +368,30 @@ class EquipmentRow(StrictModel):
     compatibility: list[Text] | None = None
     reach: dict[Text, Distance] | None = None
     availability: Text | None = None
-    # Schema v9 lifecycle/ordering metadata (currently on InfiniBand rows).
-    status: Text | None = None
-    part_numbers: list[Text] = Field(default_factory=list)
-    source_url: Text | None = None
-
-    _source = field_validator("source_url")(check_url)
-
-    @model_validator(mode="after")
-    def consistent(self):
-        unique(self.part_numbers, "equipment part number")
-        return self
 
 
-class NetworkAdapterRow(StrictModel):
+class NetworkAdapterRow(InventoryRow):
     category: Literal["Network adapter"]
-    model: Text
     family: Text
-    status: Text
-    part_numbers: list[Text]
     speed: Text
     interface_type: Text
-    source_url: Text
-
-    _source = field_validator("source_url")(check_url)
-
-    @model_validator(mode="after")
-    def consistent(self):
-        unique(self.part_numbers, "network adapter part number")
-        return self
+    module_interfaces: list[ModuleInterface]
 
 
-class UFMApplianceRow(StrictModel):
+class UFMApplianceRow(InventoryRow):
     category: Literal["UFM appliance"]
-    model: Text
     family: Text
-    status: Text
-    part_numbers: list[Text]
-    legacy_opn: Text | None
     network_interface: Text
-    source_url: Text
-
-    _source = field_validator("source_url")(check_url)
-
-    @model_validator(mode="after")
-    def consistent(self):
-        unique(self.part_numbers, "UFM appliance part number")
-        return self
 
 
-class ProductSummary(StrictModel):
-    model: Text
+class ProductSummary(InventoryRow):
     speed: Text
-    category: Text
 
 
-class ProductRow(StrictModel):
+class ProductRow(InventoryRow):
     category: Literal["Transceiver", "AOC", "Copper"]
-    model: Text
-    variant: Text | None
     status: Literal["active", "planned", "prototype", "no_longer_for_sale", "discontinued"]
-    part_numbers: list[Text]
-    source_url: Text | None
+    variant: Text | None
     interface_count: Positive | None
     interface_speed: Text | None
     interface_connector: Text | None
@@ -410,8 +400,6 @@ class ProductRow(StrictModel):
     medium: Literal["SM", "MM", "Copper"] | None
     reach: dict[Text, Distance] | None
     fabric_compatibility: list[Fabric] = Field(default_factory=list)
-
-    _source = field_validator("source_url")(check_url)
 
     @field_validator("speed")
     @classmethod
@@ -422,7 +410,6 @@ class ProductRow(StrictModel):
 
     @model_validator(mode="after")
     def consistent(self):
-        unique(self.part_numbers, "part number")
         unique(self.fabric_compatibility, "fabric")
         return self
 
@@ -458,7 +445,7 @@ def validate_table(section: dict[str, Any], row_type: type[StrictModel]) -> list
 
 
 class CatalogDocument(StrictModel):
-    schema_version: Literal[9]
+    schema_version: Literal[10]
     snapshot_date: Text
     generated_at: Text
     timezone: Text
@@ -491,18 +478,11 @@ class CatalogDocument(StrictModel):
         for name, row_type in (("network_adapters", NetworkAdapterRow), ("ufm_appliances", UFMApplianceRow)):
             rows = validate_table(getattr(self, name), row_type)
             unique([r["model"] for r in rows], f"{name} model")
-        expected = {"product_fields", "active", "no_longer_for_sale", "transceiver_fields", "transceivers", "transceiver_fabric_compatibility", "detailed_interconnect_fields", "aoc", "copper"}
+        expected = {"product_fields", "active", "no_longer_for_sale", "detailed_interconnect_fields", "transceivers", "aoc", "copper"}
         if set(self.linkx) != expected:
             raise ValueError("unsupported LinkX table layout")
-        for bucket, fields, kind in (("active", "product_fields", ProductSummary), ("no_longer_for_sale", "product_fields", ProductSummary), ("transceivers", "transceiver_fields", ProductRow), ("aoc", "detailed_interconnect_fields", ProductRow), ("copper", "detailed_interconnect_fields", ProductRow)):
+        for bucket, fields, kind in (("active", "product_fields", ProductSummary), ("no_longer_for_sale", "product_fields", ProductSummary), ("transceivers", "detailed_interconnect_fields", ProductRow), ("aoc", "detailed_interconnect_fields", ProductRow), ("copper", "detailed_interconnect_fields", ProductRow)):
             validate_table({"fields": self.linkx[fields], "items": self.linkx[bucket]}, kind)
-        fabric_map = self.linkx["transceiver_fabric_compatibility"]
-        if not isinstance(fabric_map, dict):
-            raise ValueError("fabric map must be an object")
-        for key, fabrics in fabric_map.items():
-            if not isinstance(key, str) or not key or not isinstance(fabrics, list) or any(f not in {"ETH", "IB", "NVL"} for f in fabrics):
-                raise ValueError("invalid transceiver fabric map")
-            unique(fabrics, "fabric")
         return self
 
 

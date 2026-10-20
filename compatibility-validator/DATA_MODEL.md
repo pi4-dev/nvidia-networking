@@ -1,8 +1,10 @@
 # Validator data model
 
-The validator activates only a mutually consistent pair of canonical schema **8** and profile schema **2** inputs. Unrecognized schema versions require an explicit code migration. Unknown facts use `null` or empty lists; do not fill them with a family's aggregate bandwidth or a guess based on a product name.
+The validator activates only a mutually consistent pair of canonical schema **10** and profile schema **2** inputs. Unrecognized schema versions require an explicit code migration. Unknown facts use `null` or empty lists; do not fill them with a family's aggregate bandwidth or a guess based on a product name.
 
 ## Canonical catalog
+
+Schema 10 gives every inventory row (LinkX summaries, transceivers, AOC, copper, switches, gateways, silicon photonics, DPUs, SuperNICs, adapters, UFM appliances) the same general columns: `category`, `model`, `status`, `legacy_opn` (nullable string; several legacy OPNs are joined with ` / `), `part_numbers` (NVIDIA OPNs, possibly empty), `description` and `source_url` (a concrete product page). Transceiver, AOC and copper rows additionally carry `interface_count`, `interface_speed`, `interface_connector`, `speed`, `interface_type` (`OSFP-finned` and `OSFP-flattop` are separate rows), `medium`, `reach` and `fabric_compatibility` (IB / ETH / NVL) directly in the row; the former `transceiver_fabric_compatibility` map and `transceiver_fields` list no longer exist. Devices that accept pluggable modules (switches, gateways, DPUs, SuperNICs, adapters) list `module_interfaces`: `interface_type`, `count`, `speed`, `pluggable`, optional `role` (for example the InfiniBand or Ethernet side of a gateway) and `applies_to` (SKU). A null `count` or `speed` means the source does not state it for that row. Empty `part_numbers` means the product page publishes no NVIDIA OPN.
 
 `../data/nvidia-interconnects.json` owns model identity, product lifecycle, module families, advertised aggregate speed/reach, fabric, ordering part numbers and primary sources. Nullable `pluggable` is intentional: `null` means no assertion, `false` means fixed interfaces.
 

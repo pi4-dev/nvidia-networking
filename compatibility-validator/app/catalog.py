@@ -100,14 +100,11 @@ def build_products(raw: dict, profiles: ProfileDocument) -> list[dict]:
     linkx = raw["linkx"]
     products = {}
     pns = set()
-    for bucket, fields in (("transceivers", "transceiver_fields"), ("aoc", "detailed_interconnect_fields"), ("copper", "detailed_interconnect_fields")):
+    for bucket, fields in (("transceivers", "detailed_interconnect_fields"), ("aoc", "detailed_interconnect_fields"), ("copper", "detailed_interconnect_fields")):
         for item in rows({"fields": linkx[fields], "items": linkx[bucket]}):
             id_ = product_id(item)
             if id_ in products:
                 raise ValueError("duplicate interconnect ID")
-            if bucket == "transceivers":
-                key = item["model"] + ("|" + item["variant"] if item["variant"] else "")
-                item["fabric_compatibility"] = linkx["transceiver_fabric_compatibility"].get(key, linkx["transceiver_fabric_compatibility"].get(item["model"], []))
             detail = profiles.interconnect_details.get(id_)
             normalized = detail.model_dump() if detail else {"endpoints": [], "skus": [], "cable_type": "Unknown", "optics": None, "conditions": []}
             if detail:
@@ -149,9 +146,9 @@ def build_products(raw: dict, profiles: ProfileDocument) -> list[dict]:
             continue
         id_ = product_id(item)
         products[id_] = {**item, "id": id_, "status": "no_longer_for_sale", "variant": None,
-                         "speed_gbps": speed_gbps(item["speed"]), "endpoints": [], "skus": [], "part_numbers": [],
+                         "speed_gbps": speed_gbps(item["speed"]), "endpoints": [], "skus": [],
                          "fabric_compatibility": [], "medium": None, "reach": None, "optics": None,
-                         "cable_type": "Unknown", "conditions": [], "source_url": raw["sources"].get("linkx_interconnects")}
+                         "cable_type": "Unknown", "conditions": []}
     return sorted(products.values(), key=lambda p: (p["model"], p.get("variant") or ""))
 
 

@@ -82,7 +82,7 @@ class CatalogTests(unittest.TestCase):
     def test_catalog_summary_matches_source_rows(self):
         linkx = RAW['linkx']
         summary = RAW['summary']
-        transceiver_status_idx = linkx['transceiver_fields'].index('status')
+        transceiver_status_idx = linkx['detailed_interconnect_fields'].index('status')
         detailed_status_idx = linkx['detailed_interconnect_fields'].index('status')
 
         self.assertEqual(summary['linkx_total'], len(linkx['active']) + len(linkx['no_longer_for_sale']))
@@ -174,7 +174,7 @@ class CatalogTests(unittest.TestCase):
     def test_product_fields_are_typed(self):
         for field, value in [('part_numbers', {}), ('speed', 'UNKNOWN'), ('status', 'maybe'), ('interface_count', True)]:
             raw = copy.deepcopy(RAW)
-            raw['linkx']['transceivers'][0][raw['linkx']['transceiver_fields'].index(field)] = value
+            raw['linkx']['transceivers'][0][raw['linkx']['detailed_interconnect_fields'].index(field)] = value
             with self.subTest(field=field), self.assertRaises((ValidationError, ValueError)):
                 CatalogDocument.model_validate(raw)
 
@@ -186,6 +186,46 @@ class CatalogTests(unittest.TestCase):
         g.pop('compatibility_source')
         g['modes'].append({'id':'8x25','links':8,'speed_gbps':25})
         with self.assertRaises(ValidationError): PortGroup.model_validate(g)
+
+    def test_every_inventory_row_has_general_columns(self):
+        general = {'category', 'model', 'status', 'legacy_opn', 'part_numbers', 'description', 'source_url'}
+        tables = {k: RAW[k] for k in ('ethernet', 'infiniband', 'silicon_photonics', 'dpu', 'supernic', 'network_adapters', 'ufm_appliances')}
+        linkx = RAW['linkx']
+        tables.update({'product_fields': {'fields': linkx['product_fields'], 'items': linkx['active'] + linkx['no_longer_for_sale']}})
+        for bucket in ('transceivers', 'aoc', 'copper'):
+            tables[bucket] = {'fields': linkx['detailed_interconnect_fields'], 'items': linkx[bucket]}
+        for name, table in tables.items():
+            with self.subTest(table=name):
+                self.assertTrue(general <= set(table['fields']))
+                for row in table['items']:
+                    record = dict(zip(table['fields'], row))
+                    for key in general - {'legacy_opn', 'part_numbers'}:
+                        self.assertTrue(record[key], (name, record['model'], key))
+                    self.assertIsInstance(record['part_numbers'], list)
+
+    def test_cable_and_optics_rows_carry_interface_facts(self):
+        linkx = RAW['linkx']
+        fields = linkx['detailed_interconnect_fields']
+        for bucket in ('transceivers', 'aoc', 'copper'):
+            for row in linkx[bucket]:
+                record = dict(zip(fields, row))
+                with self.subTest(model=record['model'], variant=record['variant']):
+                    for key in ('interface_count', 'interface_speed', 'speed', 'interface_type', 'medium', 'reach'):
+                        self.assertIsNotNone(record[key], key)
+                    self.assertTrue(record['fabric_compatibility'])
+                    if 'OSFP' in record['interface_type']:
+                        self.assertRegex(record['interface_type'], r'OSFP-(finned|flattop)')
+
+    def test_schema_v9_layout_is_rejected(self):
+        raw = copy.deepcopy(RAW); raw['schema_version'] = 9
+        with self.assertRaises(ValidationError): CatalogDocument.model_validate(raw)
+
+    def test_missing_general_column_is_rejected(self):
+        raw = copy.deepcopy(RAW)
+        table = raw['dpu']; idx = table['fields'].index('description')
+        table['fields'].pop(idx)
+        for row in table['items']: row.pop(idx)
+        with self.assertRaises(ValidationError): CatalogDocument.model_validate(raw)
 
     def test_unknown_schema_version_is_rejected(self):
         raw = copy.deepcopy(RAW); raw['schema_version'] = 999
@@ -199,7 +239,7 @@ class CatalogTests(unittest.TestCase):
 
     def test_changed_canonical_mechanics_reject_stale_endpoint_profile(self):
         raw = copy.deepcopy(RAW)
-        fields = raw['linkx']['transceiver_fields']
+        fields = raw['linkx']['detailed_interconnect_fields']
         row = next(r for r in raw['linkx']['transceivers'] if r[fields.index('model')] == 'MMS4X00-NM')
         row[fields.index('interface_type')] = 'OSFP-flattop'
         self.data.write_text(json.dumps(raw))

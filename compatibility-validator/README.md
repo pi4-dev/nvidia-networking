@@ -119,7 +119,7 @@ The initial exact profile catalog covers four ConnectX-8 OPNs (C8180 Socket Dire
 
 ## Data contracts
 
-The canonical `../data/nvidia-interconnects.json` remains schema **8**. `data/device-profiles.json` uses schema **2**, with explicit port modes, cable endpoints, SKU lengths and optical details. Both inputs are checked before activating a revision. See [DATA_MODEL.md](DATA_MODEL.md) for field semantics and update instructions.
+The canonical `../data/nvidia-interconnects.json` is schema **10**. `data/device-profiles.json` uses schema **2**, with explicit port modes, cable endpoints, SKU lengths and optical details. Both inputs are checked before activating a revision. See [DATA_MODEL.md](DATA_MODEL.md) for field semantics and update instructions.
 
 `port_interface_compatibility` remains authoritative for accepted module families and fixed interfaces. The overlay cannot broaden those permissions. Port capabilities are not inferred from free-text descriptions or aggregate adapter bandwidth. Generic and SKU-specific Quantum-2 profiles use the same twin-port capacity; SN3420 modes cannot exceed cage capacity. Unqualified OSFP shells remain unknown.
 

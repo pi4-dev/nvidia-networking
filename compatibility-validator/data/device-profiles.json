@@ -2768,7 +2768,23 @@
           ]
         }
       ],
-      "skus": [],
+      "skus": [
+        {
+          "part_number": "980-9IAO5-00X001",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/9809iao500xxxxrhs2x800"
+        },
+        {
+          "part_number": "980-9IAO5-00X01A",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/9809iao500xxxxrhs2x800"
+        },
+        {
+          "part_number": "980-9IAO5-00X002",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/9809iao500xxxxrhs2x800"
+        }
+      ],
       "cable_type": "Copper",
       "source_url": "https://networking-docs.nvidia.com/9809iao500xxxxrhs2x800",
       "conditions": []
