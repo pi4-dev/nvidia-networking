@@ -14,6 +14,11 @@ releases. Historical dates below come from their referenced commits. The `v0.01`
 
 ### Changed
 
+- Regenerated `network_equipment.md` and added `network_equipment.xlsx` from the schema v10
+  inventory (snapshot 2026-10-20): one section/sheet per category for active products
+  with Legacy OPN, NVIDIA OPN, interfaces/cages, fabric and a product link column;
+  no-longer-for-sale LinkX items are excluded. The three legacy ConnectX adapters
+  stay in a separate section. Workbook opens with openpyxl; not checked in Excel.
 - Inventory schema v10: every inventory row (LinkX summaries, transceivers, AOC,
   copper, switches, gateways, silicon photonics, DPUs, SuperNICs, adapters, UFM
   appliances) now has `category`, `model`, `status`, `legacy_opn`, `part_numbers`,
