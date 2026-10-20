@@ -18,7 +18,10 @@ releases. Historical dates below come from their referenced commits. The `v0.01`
   inventory (snapshot 2026-10-20): one section/sheet per category for active products
   with Legacy OPN, NVIDIA OPN, interfaces/cages, fabric and a product link column;
   no-longer-for-sale LinkX items are excluded. The three legacy ConnectX adapters
-  stay in a separate section. Workbook opens with openpyxl; not checked in Excel.
+  stay in a separate section. The workbook also has an `All products` sheet (every product in one filterable table)
+  and a `Search` sheet (type text in B2 to list up to 200 matching products with links,
+  using plain formulas that need no Excel 365 features). Search was verified by
+  recalculating in LibreOffice; not opened in Excel.
 - Inventory schema v10: every inventory row (LinkX summaries, transceivers, AOC,
   copper, switches, gateways, silicon photonics, DPUs, SuperNICs, adapters, UFM
   appliances) now has `category`, `model`, `status`, `legacy_opn`, `part_numbers`,
