@@ -1,6 +1,6 @@
 # NVIDIA Network Equipment
 
-_Snapshot **2026-10-20**, schema **v10**, Europe/Warsaw. Generated from `data/nvidia-interconnects.json`; active products only (no-longer-for-sale LinkX items are excluded)._
+_Snapshot **2026-10-23**, schema **v10**, Europe/Warsaw. Generated from `data/nvidia-interconnects.json`; active products only (no-longer-for-sale LinkX items are excluded)._
 
 `IB` = InfiniBand, `ETH` = Ethernet, `NVL` = NVLink/NVL. OSFP finned/flat-top variants are separate rows. Empty `NVIDIA OPN` means the product page publishes no NVIDIA OPN; `—` means not stated by the source.
 
@@ -107,23 +107,23 @@ Accessories (QSA adapters, fiber cables) and family entries without a detailed r
 
 | Model | Family | Status | Legacy OPN | NVIDIA OPN | Speed | Cages / interfaces | Description | Link |
 |---|---|---|---|---|---|---|---|---|
-| Q3200-RA | Quantum-X800 | documented | — | — | 800Gb/s XDR | 36x OSFP 800Gb/s XDR (twin-port, 72 ports) | Quantum-X800 800Gb/s XDR: 2x18 OSFP | [NVIDIA](https://networking-docs.nvidia.com/switches#nvidiatab-hw-documentation) |
-| Q3400-RA | Quantum-X800 | documented | — | — | 800Gb/s XDR | 72x OSFP 800Gb/s XDR (twin-port, 144 ports) | Quantum-X800 800Gb/s XDR: 72x OSFP | [NVIDIA](https://networking-docs.nvidia.com/switches#nvidiatab-hw-documentation) |
-| Q3401-RD | Quantum-X800 | documented | — | — | 800Gb/s XDR | 72x OSFP 800Gb/s XDR (twin-port, 144 ports) | Quantum-X800 800Gb/s XDR: 72x OSFP | [NVIDIA](https://networking-docs.nvidia.com/switches#nvidiatab-hw-documentation) |
-| Q3450-LD | Quantum-X Photonics / Quantum-X800 | documented | — | — | 800Gb/s XDR | 144x MPO-12 CPO 800Gb/s XDR fixed | Quantum-X Photonics / Quantum-X800 800Gb/s XDR: 144x MPO12 CPO | [NVIDIA](https://networking-docs.nvidia.com/switches#nvidiatab-hw-documentation) |
+| Q3200-RA | Quantum-X800 | documented | — | 920-9B34F-00RX-FS0 | 800Gb/s XDR | 36x OSFP 800Gb/s XDR (twin-port, 72 ports) | Quantum-X800 800Gb/s XDR: 2x18 OSFP | [NVIDIA](https://networking-docs.nvidia.com/switches#nvidiatab-hw-documentation) |
+| Q3400-RA | Quantum-X800 | documented | — | 920-9B36F-00RX-8S0 | 800Gb/s XDR | 72x OSFP 800Gb/s XDR (twin-port, 144 ports) | Quantum-X800 800Gb/s XDR: 72x OSFP | [NVIDIA](https://networking-docs.nvidia.com/switches#nvidiatab-hw-documentation) |
+| Q3401-RD | Quantum-X800 | documented | — | 920-9B36P-00RX-8S0 | 800Gb/s XDR | 72x OSFP 800Gb/s XDR (twin-port, 144 ports) | Quantum-X800 800Gb/s XDR: 72x OSFP | [NVIDIA](https://networking-docs.nvidia.com/switches#nvidiatab-hw-documentation) |
+| Q3450-LD | Quantum-X Photonics / Quantum-X800 | documented | — | 920-9B36M-00MX-8ES | 800Gb/s XDR | 144x MPO-12 CPO 800Gb/s XDR fixed | Quantum-X Photonics / Quantum-X800 800Gb/s XDR: 144x MPO12 CPO | [NVIDIA](https://networking-docs.nvidia.com/switches#nvidiatab-hw-documentation) |
 | QM9700 family | Quantum-2 | documented | — | — | 400Gb/s NDR | OSFP 400Gb/s NDR | Quantum-2 400Gb/s NDR: OSFP | [NVIDIA](https://networking-docs.nvidia.com/switches#nvidiatab-hw-documentation) |
 | Skyway | InfiniBand-to-Ethernet Gateway | documented | — | — | 100/200 Gb/s per port | 8x QSFP56 100/200 Gb/s [InfiniBand]; 8x QSFP56 100/200 Gb/s [Ethernet] | InfiniBand-to-Ethernet Gateway 100/200 Gb/s per port: 8 ports per InfiniBand and Ethernet side | [NVIDIA](https://networking-docs.nvidia.com/skyway) |
-| MetroX-3 XC | Long-haul InfiniBand | documented | — | — | InfiniBand extension | OSFP; QSFP112 | Long-haul InfiniBand InfiniBand extension | [NVIDIA](https://networking-docs.nvidia.com/switches#nvidiatab-hw-documentation) |
+| MetroX-3 XC | Long-haul InfiniBand | end_of_life | MTQ8400-HS2R / MTQ8400-HS2RC | 920-9B020-00FA-0DZ, 920-9B020-00FA-6DZ | InfiniBand extension | OSFP; 2x QSFP112 100Gb/s long-haul (DWDM-ready) | Long-haul InfiniBand InfiniBand extension | [NVIDIA](https://networking-docs.nvidia.com/metrox3xc) |
 | UFM Telemetry | UFM platform | documented | — | — | — | — | UFM platform | [NVIDIA](https://networking-docs.nvidia.com/switches#nvidiatab-hw-documentation) |
 | UFM Enterprise | UFM platform | documented | — | — | — | — | UFM platform | [NVIDIA](https://networking-docs.nvidia.com/switches#nvidiatab-hw-documentation) |
 | UFM Cyber-AI | UFM platform | documented | — | — | — | — | UFM platform | [NVIDIA](https://networking-docs.nvidia.com/switches#nvidiatab-hw-documentation) |
-| Skyway-3 | InfiniBand-to-Ethernet Gateway | active | — | 920-9B02D-00RG-CF0, MGA400-XS2 | XDR/Ethernet gateway | 8x QSFP112 [InfiniBand]; 8x QSFP112 [Ethernet] | InfiniBand-to-Ethernet Gateway XDR/Ethernet gateway: 8x IB + 8x Ethernet QSFP112 | [NVIDIA](https://networking-docs.nvidia.com/skyway3) |
+| Skyway-3 | InfiniBand-to-Ethernet Gateway | active | — | 920-9B02D-00RG-CF0, MGA400-XS2 | XDR/Ethernet gateway | 8x QSFP112 [InfiniBand]; 8x QSFP112 [Ethernet] | InfiniBand-to-Ethernet Gateway XDR/Ethernet gateway: 8x IB + 8x Ethernet QSFP112 | [NVIDIA](https://networking-docs.nvidia.com/skyway3hw) |
 
 ## Silicon Photonics
 
 | Model | Family | Status | Legacy OPN | NVIDIA OPN | Speed | Cages / interfaces | Description | Link |
 |---|---|---|---|---|---|---|---|---|
-| Q3450-LD | Quantum-X InfiniBand Photonics | documented | — | — | 800Gb/s XDR | 144x MPO-12 CPO 800Gb/s XDR fixed | Quantum-X InfiniBand Photonics: co-packaged optics, 800Gb/s XDR, 115.2 Tb/s | [NVIDIA](https://networking-docs.nvidia.com/xdrswitcheshw) |
+| Q3450-LD | Quantum-X InfiniBand Photonics | documented | — | 920-9B36M-00MX-8ES | 800Gb/s XDR | 144x MPO-12 CPO 800Gb/s XDR fixed | Quantum-X InfiniBand Photonics: co-packaged optics, 800Gb/s XDR, 115.2 Tb/s | [NVIDIA](https://networking-docs.nvidia.com/xdrswitcheshw) |
 | Spectrum-X Ethernet Photonics Switches | Spectrum-X Ethernet Photonics | active | — | — | 200G SerDes CPO architecture | — | Spectrum-X Ethernet Photonics: co-packaged optics, 200G SerDes CPO architecture, up to 409.6 Tb/s | [NVIDIA](https://www.nvidia.com/en-us/networking/products/silicon-photonics/) |
 
 ## DPU
@@ -138,20 +138,20 @@ Accessories (QSA adapters, fiber cables) and family entries without a detailed r
 
 | Model | Family | Status | Legacy OPN | NVIDIA OPN | Speed | Cages / interfaces | Description | Link |
 |---|---|---|---|---|---|---|---|---|
-| ConnectX-9 SuperNIC | — | documented | — | 900-9X91E-00EB-ST0, 900-9X91Q-00CN-ST0 | up to 1.6 Tb/s per GPU | 1x OSFP 800GbE / XDR 800Gb/s (C9180); 2x QSFP112 2x400GbE / 400Gb/s IB (C9240) | ConnectX-9 SuperNIC, up to 1.6 Tb/s per GPU: Spectrum-X Ethernet, AI fabrics | [NVIDIA](https://networking-docs.nvidia.com/connectx9hw) |
-| ConnectX-8 SuperNIC | — | documented | — | 900-9X81E-00EX-ST0, 900-9X81Q-00CN-ST0, 900-9X81Q-00CV-ST0 | up to 800 Gb/s total network bandwidth | 1x OSFP XDR 800Gb/s / 2x400GbE (C8180); 2x QSFP112 400GbE / 400Gb/s IB (C8240); 2x QSFP112 up to 400Gb/s aggregate (C8220) | ConnectX-8 SuperNIC, up to 800 Gb/s total network bandwidth: PCIe Gen6, Spectrum-X Ethernet, AI compute fabrics | [NVIDIA](https://networking-docs.nvidia.com/connectx8hw) |
+| ConnectX-9 SuperNIC | — | documented | — | 900-9X91E-00EB-ST0, 900-9X91Q-00CN-ST0, 900-9X91E-00EB-DT0, 900-9X91E-00QB-ST0, 900-9X91Q-00RN-ST0, 900-9X91Q-00RV-ST0, 900-9X91Q-00RC-ST0 | up to 1.6 Tb/s per GPU | 1x OSFP 800GbE / XDR 800Gb/s (C9180); 2x QSFP112 2x400GbE / 400Gb/s IB (C9240); 2x QSFP112 400GbE (C9220); 2x QSFP112 200GbE (C9210) | ConnectX-9 SuperNIC, up to 1.6 Tb/s per GPU: Spectrum-X Ethernet, AI fabrics | [NVIDIA](https://networking-docs.nvidia.com/connectx9hw) |
+| ConnectX-8 SuperNIC | — | documented | — | 900-9X81E-00EX-ST0, 900-9X81Q-00CN-ST0, 900-9X81Q-00CV-ST0, 900-9X81E-00EX-DT0, 900-9X81E-00EX-SL0 | up to 800 Gb/s total network bandwidth | 1x OSFP XDR 800Gb/s / 2x400GbE (C8180); 2x QSFP112 400GbE / 400Gb/s IB (C8240); 2x QSFP112 up to 400Gb/s aggregate (C8220); 1x OSFP XDR 800Gb/s / 2x400GbE (C8180L Partner Cooled) | ConnectX-8 SuperNIC, up to 800 Gb/s total network bandwidth: PCIe Gen6, Spectrum-X Ethernet, AI compute fabrics | [NVIDIA](https://networking-docs.nvidia.com/connectx8hw) |
 | BlueField-3 SuperNIC | — | documented | — | 900-9D3B4-00CC-EA0, 900-9D3B4-00CV-EA0, 900-9D3B4-00EN-EA0, 900-9D3B4-00PN-EA0, 900-9D3B4-00SC-EA0, 900-9D3B4-00SV-EA0, 900-9D3D4-00EN-HA0, 900-9D3D4-00NN-HA0 | up to 400 Gb/s | QSFP112 up to 400 Gb/s; QSFP56 up to 400 Gb/s; QSFP28 up to 400 Gb/s | BlueField-3 SuperNIC, up to 400 Gb/s: Spectrum-X Ethernet, secure cloud multi-tenancy, deterministic isolated performance | [NVIDIA](https://networking-docs.nvidia.com/bf3dpu) |
 
 ## Network adapters
 
 | Model | Family | Status | Legacy OPN | NVIDIA OPN | Speed | Interface | Cages / interfaces | Link |
 |---|---|---|---|---|---|---|---|---|
-| C9180 | ConnectX-9 | MP | — | 900-9X91E-00EB-ST0 | 800GbE / XDR 800Gb/s | single-cage OSFP | 1x OSFP 800GbE / XDR 800Gb/s (C9180) | [NVIDIA](https://networking-docs.nvidia.com/connectx9hw) |
-| C9240 | ConnectX-9 | MP | — | 900-9X91Q-00CN-ST0 | 2x400GbE / 400Gb/s IB | dual QSFP112 | 2x QSFP112 2x400GbE / 400Gb/s IB (C9240) | [NVIDIA](https://networking-docs.nvidia.com/connectx9hw) |
-| C8180 | ConnectX-8 | MP | — | 900-9X81E-00EX-ST0 | XDR 800Gb/s / 2x400GbE | single-cage OSFP | 1x OSFP XDR 800Gb/s / 2x400GbE (C8180) | [NVIDIA](https://networking-docs.nvidia.com/connectx8hw) |
+| C9180 | ConnectX-9 | MP | — | 900-9X91E-00EB-ST0, 900-9X91E-00EB-DT0, 900-9X91E-00QB-ST0 | 800GbE / XDR 800Gb/s | single-cage OSFP | 1x OSFP 800GbE / XDR 800Gb/s (C9180) | [NVIDIA](https://networking-docs.nvidia.com/connectx9hw) |
+| C9240 | ConnectX-9 | MP | — | 900-9X91Q-00CN-ST0, 900-9X91Q-00RN-ST0 | 2x400GbE / 400Gb/s IB | dual QSFP112 | 2x QSFP112 2x400GbE / 400Gb/s IB (C9240) | [NVIDIA](https://networking-docs.nvidia.com/connectx9hw) |
+| C8180 | ConnectX-8 | MP | — | 900-9X81E-00EX-ST0, 900-9X81E-00EX-DT0 | XDR 800Gb/s / 2x400GbE | single-cage OSFP | 1x OSFP XDR 800Gb/s / 2x400GbE (C8180) | [NVIDIA](https://networking-docs.nvidia.com/connectx8hw) |
 | C8240 | ConnectX-8 | active | — | 900-9X81Q-00CN-ST0 | 400GbE / 400Gb/s IB | dual QSFP112 | 2x QSFP112 400GbE / 400Gb/s IB (C8240) | [NVIDIA](https://networking-docs.nvidia.com/connectx8hw) |
 | C8220 | ConnectX-8 | prototype | — | 900-9X81Q-00CV-ST0 | up to 400Gb/s aggregate | dual QSFP112 | 2x QSFP112 up to 400Gb/s aggregate (C8220) | [NVIDIA](https://networking-docs.nvidia.com/connectx8hw) |
-| ConnectX-7 | ConnectX-7 | documented | — | — | up to 400Gb/s IB/Ethernet | OSFP / QSFP112 by SKU | OSFP up to 400Gb/s IB/Ethernet (ConnectX-7); QSFP112 up to 400Gb/s IB/Ethernet (ConnectX-7) | [NVIDIA](https://networking-docs.nvidia.com/connectx7hw) |
+| ConnectX-7 | ConnectX-7 | documented | MCX713104AC-ADAT, MCX713104AS-ADAT, MCX713105AS-WEAT, MCX713106AC-CEAT, MCX713106AC-VEAT, MCX713106AS-CEAT, MCX713106AS-VEAT, MCX713114GC-GEAT, MCX713114TC-GEAT, MCX715105AS-WEAT, MCX75310AAC-NEAT, MCX75310AAS-HEAT, MCX75310AAS-NEAT, MCX755106AC-HEAT, MCX755106AS-HEAT, MCX75510AAS-HEAT, MCX75510AAS-NEAT | 900-9X721-003N-DT0, 900-9X721-003N-DT1, 900-9X766-003N-SQ0, 900-9X766-003N-SR0, 900-9X766-003N-ST0, 900-9X7AH-0039-ST1, 900-9X7AH-0039-STZ, 900-9X7AH-004N-CT0, 900-9X7AH-004N-GT0, 900-9X7AH-0076-ST0, 900-9X7AH-0078-DTZ, 900-9X7AH-0078-ST0, 900-9X7AH-0079-DTZ, 900-9X7AH-0086-SQ0, 900-9X7AH-0088-ST0, 900-9X7AO-0003-ST0, 900-9X7AO-00C3-STZ | up to 400Gb/s IB/Ethernet | OSFP / QSFP112 by SKU | OSFP up to 400Gb/s IB/Ethernet (ConnectX-7); QSFP112 up to 400Gb/s IB/Ethernet (ConnectX-7) | [NVIDIA](https://networking-docs.nvidia.com/connectx7hw) |
 | ConnectX-6 | ConnectX-6 | documented | — | — | up to 200Gb/s IB/Ethernet | QSFP56 / QSFP28 by SKU | QSFP56 up to 200Gb/s IB/Ethernet (ConnectX-6); QSFP28 up to 200Gb/s IB/Ethernet (ConnectX-6) | [NVIDIA](https://networking-docs.nvidia.com/adapters) |
 | ConnectX-6 Dx | ConnectX-6 Dx | documented | — | — | up to 200GbE | QSFP56 / QSFP28 / SFP56 by SKU | QSFP56 up to 200GbE (ConnectX-6 Dx); QSFP28 up to 200GbE (ConnectX-6 Dx); SFP56 up to 200GbE (ConnectX-6 Dx) | [NVIDIA](https://networking-docs.nvidia.com/adapters) |
 | ConnectX-6 Lx | ConnectX-6 Lx | documented | — | — | up to 50GbE | SFP56 / SFP28 by SKU | SFP56 up to 50GbE (ConnectX-6 Lx); SFP28 up to 50GbE (ConnectX-6 Lx) | [NVIDIA](https://networking-docs.nvidia.com/adapters) |
