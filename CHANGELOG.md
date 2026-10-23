@@ -11,9 +11,18 @@ releases. Historical dates below come from their referenced commits. The `v0.01`
 
 ## [Unreleased]
 
-
 ### Changed
 
+- Inventory snapshot 2026-10-23 (schema v10, unchanged; report
+  `2026/10/nvidia_interconnects_2026-10-23.md`): applied the 2026-10-21 OPN additions
+  that had not yet been written to `data/nvidia-interconnects.json` (XDR switch,
+  ConnectX-7/8/9 and SuperNIC OPNs, C8180L Partner Cooled, C9220/C9210). New: MetroX-3 XC
+  OPNs `920-9B020-00FA-0DZ`/`-6DZ` with legacy OPNs `MTQ8400-HS2R`/`-HS2RC`, status now
+  `end_of_life`, 2x long-haul QSFP112 100Gb/s; Skyway-3 source URL moved to
+  `/skyway3hw` (old URL returns 404). `network_equipment.md` and `.xlsx` patched for these
+  rows; workbook tab order is now Info, All products, Search (Search was verified by
+  recalculating in LibreOffice; not opened in Excel). Limitation: two PDF manual URLs
+  were unreachable and not compared.
 - Regenerated `network_equipment.md` and added `network_equipment.xlsx` from the schema v10
   inventory (snapshot 2026-10-20): one section/sheet per category for active products
   with Legacy OPN, NVIDIA OPN, interfaces/cages, fabric and a product link column;
