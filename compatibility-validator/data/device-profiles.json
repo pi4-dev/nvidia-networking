@@ -396,42 +396,6 @@
       ]
     },
     {
-      "id": "ethernet:SN6200-LD",
-      "kind": "Ethernet switch",
-      "model": "SN6200-LD",
-      "family": "Spectrum-6 SN6000",
-      "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
-      "port_groups": [
-        {
-          "id": "ports-1",
-          "label": "32 × OSFP",
-          "connector_family": "OSFP",
-          "count": 32,
-          "module_speed_gbps": 1600,
-          "modes": [
-            {
-              "id": "2x800",
-              "links": 2,
-              "speed_gbps": 800
-            }
-          ],
-          "fabrics": [
-            "ETH"
-          ],
-          "pluggable": true,
-          "source_url": "https://www.nvidia.com/en-us/networking/ethernet-switching/",
-          "accepted_connector_families": [
-            "OSFP"
-          ],
-          "accepted_interface_types": [],
-          "conditions": [
-            "Front-panel modes beyond 2×800G require a port-specific reference; backplane counts are excluded."
-          ],
-          "scope_note": "OSFP mechanical variant is not documented in this catalog entry."
-        }
-      ]
-    },
-    {
       "id": "ethernet:SN5610",
       "kind": "Ethernet switch",
       "model": "SN5610",

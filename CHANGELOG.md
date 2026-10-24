@@ -13,6 +13,15 @@ releases. Historical dates below come from their referenced commits. The `v0.01`
 
 ### Changed
 
+- Inventory snapshot 2026-10-24 (schema v10, unchanged; report
+  `2026/10/nvidia_interconnects_2026-10-24.md`): removed Spectrum-6 `SN6200-LD` (no longer
+  in the SN6000 manual) and ConnectX-8 `C8220` / OPN `900-9X81Q-00CV-ST0` (no longer in the
+  ConnectX-8 ordering table, also dropped from the ConnectX-8 SuperNIC OPN list);
+  corrected 404 source URLs for Skyway and the legacy ConnectX-4, 4 Lx and 5 adapters. The
+  validator device profile `ethernet:SN6200-LD` was removed accordingly.
+  `network_equipment.md` and `.xlsx` patched (rows, links, snapshot date; Search re-checked
+  by recalculating in LibreOffice). Limitation: the validator test suite could not be run
+  here (pytest/pydantic unavailable offline); LinkX ordering tables were not machine-compared.
 - Inventory snapshot 2026-10-23 (schema v10, unchanged; report
   `2026/10/nvidia_interconnects_2026-10-23.md`): applied the 2026-10-21 OPN additions
   that had not yet been written to `data/nvidia-interconnects.json` (XDR switch,
