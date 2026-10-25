@@ -13,6 +13,15 @@ releases. Historical dates below come from their referenced commits. The `v0.01`
 
 ### Changed
 
+- Inventory snapshot 2026-10-25 (schema v10, unchanged; report
+  `2026/10/nvidia_interconnects_2026-10-25.md`): captured published OPN / legacy OPN
+  pairs for Skyway (`920-9B020-00FA-0D2` / `MGA100-HS2`) and the legacy ConnectX-4
+  (`MCX455A-ECAT` -> `900-9X4AC-0016-ST0`), ConnectX-4 Lx (`MCX4121A-ACAT` ->
+  `900-9X4B0-0053-0T1`) and ConnectX-5 (`MCX516A-CCAT` -> `900-9X5AD-0056-ST1`)
+  adapters, which previously stored model-style part numbers only. No products added or
+  removed; validator unchanged. `network_equipment.md` and `.xlsx` patched for the
+  Skyway row and snapshot date. Limitations: LinkX and several switch ordering tables
+  were not machine-compared; the validator tests were not run.
 - Inventory snapshot 2026-10-24 (schema v10, unchanged; report
   `2026/10/nvidia_interconnects_2026-10-24.md`): removed Spectrum-6 `SN6200-LD` (no longer
   in the SN6000 manual) and ConnectX-8 `C8220` / OPN `900-9X81Q-00CV-ST0` (no longer in the
