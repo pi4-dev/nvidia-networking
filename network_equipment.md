@@ -1,6 +1,6 @@
 # NVIDIA Network Equipment
 
-_Snapshot **2026-10-24**, schema **v10**, Europe/Warsaw. Generated from `data/nvidia-interconnects.json`; active products only (no-longer-for-sale LinkX items are excluded)._
+_Snapshot **2026-10-25**, schema **v10**, Europe/Warsaw. Generated from `data/nvidia-interconnects.json`; active products only (no-longer-for-sale LinkX items are excluded)._
 
 `IB` = InfiniBand, `ETH` = Ethernet, `NVL` = NVLink/NVL. OSFP finned/flat-top variants are separate rows. Empty `NVIDIA OPN` means the product page publishes no NVIDIA OPN; `—` means not stated by the source.
 
@@ -111,7 +111,7 @@ Accessories (QSA adapters, fiber cables) and family entries without a detailed r
 | Q3401-RD | Quantum-X800 | documented | — | 920-9B36P-00RX-8S0 | 800Gb/s XDR | 72x OSFP 800Gb/s XDR (twin-port, 144 ports) | Quantum-X800 800Gb/s XDR: 72x OSFP | [NVIDIA](https://networking-docs.nvidia.com/switches#nvidiatab-hw-documentation) |
 | Q3450-LD | Quantum-X Photonics / Quantum-X800 | documented | — | 920-9B36M-00MX-8ES | 800Gb/s XDR | 144x MPO-12 CPO 800Gb/s XDR fixed | Quantum-X Photonics / Quantum-X800 800Gb/s XDR: 144x MPO12 CPO | [NVIDIA](https://networking-docs.nvidia.com/switches#nvidiatab-hw-documentation) |
 | QM9700 family | Quantum-2 | documented | — | — | 400Gb/s NDR | OSFP 400Gb/s NDR | Quantum-2 400Gb/s NDR: OSFP | [NVIDIA](https://networking-docs.nvidia.com/switches#nvidiatab-hw-documentation) |
-| Skyway | InfiniBand-to-Ethernet Gateway | documented | — | — | 100/200 Gb/s per port | 8x QSFP56 100/200 Gb/s [InfiniBand]; 8x QSFP56 100/200 Gb/s [Ethernet] | InfiniBand-to-Ethernet Gateway 100/200 Gb/s per port: 8 ports per InfiniBand and Ethernet side | [NVIDIA](https://networking-docs.nvidia.com/skywayhw) |
+| Skyway | InfiniBand-to-Ethernet Gateway | documented | MGA100-HS2 | 920-9B020-00FA-0D2 | 100/200 Gb/s per port | 8x QSFP56 100/200 Gb/s [InfiniBand]; 8x QSFP56 100/200 Gb/s [Ethernet] | InfiniBand-to-Ethernet Gateway 100/200 Gb/s per port: 8 ports per InfiniBand and Ethernet side | [NVIDIA](https://networking-docs.nvidia.com/skywayhw) |
 | MetroX-3 XC | Long-haul InfiniBand | end_of_life | MTQ8400-HS2R / MTQ8400-HS2RC | 920-9B020-00FA-0DZ, 920-9B020-00FA-6DZ | InfiniBand extension | OSFP; 2x QSFP112 100Gb/s long-haul (DWDM-ready) | Long-haul InfiniBand InfiniBand extension | [NVIDIA](https://networking-docs.nvidia.com/metrox3xc) |
 | UFM Telemetry | UFM platform | documented | — | — | — | — | UFM platform | [NVIDIA](https://networking-docs.nvidia.com/switches#nvidiatab-hw-documentation) |
 | UFM Enterprise | UFM platform | documented | — | — | — | — | UFM platform | [NVIDIA](https://networking-docs.nvidia.com/switches#nvidiatab-hw-documentation) |
