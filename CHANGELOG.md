@@ -13,6 +13,15 @@ releases. Historical dates below come from their referenced commits. The `v0.01`
 
 ### Changed
 
+- Inventory snapshot 2026-10-26 (schema v10, unchanged; report
+  `2026/10/nvidia_interconnects_2026-10-26.md`): added SN2201 SKU `920-9N110-00R1-NC0`
+  (legacy `MSN2201-CSMRC`) and the first published OPNs for Spectrum-6 `SN6600-LD`
+  (`920-9N62F-00LI-GC1`), `SN6600` (`920-9N63F-00RI-3C0`), `SN6810-LD`
+  (`920-9N64K-00LI-GC0`) and `SN6800-LD` (`920-9N67K-00LA-GC0`). No products added or
+  removed; validator unchanged. `network_equipment.md` and `.xlsx` patched for these rows
+  and the snapshot date (Search verified by recalculating in LibreOffice). Limitations: the
+  SN5000 and BlueField-3 PDF manuals returned 403 and were not compared; EoL SN3700 and
+  SN4600 200GbE SKUs remain outside the inventory scope; validator tests not run.
 - Inventory snapshot 2026-10-25 (schema v10, unchanged; report
   `2026/10/nvidia_interconnects_2026-10-25.md`): captured published OPN / legacy OPN
   pairs for Skyway (`920-9B020-00FA-0D2` / `MGA100-HS2`) and the legacy ConnectX-4
