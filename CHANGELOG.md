@@ -13,6 +13,14 @@ releases. Historical dates below come from their referenced commits. The `v0.01`
 
 ### Changed
 
+- Inventory snapshot 2026-11-02 (schema v10, unchanged; report
+  `2026/11/nvidia_interconnects_2026-11-02.md`): added UFM Enterprise Gen 3.5 (XDR)
+  appliance `MUA970` (OPN `920-9B020-00RI-0D0`, legacy `MUA9702H-2SFS`, 1U, 2x ConnectX-8
+  400Gb/s InfiniBand), previously missing next to the tracked `MUA970D`. No other
+  products added or removed; validator unchanged. `network_equipment.md` and `.xlsx`
+  updated for the new row and snapshot date. Limitations: legacy/OCP adapters and
+  EoL switch SKUs remain out of scope; LinkX attributes not machine-compared; validator
+  tests not run.
 - Inventory snapshot 2026-10-26 (schema v10, unchanged; report
   `2026/10/nvidia_interconnects_2026-10-26.md`): added SN2201 SKU `920-9N110-00R1-NC0`
   (legacy `MSN2201-CSMRC`) and the first published OPNs for Spectrum-6 `SN6600-LD`
