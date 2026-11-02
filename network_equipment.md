@@ -1,6 +1,6 @@
 # NVIDIA Network Equipment
 
-_Snapshot **2026-10-26**, schema **v10**, Europe/Warsaw. Generated from `data/nvidia-interconnects.json`; active products only (no-longer-for-sale LinkX items are excluded)._
+_Snapshot **2026-11-02**, schema **v10**, Europe/Warsaw. Generated from `data/nvidia-interconnects.json`; active products only (no-longer-for-sale LinkX items are excluded)._
 
 `IB` = InfiniBand, `ETH` = Ethernet, `NVL` = NVLink/NVL. OSFP finned/flat-top variants are separate rows. Empty `NVIDIA OPN` means the product page publishes no NVIDIA OPN; `—` means not stated by the source.
 
@@ -159,6 +159,7 @@ Accessories (QSA adapters, fiber cables) and family entries without a detailed r
 | Model | Family | Status | Legacy OPN | NVIDIA OPN | Network interface | Description | Link |
 |---|---|---|---|---|---|---|---|
 | UFM XDR Appliance | UFM Enterprise Gen 3.5 | documented | — | — | XDR InfiniBand | UFM Enterprise Gen 3.5 UFM appliance, XDR InfiniBand | [NVIDIA](https://networking-docs.nvidia.com/software/management-software/ufm-appliances) |
+| MUA970 | UFM XDR Gen 3.5 | active | MUA9702H-2SFS | 920-9B020-00RI-0D0 | ConnectX-8 400Gb/s InfiniBand | UFM XDR Gen 3.5 UFM appliance (Telemetry or Enterprise), 1U, 2x ConnectX-8 single-port 400Gb/s InfiniBand | [NVIDIA](https://networking-docs.nvidia.com/ufmenterprisexdrhw/) |
 | MUA970D | UFM XDR-DC Gen 3.5 | active | MUA9702H-2SFS-DC | 920-9B020-10RI-0D0 | ConnectX-8 400Gb/s InfiniBand | UFM XDR-DC Gen 3.5 UFM appliance, ConnectX-8 400Gb/s InfiniBand | [NVIDIA](https://networking-docs.nvidia.com/ufmenterprisexdrdchw/) |
 | MUA9652H-2SF | UFM Cyber-AI 4.0 | documented | MUA9652H-2SF | 920-9B020-00FH-0D0 | 2x ConnectX-6 HDR 200Gb/s InfiniBand | UFM Cyber-AI 4.0 UFM appliance, 2x ConnectX-6 HDR 200Gb/s InfiniBand | [NVIDIA](https://networking-docs.nvidia.com/ufm40cyberaiapphw) |
 | MUA960 | UFM Enterprise Gen 3.0 HDR | documented | MUA9602H-2SR | 920-9B020-00FA-0D3 | HDR InfiniBand | UFM Enterprise Gen 3.0 HDR UFM appliance, HDR InfiniBand | [NVIDIA](https://networking-docs.nvidia.com/ufmenterprisehdrhwum) |
