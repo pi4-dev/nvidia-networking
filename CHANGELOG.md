@@ -13,6 +13,14 @@ releases. Historical dates below come from their referenced commits. The `v0.01`
 
 ### Changed
 
+- Inventory snapshot 2026-11-04 (schema v10, unchanged; report
+  `2026/11/nvidia_interconnects_2026-11-04.md`): added DPU `BlueField-3 DPU Controller
+  (B3220SH E-Series)` (OPNs `900-9D3C6-00CV-GA0`, `900-9D3C6-00CV-DA0`, `900-9D3C6-00SV-DA0`;
+  2x QSFP112 200Gb/s), which the DPU/DOCA index already linked but the inventory lacked.
+  No products removed or changed; validator unchanged. `network_equipment.md` and `.xlsx`
+  updated (DPU tab, All products, snapshot date; Search verified by recalculating in
+  LibreOffice). Limitations: legacy/OCP adapters and EoL switch SKUs remain out of scope;
+  LinkX attributes not machine-compared; validator tests not run.
 - Inventory snapshot 2026-11-02 (schema v10, unchanged; report
   `2026/11/nvidia_interconnects_2026-11-02.md`): added UFM Enterprise Gen 3.5 (XDR)
   appliance `MUA970` (OPN `920-9B020-00RI-0D0`, legacy `MUA9702H-2SFS`, 1U, 2x ConnectX-8
