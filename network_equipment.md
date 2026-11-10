@@ -1,6 +1,6 @@
 # NVIDIA Network Equipment
 
-_Snapshot **2026-11-04**, schema **v10**, Europe/Warsaw. Generated from `data/nvidia-interconnects.json`; active products only (no-longer-for-sale LinkX items are excluded)._
+_Snapshot **2026-11-10**, schema **v10**, Europe/Warsaw. Generated from `data/nvidia-interconnects.json`; active products only (no-longer-for-sale LinkX items are excluded)._
 
 `IB` = InfiniBand, `ETH` = Ethernet, `NVL` = NVLink/NVL. OSFP finned/flat-top variants are separate rows. Empty `NVIDIA OPN` means the product page publishes no NVIDIA OPN; `—` means not stated by the source.
 
@@ -36,6 +36,8 @@ Finned and flat-top OSFP are separate rows.
 | MMS4X50-NM | — | active | — | 980-9I30L-00N000 | 800G | OSFP-finned | 2x 400Gb/s Duplex LC | SM | max 2000 m | IB/ETH | MMS4X50-NM 800Gbps Twin-port OSFP 2xFR4, 2x400Gb/s Single Mode, 2km | [NVIDIA](https://networking-docs.nvidia.com/mms4x50nm800g2kmpub) |
 | MMS4X00-NS | finned | active | MMS4X00-NS | 980-9I30H-00NM00 | 800G | OSFP-finned | 2x 400Gb/s MPO-12/APC | SM | max 100 m | IB/ETH | MMS4X00-NS 800Gbps Twin-port OSFP 2x400Gb/s Single Mode 2xDR4 100m | [NVIDIA](https://networking-docs.nvidia.com/800gmms4x00ns) |
 | MMS4X00-NS-FLT | flat-top | active | MMS4X00-NS-FLT | 980-9I30I-00NM00 | 800G | OSFP-flattop | 2x 400Gb/s MPO-12/APC | SM | max 100 m | IB/ETH | MMS4X00-NS 800Gbps Twin-port OSFP 2x400Gb/s Single Mode 2xDR4 100m | [NVIDIA](https://networking-docs.nvidia.com/800gmms4x00ns) |
+| MMA4Z00-NS | finned | active | MMA4Z00-NS | 980-9I510-00NS00 | 800G | OSFP-finned | 2x 400Gb/s MPO-12/APC | MM | OM3 30 m, OM4 50 m, max 50 m | IB/ETH | MMA4Z00-NS 800Gb/s Twin-port OSFP, 2x400Gb/s Multimode 2xSR4, 50m | [NVIDIA](https://networking-docs.nvidia.com/800gmma4z00ns) |
+| MMA4Z00-NS-FLT | flat-top | active | MMA4Z00-NS-FLT | 980-9I51A-00NS00 | 800G | OSFP-flattop | 2x 400Gb/s MPO-12/APC | MM | OM3 30 m, OM4 50 m, max 50 m | IB/ETH | MMA4Z00-NS 800Gb/s Twin-port OSFP, 2x400Gb/s Multimode 2xSR4, 50m | [NVIDIA](https://networking-docs.nvidia.com/800gmma4z00ns) |
 | MMA4Z00-NS-T | — | active | MMA4Z00-NS-T | 980-9I510-F4NS00 | 800G | OSFP-finned | 2x 400Gb/s MPO-12/APC | MM | OM3 30 m, OM4 50 m, max 50 m | ETH | MMA4Z00-NS-T 800Gb/s Twin-port OSFP, 2x400Gb/s Multimode, 50m | [NVIDIA](https://networking-docs.nvidia.com/800gmma4z00nst) |
 | MMS4X00-NS-T | — | active | MMS4X00-NS-T | 980-9I30H-F4NM00 | 800G | OSFP-finned | 2x 400Gb/s MPO-12/APC | SM | max 100 m | ETH | MMS4X00-NS-T 800Gbps Twin-port OSFP 2x400Gb/s Single Mode 100m | [NVIDIA](https://networking-docs.nvidia.com/800gmms4x00nst) |
 | MMS4A20 | RHS | active | — | 980-9IAT0-00XM00 | 800G | OSFP-flattop | 1x 800Gb/s MPO-12/APC | SM | max 500 m | IB | NVIDIA MMS4A20 800Gbps, DR4 Single-port OSFP, MPO, 1310nm Single Mode, RHS (500m) Transceiver | [NVIDIA](https://networking-docs.nvidia.com/9iat0mosfp800sprhs) |

@@ -3220,6 +3220,68 @@
       "cable_type": "DAC",
       "source_url": "https://networking-docs.nvidia.com/mcp1600e0xxxeyyspec",
       "conditions": []
+    },
+    "Transceiver|MMA4Z00-NS|finned": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-finned",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I510-00NS00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/800gmma4z00ns"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/800gmma4z00ns",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC"
+      }
+    },
+    "Transceiver|MMA4Z00-NS-FLT|flat-top": {
+      "endpoints": [
+        {
+          "id": "A",
+          "role": "module",
+          "count": 1,
+          "connector_family": "OSFP",
+          "interface_type": "OSFP-flattop",
+          "modes": [
+            {
+              "id": "2x400",
+              "links": 2,
+              "speed_gbps": 400
+            }
+          ]
+        }
+      ],
+      "skus": [
+        {
+          "part_number": "980-9I51A-00NS00",
+          "length_m": null,
+          "source_url": "https://networking-docs.nvidia.com/800gmma4z00ns"
+        }
+      ],
+      "cable_type": "Transceiver",
+      "source_url": "https://networking-docs.nvidia.com/800gmma4z00ns",
+      "conditions": [],
+      "optics": {
+        "connector": "MPO-12/APC"
+      }
     }
   },
   "hardware_profiles": [

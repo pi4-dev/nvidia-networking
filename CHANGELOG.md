@@ -13,6 +13,17 @@ releases. Historical dates below come from their referenced commits. The `v0.01`
 
 ### Changed
 
+- Inventory snapshot 2026-11-10 (schema v10, unchanged; report
+  `2026/11/nvidia_interconnects_2026-11-10.md`): added LinkX transceivers `MMA4Z00-NS`
+  (finned OSFP, OPN `980-9I510-00NS00`) and `MMA4Z00-NS-FLT` (flat-top OSFP, OPN
+  `980-9I51A-00NS00`): 800G twin-port, 2x 400Gb/s 2xSR4, MPO-12/APC, MM, OM3 30 m / OM4 50 m,
+  IB and ETH; both were listed on the LinkX index but missing from the inventory. No products
+  removed or changed. The validator device profiles gained both transceivers.
+  `network_equipment.md` and `.xlsx` updated (Transceivers, All products, snapshot date;
+  Search verified by recalculating in LibreOffice). Limitations: SN2201/SN3000-SN6000 switch
+  OPNs could not be re-verified (no machine-readable ordering tables); legacy/OCP adapters and
+  EoL switch SKUs remain out of scope; LinkX attributes not machine-compared; validator tests
+  not run.
 - Inventory snapshot 2026-11-04 (schema v10, unchanged; report
   `2026/11/nvidia_interconnects_2026-11-04.md`): added DPU `BlueField-3 DPU Controller
   (B3220SH E-Series)` (OPNs `900-9D3C6-00CV-GA0`, `900-9D3C6-00CV-DA0`, `900-9D3C6-00SV-DA0`;
