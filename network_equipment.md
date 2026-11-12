@@ -1,6 +1,6 @@
 # NVIDIA Network Equipment
 
-_Snapshot **2026-11-10**, schema **v10**, Europe/Warsaw. Generated from `data/nvidia-interconnects.json`; active products only (no-longer-for-sale LinkX items are excluded)._
+_Snapshot **2026-11-12**, schema **v10**, Europe/Warsaw. Generated from `data/nvidia-interconnects.json`; active products only (no-longer-for-sale LinkX items are excluded)._
 
 `IB` = InfiniBand, `ETH` = Ethernet, `NVL` = NVLink/NVL. OSFP finned/flat-top variants are separate rows. Empty `NVIDIA OPN` means the product page publishes no NVIDIA OPN; `—` means not stated by the source.
 
@@ -89,8 +89,8 @@ Accessories (QSA adapters, fiber cables) and family entries without a detailed r
 
 | Model | Family | Status | Legacy OPN | NVIDIA OPN | Speed | Cages / interfaces | Description | Link |
 |---|---|---|---|---|---|---|---|---|
-| SN6810-LD | Spectrum-6 SN6000 | documented | — | 920-9N64K-00LI-GC0 | 800GbE | 128x MMC-12 800GbE fixed | Spectrum-6 SN6000 2U 800GbE Ethernet switch: 128x MMC-12 (co-packaged optics) | [NVIDIA](https://networking-docs.nvidia.com/sn6000hw) |
-| SN6800-LD | Spectrum-6 SN6000 | documented | — | 920-9N67K-00LA-GC0 | 200GbE | 512x MMC-12 200GbE fixed | Spectrum-6 SN6000 5U 200GbE Ethernet switch: 512x MMC-12 (co-packaged optics) | [NVIDIA](https://networking-docs.nvidia.com/sn6000hw) |
+| SN6810-LD | Spectrum-6 SN6000 | documented | — | 920-9N64K-00LI-GC0 | 800GbE | 128x MMC-16 800GbE fixed | Spectrum-6 SN6000 2U 800GbE Ethernet switch: 128x MMC-16 (co-packaged optics) | [NVIDIA](https://networking-docs.nvidia.com/sn6000hw) |
+| SN6800-LD | Spectrum-6 SN6000 | documented | — | 920-9N67K-00LA-GC0 | 200GbE | 512x MMC-16 200GbE fixed | Spectrum-6 SN6000 5U 200GbE Ethernet switch: 512x MMC-16 (co-packaged optics) | [NVIDIA](https://networking-docs.nvidia.com/sn6000hw) |
 | SN6600-LD | Spectrum-6 SN6000 | documented | — | 920-9N62F-00LI-GC1 | 800GbE | 64x OSFP 2x800 Gb/s | Spectrum-6 SN6000 2U 800GbE Ethernet switch: 64x OSFP 2x800 Gb/s | [NVIDIA](https://networking-docs.nvidia.com/sn6000hw) |
 | SN6600 | Spectrum-6 SN6000 | documented | — | 920-9N63F-00RI-3C0 | 800GbE | 64x OSFP 2x800 Gb/s | Spectrum-6 SN6000 3U 800GbE Ethernet switch: 64x OSFP 2x800 Gb/s | [NVIDIA](https://networking-docs.nvidia.com/sn6000hw) |
 | SN5610 | Spectrum-4 SN5000 | documented | — | 920-9N42F-00RI-3C1 | 800GbE | 64x OSFP 800GbE; 2x SFP28 25GbE | Spectrum-4 SN5000 2U 800GbE Ethernet switch: 64x OSFP 800GbE + 2x SFP28 25GbE | [NVIDIA](https://networking-docs.nvidia.com/sn5000hw) |
