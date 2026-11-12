@@ -266,8 +266,8 @@
       "port_groups": [
         {
           "id": "ports-1",
-          "label": "128 × MMC-12",
-          "connector_family": "MMC-12",
+          "label": "128 × MMC-16",
+          "connector_family": "MMC-16",
           "count": 128,
           "module_speed_gbps": null,
           "modes": [],
@@ -291,8 +291,8 @@
       "port_groups": [
         {
           "id": "ports-1",
-          "label": "512 × MMC-12",
-          "connector_family": "MMC-12",
+          "label": "512 × MMC-16",
+          "connector_family": "MMC-16",
           "count": 512,
           "module_speed_gbps": null,
           "modes": [],

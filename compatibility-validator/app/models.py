@@ -13,7 +13,7 @@ Identifier = Annotated[str, Field(min_length=1, max_length=256)]
 Positive = Annotated[int, Field(gt=0, le=100000)]
 Distance = Annotated[float, Field(gt=0, le=1000000, allow_inf_nan=False)]
 Fabric = Literal["ETH", "IB", "NVL"]
-Connector = Literal["OSFP", "QSFP-DD", "QSFP112", "QSFP56", "QSFP28", "QSFP+", "SFP56", "SFP28", "SFP+", "MMC-12", "MPO-12", "RJ45"]
+Connector = Literal["OSFP", "QSFP-DD", "QSFP112", "QSFP56", "QSFP28", "QSFP+", "SFP56", "SFP28", "SFP+", "MMC-12", "MMC-16", "MPO-12", "RJ45"]
 Outcome = Literal["compatible", "conditional", "unknown", "incompatible"]
 
 

@@ -13,6 +13,19 @@ releases. Historical dates below come from their referenced commits. The `v0.01`
 
 ### Changed
 
+- Inventory snapshot 2026-11-12 (schema v10, unchanged; report
+  `2026/11/nvidia_interconnects_2026-11-12.md`): Spectrum-6 CPO switches `SN6810-LD`
+  (`920-9N64K-00LI-GC0`, 128 ports) and `SN6800-LD` (`920-9N67K-00LA-GC0`, 512 ports) now list
+  MMC-16 rather than MMC-12 fiber connectors in `connectors`, `description`,
+  `module_interfaces` and `port_interface_compatibility`. The SN6000 manual (updated
+  2026-11-04) gives MMC-16; port counts, speeds and throughput are unchanged. No products
+  added or removed. The validator accepts the `MMC-16` connector family, and both device
+  profiles use it. `network_equipment.md` and `.xlsx` are updated. The SN2201-SN6000
+  ordering tables are now available as HTML, and their in-scope OPNs match the inventory.
+  Validation: catalog and profile schema checks pass, and 68 unit tests pass. The
+  `test_validator` module did not run because `fastapi` is not installed in this
+  environment. Limitations: EoL switch SKUs, legacy/OCP adapters and accessory kits remain
+  out of scope; LinkX attributes not fully machine-compared.
 - Inventory snapshot 2026-11-10 (schema v10, unchanged; report
   `2026/11/nvidia_interconnects_2026-11-10.md`): added LinkX transceivers `MMA4Z00-NS`
   (finned OSFP, OPN `980-9I510-00NS00`) and `MMA4Z00-NS-FLT` (flat-top OSFP, OPN
