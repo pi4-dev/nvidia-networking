@@ -13,6 +13,14 @@ releases. Historical dates below come from their referenced commits. The `v0.01`
 
 ### Changed
 
+- Inventory snapshot 2026-11-16 (schema v10, unchanged; report
+  `2026/11/nvidia_interconnects_2026-11-16.md`): LinkX transceiver `MMS4X90-NR` now has
+  NVIDIA OPN `980-9IB70-00YL00` and legacy OPN `MMS4X90-NR` (previously empty), taken from
+  the product's "Ordering Information v1.0" page. The main ordering page still shows the
+  MMS4X50-NM OPN and was not used. No products added or removed; validator unchanged
+  (its MMS4X90-NR profile stores no OPN). `network_equipment.md` and `.xlsx` updated.
+  Limitations: EoL/Quantum-2 switch SKUs, legacy/OCP adapters and accessory kits remain
+  out of scope; LinkX attributes not fully machine-compared.
 - Inventory snapshot 2026-11-12 (schema v10, unchanged; report
   `2026/11/nvidia_interconnects_2026-11-12.md`): Spectrum-6 CPO switches `SN6810-LD`
   (`920-9N64K-00LI-GC0`, 128 ports) and `SN6800-LD` (`920-9N67K-00LA-GC0`, 512 ports) now list
