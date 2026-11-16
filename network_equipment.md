@@ -1,6 +1,6 @@
 # NVIDIA Network Equipment
 
-_Snapshot **2026-11-12**, schema **v10**, Europe/Warsaw. Generated from `data/nvidia-interconnects.json`; active products only (no-longer-for-sale LinkX items are excluded)._
+_Snapshot **2026-11-16**, schema **v10**, Europe/Warsaw. Generated from `data/nvidia-interconnects.json`; active products only (no-longer-for-sale LinkX items are excluded)._
 
 `IB` = InfiniBand, `ETH` = Ethernet, `NVL` = NVLink/NVL. OSFP finned/flat-top variants are separate rows. Empty `NVIDIA OPN` means the product page publishes no NVIDIA OPN; `—` means not stated by the source.
 
@@ -43,7 +43,7 @@ Finned and flat-top OSFP are separate rows.
 | MMS4A20 | RHS | active | — | 980-9IAT0-00XM00 | 800G | OSFP-flattop | 1x 800Gb/s MPO-12/APC | SM | max 500 m | IB | NVIDIA MMS4A20 800Gbps, DR4 Single-port OSFP, MPO, 1310nm Single Mode, RHS (500m) Transceiver | [NVIDIA](https://networking-docs.nvidia.com/9iat0mosfp800sprhs) |
 | MMS4X00-NM16 | — | active | MMS4X00-NM16 | 980-9I30J-F4NM00 | 800G | OSFP-finned | 1x 800Gb/s MPO-16/APC | SM | max 500 m | ETH | MMS4X00-NM16 NVIDIA Ethernet 800Gbps OSFP Twin-port Finned Transceiver OSFP 1xMPO16 1310nm SMF up to 500m | [NVIDIA](https://networking-docs.nvidia.com/mms4x00nm16) |
 | MMS4X00-NM-HGX | HGX Rubin NVL8 | active | MMS4X00-NM-HGX | 980-9I302-00NM00 | 800G | OSFP-flattop | 2x 400Gb/s MPO-12/APC | SM | max 500 m | IB/ETH/NVL | MMS4X00-NM-HGX 800Gbps Twin-port OSFP 2x400Gb/s InfiniBand and Ethernet Single Mode 2xDR4 500m | [NVIDIA](https://networking-docs.nvidia.com/mms4x00nmhgx500) |
-| MMS4X90-NR | — | active | — | — | 800G | OSFP-finned | 2x 400Gb/s Duplex LC | SM | max 10000 m | IB/ETH | MMS4X90-NR 800Gbps, 2xLR4, OSFP, 2xLC-LC, 1310nm SMF, Finned Twin-port Transceiver (up to 10km) | [NVIDIA](https://networking-docs.nvidia.com/mms4x90nr800g) |
+| MMS4X90-NR | — | active | MMS4X90-NR | 980-9IB70-00YL00 | 800G | OSFP-finned | 2x 400Gb/s Duplex LC | SM | max 10000 m | IB/ETH | MMS4X90-NR 800Gbps, 2xLR4, OSFP, 2xLC-LC, 1310nm SMF, Finned Twin-port Transceiver (up to 10km) | [NVIDIA](https://networking-docs.nvidia.com/mms4x90nr800g) |
 | MMS1W50-HM | — | active | — | MMS1W50-HM | 200G | QSFP56 | 1x 200Gb/s Duplex LC/UPC | SM | max 2000 m | IB | MMS1W50-HM 200Gb/s QSFP56 FR4 | [NVIDIA](https://networking-docs.nvidia.com/mms1w50hmspec) |
 | MMA2P00-AS | — | active | — | MMA2P00-AS | 25G | SFP28 | 1x 25Gb/s Duplex LC/UPC | MM | OM3 70 m, OM4 100 m, max 100 m | ETH | MMA2P00-AS 25GbE SFP28 MMF Transceiver Product Specifications | [NVIDIA](https://networking-docs.nvidia.com/mma2p00asspec) |
 
