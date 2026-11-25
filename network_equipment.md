@@ -1,6 +1,6 @@
 # NVIDIA Network Equipment
 
-_Snapshot **2026-11-16**, schema **v10**, Europe/Warsaw. Generated from `data/nvidia-interconnects.json`; active products only (no-longer-for-sale LinkX items are excluded)._
+_Snapshot **2026-11-25**, schema **v10**, Europe/Warsaw. Generated from `data/nvidia-interconnects.json`; active products only (no-longer-for-sale LinkX items are excluded)._
 
 `IB` = InfiniBand, `ETH` = Ethernet, `NVL` = NVLink/NVL. OSFP finned/flat-top variants are separate rows. Empty `NVIDIA OPN` means the product page publishes no NVIDIA OPN; `—` means not stated by the source.
 
@@ -109,6 +109,7 @@ Accessories (QSA adapters, fiber cables) and family entries without a detailed r
 | Model | Family | Status | Legacy OPN | NVIDIA OPN | Speed | Cages / interfaces | Description | Link |
 |---|---|---|---|---|---|---|---|---|
 | Q3200-RA | Quantum-X800 | documented | — | 920-9B34F-00RX-FS0 | 800Gb/s XDR | 36x OSFP 800Gb/s XDR (twin-port, 72 ports) | Quantum-X800 800Gb/s XDR: 2x18 OSFP | [NVIDIA](https://networking-docs.nvidia.com/switches#nvidiatab-hw-documentation) |
+| Q3300-LD | Quantum-X800 | documented | — | 920-9B36F-00NX-GS0 | 800Gb/s XDR (400/800Gb/s per port; NDR not supported) | 72x OSFP-flattop 800Gb/s XDR (twin-port, 144 ports; 400/800Gb/s per port); 1x OSFP 400Gb/s (FNM) | NVIDIA Quantum-3 based XDR InfiniBand Switch, Q3300-LD, 3U, 144 XDR Ports over 72 OSFP Cages, 48VDC, Standard Depth, Managed, 100% Liquid-cooled, Rail Kit | [NVIDIA](https://networking-docs.nvidia.com/xdrswitcheshw) |
 | Q3400-RA | Quantum-X800 | documented | — | 920-9B36F-00RX-8S0 | 800Gb/s XDR | 72x OSFP 800Gb/s XDR (twin-port, 144 ports) | Quantum-X800 800Gb/s XDR: 72x OSFP | [NVIDIA](https://networking-docs.nvidia.com/switches#nvidiatab-hw-documentation) |
 | Q3401-RD | Quantum-X800 | documented | — | 920-9B36P-00RX-8S0 | 800Gb/s XDR | 72x OSFP 800Gb/s XDR (twin-port, 144 ports) | Quantum-X800 800Gb/s XDR: 72x OSFP | [NVIDIA](https://networking-docs.nvidia.com/switches#nvidiatab-hw-documentation) |
 | Q3450-LD | Quantum-X Photonics / Quantum-X800 | documented | — | 920-9B36M-00MX-8ES | 800Gb/s XDR | 144x MPO-12 CPO 800Gb/s XDR fixed | Quantum-X Photonics / Quantum-X800 800Gb/s XDR: 144x MPO12 CPO | [NVIDIA](https://networking-docs.nvidia.com/switches#nvidiatab-hw-documentation) |
