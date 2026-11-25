@@ -958,6 +958,41 @@
       ]
     },
     {
+      "id": "infiniband:Q3300-LD",
+      "kind": "InfiniBand switch / appliance",
+      "model": "Q3300-LD",
+      "family": "Quantum-X800",
+      "source_url": "https://networking-docs.nvidia.com/xdrswitcheshw/1.6/specifications",
+      "port_groups": [
+        {
+          "id": "ports-1",
+          "label": "72 × twin-port OSFP (flat-top, RHS)",
+          "connector_family": "OSFP",
+          "count": 72,
+          "module_speed_gbps": 1600,
+          "modes": [
+            {
+              "id": "2x800",
+              "links": 2,
+              "speed_gbps": 800
+            }
+          ],
+          "fabrics": [
+            "IB"
+          ],
+          "pluggable": true,
+          "source_url": "https://networking-docs.nvidia.com/xdrswitcheshw/1.6/specifications",
+          "accepted_connector_families": [
+            "OSFP"
+          ],
+          "accepted_interface_types": [
+            "OSFP-flattop"
+          ],
+          "conditions": []
+        }
+      ]
+    },
+    {
       "id": "infiniband:Q3400-RA",
       "kind": "InfiniBand switch / appliance",
       "model": "Q3400-RA",

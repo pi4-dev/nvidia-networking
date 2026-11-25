@@ -13,6 +13,19 @@ releases. Historical dates below come from their referenced commits. The `v0.01`
 
 ### Changed
 
+- Inventory snapshot 2026-11-25 (schema v10, unchanged; report
+  `2026/11/nvidia_interconnects_2026-11-25.md`): added Quantum-X800 InfiniBand switch
+  `Q3300-LD` (`920-9B36F-00NX-GS0`; 3U, 144x 800Gb/s XDR over 72 flat-top RHS OSFP cages plus
+  one OSFP FNM port, 400/800Gb/s per port, NDR not supported, 115.2 Tb/s, 100% liquid-cooled,
+  48VDC bus bar), from the Q3xxx XDR switch manual v1.6 (November 2026). Its cages are stored
+  as `OSFP-flattop` in `module_interfaces` and `port_interface_compatibility`. No products
+  removed or changed. The validator gained a Q3300-LD device profile (72x twin-port OSFP,
+  flat-top modules only, 2x800G XDR). `network_equipment.md` and `.xlsx` updated. The report
+  manual count is corrected from 101 to 96. Validation: JSON diff shows only the Q3300-LD row
+  and its interface record; validator tests did not run because PyPI (`fastapi`,
+  `pydantic`) is unreachable in this environment. Limitations: EoL/Quantum-2 switch SKUs,
+  legacy/OCP adapters and accessory kits remain out of scope; LinkX attributes not fully
+  machine-compared.
 - Inventory snapshot 2026-11-16 (schema v10, unchanged; report
   `2026/11/nvidia_interconnects_2026-11-16.md`): LinkX transceiver `MMS4X90-NR` now has
   NVIDIA OPN `980-9IB70-00YL00` and legacy OPN `MMS4X90-NR` (previously empty), taken from

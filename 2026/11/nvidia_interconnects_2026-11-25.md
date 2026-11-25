@@ -38,7 +38,7 @@ profile for Q3300-LD (72x twin-port OSFP, flat-top only, 2x800G XDR) was added.
 
 - Index pages: LinkX 72 manual links, switches, DPU/DOCA, adapters and management software:
   every in-scope link is already in the inventory.
-- 101 product manuals crawled (ordering, introduction, specification, interface and revision
+- 96 product manuals crawled (ordering, introduction, specification, interface and revision
   pages). Pages updated since the last snapshot were reviewed:
   - SN4000 ordering information (2026-11-21): only the EoL SN4600 200GbE SKUs (out of scope)
     are listed beyond the tracked OPNs.
