@@ -13,6 +13,21 @@ releases. Historical dates below come from their referenced commits. The `v0.01`
 
 ### Changed
 
+- Inventory snapshot 2026-11-28 (schema v10, unchanged; report
+  `2026/11/nvidia_interconnects_2026-11-28.md`): DPU `BlueField-4 DPU` is now sourced from its
+  new hardware user guide (`bf4dpu`, first public release November 2026). It gains NVIDIA OPNs
+  `900-9D4B4-00CW-AA0` (B4240, air-cooled) and `900-9D4B4-00CW-SA0` (B4240L, liquid-cooled),
+  both lifecycle Prototype. `module_interfaces` changes from QSFP112 (count unknown, 800Gb/s)
+  to 2x QSFP112 at 400Gb/s per port (400GbE default / NDR). `port_interface_compatibility`
+  now cites the Supported Interfaces page, lists `400GbE` and `400Gb/s NDR`, and drops the DGX
+  Rubin scope note. The specifications page shows B4240L as `900-9D4C4-00CW-SA0`; the ordering
+  and interface tables' OPN is recorded. No products added or removed. The validator's
+  BlueField-4 DPU profile now states 2 QSFP112 cages and the new source. `network_equipment.md`
+  and `.xlsx` updated. Validation: JSON diff shows only the BlueField-4 DPU row and its
+  interface record; profile/catalog consistency checked with a script; validator tests did
+  not run because PyPI (`fastapi`, `pydantic`) is unreachable in this environment. Limitations: EoL/Quantum-2 switch SKUs, legacy/OCP adapters,
+  BlueField-2 and accessory kits remain out of scope; LinkX attributes not fully
+  machine-compared.
 - Inventory snapshot 2026-11-25 (schema v10, unchanged; report
   `2026/11/nvidia_interconnects_2026-11-25.md`): added Quantum-X800 InfiniBand switch
   `Q3300-LD` (`920-9B36F-00NX-GS0`; 3U, 144x 800Gb/s XDR over 72 flat-top RHS OSFP cages plus

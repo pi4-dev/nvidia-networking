@@ -1225,19 +1225,19 @@
       "kind": "DPU",
       "model": "BlueField-4 DPU",
       "family": "dpu",
-      "source_url": "https://www.nvidia.com/en-eu/data-center/dgx-rubin-nvl8/",
-      "notes": "publicly documented DGX Rubin NVL8 configuration; family may expose additional SKUs",
+      "source_url": "https://networking-docs.nvidia.com/bf4dpu/supported-interfaces",
+      "notes": "B4240 (900-9D4B4-00CW-AA0, air-cooled) and B4240L (900-9D4B4-00CW-SA0, liquid-cooled): 2x QSFP112, 400GbE / NDR",
       "port_groups": [
         {
           "id": "catalog-1",
           "label": "QSFP112",
           "connector_family": "QSFP112",
-          "count": null,
+          "count": 2,
           "module_speed_gbps": null,
           "modes": [],
           "fabrics": [],
           "pluggable": true,
-          "source_url": "https://www.nvidia.com/en-eu/data-center/dgx-rubin-nvl8/",
+          "source_url": "https://networking-docs.nvidia.com/bf4dpu/supported-interfaces",
           "accepted_connector_families": [
             "QSFP112"
           ],
