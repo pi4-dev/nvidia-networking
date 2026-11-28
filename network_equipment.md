@@ -1,6 +1,6 @@
 # NVIDIA Network Equipment
 
-_Snapshot **2026-11-25**, schema **v10**, Europe/Warsaw. Generated from `data/nvidia-interconnects.json`; active products only (no-longer-for-sale LinkX items are excluded)._
+_Snapshot **2026-11-28**, schema **v10**, Europe/Warsaw. Generated from `data/nvidia-interconnects.json`; active products only (no-longer-for-sale LinkX items are excluded)._
 
 `IB` = InfiniBand, `ETH` = Ethernet, `NVL` = NVLink/NVL. OSFP finned/flat-top variants are separate rows. Empty `NVIDIA OPN` means the product page publishes no NVIDIA OPN; `—` means not stated by the source.
 
@@ -132,7 +132,7 @@ Accessories (QSA adapters, fiber cables) and family entries without a detailed r
 
 | Model | Family | Status | Legacy OPN | NVIDIA OPN | Speed | Cages / interfaces | Description | Link |
 |---|---|---|---|---|---|---|---|---|
-| BlueField-4 DPU | — | documented | — | — | 800Gb/s | QSFP112 800Gb/s | BlueField-4 DPU, 800Gb/s: networking, storage, cybersecurity, secure multi-tenancy | [NVIDIA](https://www.nvidia.com/en-eu/data-center/dgx-rubin-nvl8/) |
+| BlueField-4 DPU | — | documented | — | 900-9D4B4-00CW-AA0, 900-9D4B4-00CW-SA0 | 800Gb/s | 2x QSFP112 400Gb/s | BlueField-4 DPU, up to 800Gb/s: networking, storage, cybersecurity, secure multi-tenancy; B4240 (dual-slot FH3/4L, air-cooled) and B4240L (single-slot FHFL, liquid-cooled): 2x QSFP112, 400GbE (default) / NDR InfiniBand, PCIe Gen6 x16, 64 Arm cores, 128GB LPDDR5x, integrated BMC; lifecycle Prototype | [NVIDIA](https://networking-docs.nvidia.com/bf4dpu) |
 | BlueField-4 STX Storage Processor | — | documented | — | — | — | — | BlueField-4 STX Storage Processor: AI-native storage, Vera CPU, in-silicon security | [NVIDIA](https://www.nvidia.com/en-us/networking/products/data-processing-unit/) |
 | BlueField-3 DPU | — | documented | — | 900-9D3B6-00CC-AA0, 900-9D3B6-00CC-EA0, 900-9D3B6-00CN-AB0, 900-9D3B6-00CN-PA0, 900-9D3B6-00CV-AA0, 900-9D3B6-00SC-AA0, 900-9D3B6-00SC-EA0, 900-9D3B6-00SN-AB0, 900-9D3B6-00SV-AA0, 900-9D3L6-00CN-AA0 | 400Gb/s | QSFP112 400Gb/s; QSFP56 400Gb/s; QSFP28 400Gb/s | BlueField-3 DPU, 400Gb/s: SDN, storage, cybersecurity, HPC, 5G | [NVIDIA](https://networking-docs.nvidia.com/bf3dpu) |
 | BlueField-3 DPU Controller (B3220SH E-Series) | — | documented | — | 900-9D3C6-00CV-DA0, 900-9D3C6-00CV-GA0, 900-9D3C6-00SV-DA0 | 200Gb/s | 2x QSFP112 200Gb/s | BlueField-3 B3220SH E-Series FHHL storage controller, 200GbE (default) / NDR200 IB, PCIe Gen5.0 x16, 16 Arm cores, 48GB DDR, integrated BMC | [NVIDIA](https://networking-docs.nvidia.com/bf3controllerhw) |
